@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+  
+	<!-- General files -->
+	<!-- Error log file -->
+	<RollingFile name="generalErrorFile" fileName="/mnt/tomcat/spread/logs/hfa_general_error_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/omis_general_error_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level  %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/> 
+	</RollingFile>
+	<!-- Info log file -->
+	<RollingFile name="generalInfoFile" fileName="/mnt/tomcat/spread/logs/hfa_general_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/omis_general_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level  %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="INFO"/>
+   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+       </Filters>
+	</RollingFile>
+	
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+  	<!-- The root logger is for console -->
+    <Root level="ALL">
+      <AppenderRef ref="Console"/>
+    </Root>
+    
+    <!-- The second level of logger -->
+   	<Logger name="com.spread"
+		level="debug" additivity="true">
+		<appender-ref ref="generalErrorFile" level="error" />
+		<appender-ref ref="generalInfoFile" level="info"/>
+	</Logger>
+	
+  </Loggers>
+</Configuration>

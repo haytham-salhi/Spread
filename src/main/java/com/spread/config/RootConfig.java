@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  *
  */
 @Configuration
-@ComponentScan({"com.harri"})
+@ComponentScan({"com.spread.config.others"}) 
 @PropertySource("classpath:/application.properties")
 public class RootConfig {
 	

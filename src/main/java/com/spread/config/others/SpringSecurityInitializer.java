@@ -1,4 +1,4 @@
-package com.spread.config;
+package com.spread.config.others;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

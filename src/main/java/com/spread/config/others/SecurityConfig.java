@@ -1,4 +1,4 @@
-package com.spread.config;
+package com.spread.config.others;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

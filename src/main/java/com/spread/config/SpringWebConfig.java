@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.view.JstlView;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan({"com.harri.frontcontrollers"})
+@ComponentScan({"com.spread.frontcontrollers"})
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
@@ -28,11 +29,11 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		return viewResolver;
 	}
 
-//	@Override
-//	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//		registry.addResourceHandler("/resources/**").addResourceLocations(
-//				"/resources/");
-//	}
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/static/**").addResourceLocations(
+				"/WEB-INF/static-pages/");
+	}
 
 //	@Override
 //	public void configureMessageConverters(
