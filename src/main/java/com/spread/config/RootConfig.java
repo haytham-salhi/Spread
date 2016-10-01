@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  *
  */
 @Configuration
-@ComponentScan({"com.spread.config.others"}) 
+@ComponentScan({"com.spread.config.others", "com.spread.fetcher"}) 
 @PropertySource("classpath:/application.properties")
 public class RootConfig {
 	

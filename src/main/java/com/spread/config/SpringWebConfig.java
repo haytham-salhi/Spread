@@ -32,7 +32,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/static/**").addResourceLocations(
-				"/WEB-INF/static-pages/");
+				"/WEB-INF/static-pages/", "/WEB-INF/images/");
 	}
 
 //	@Override

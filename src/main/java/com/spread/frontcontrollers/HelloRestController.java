@@ -25,6 +25,8 @@ import com.spread.views.ResponseStatusHolder;
 @Scope("session")
 public class HelloRestController implements Serializable {
 	
+	private static final long serialVersionUID = 6179923380121110725L;
+
 	@RequestMapping(value = "/foo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseStatusHolder fixUserLocationTable() throws Exception {
 		ResponseStatusHolder response = new ResponseStatusHolder();

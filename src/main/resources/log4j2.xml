@@ -4,21 +4,33 @@
   
 	<!-- General files -->
 	<!-- Error log file -->
-	<RollingFile name="generalErrorFile" fileName="/mnt/tomcat/spread/logs/hfa_general_error_log.log"
-		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/omis_general_error_log-%d{MM-dd-yyyy}-%i.log.gz">
+	<RollingFile name="generalErrorFile" fileName="/mnt/tomcat/spread/logs/general_error_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/general_error_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level  %M - %msg%xEx%n" />
 		<SizeBasedTriggeringPolicy size="50MB" />
 	<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/> 
 	</RollingFile>
 	<!-- Info log file -->
-	<RollingFile name="generalInfoFile" fileName="/mnt/tomcat/spread/logs/hfa_general_info_log.log"
-		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/omis_general_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+	<RollingFile name="generalInfoFile" fileName="/mnt/tomcat/spread/logs/general_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/general_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level  %M - %msg%xEx%n" />
 		<SizeBasedTriggeringPolicy size="50MB" />
 	<Filters>
         <ThresholdFilter level="INFO"/>
+   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+       </Filters>
+	</RollingFile>
+	
+	<!--Fetcher log file -->
+	<RollingFile name="fetcherInfoFile" fileName="/mnt/tomcat/spread/logs/fetcher_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/fetcher_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level  %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
    		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
        </Filters>
 	</RollingFile>
@@ -35,9 +47,15 @@
     
     <!-- The second level of logger -->
    	<Logger name="com.spread"
-		level="debug" additivity="true">
+		level="trace" additivity="true">
 		<appender-ref ref="generalErrorFile" level="error" />
-		<appender-ref ref="generalInfoFile" level="info"/>
+		<appender-ref ref="generalInfoFile" level="trace"/>
+	</Logger>
+	
+	<!-- Fetcher logger -->
+   	<Logger name="com.spread.fetcher.impl.GoogleFetcher"
+		level="trace" additivity="true">
+		<appender-ref ref="fetcherInfoFile" level="trace" />
 	</Logger>
 	
   </Loggers>
