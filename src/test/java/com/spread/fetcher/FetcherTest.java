@@ -3,6 +3,8 @@ package com.spread.fetcher;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +54,7 @@ public class FetcherTest {
 	
 	@Test
 	public void googleFetcherTest() throws Exception {
-		SearchResult result = googleFetcher.fetch("Adel");
+		SearchResult result = googleFetcher.fetch("هيثم صالحي");
 		
 		result.getSearchItems().forEach(System.out::println);
 	}
@@ -63,5 +65,4 @@ public class FetcherTest {
 		
 		result.getSearchItems().forEach(System.out::println);
 	}
-
 }

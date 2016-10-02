@@ -1,6 +1,8 @@
 package com.spread.fetcher.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,6 +75,12 @@ public class BingFetcher implements SearchEngineFetcher {
 		int actualNumberOfItemsFetched = 0; // Counter
 		
 		int totalCountAsInt = -1;
+		
+		try {
+			query = URLEncoder.encode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(ExceptionUtils.getStackTrace(e));
+		}
 
 		// Prepare the endPoint
 		String preparedEndPoint = endPoint.replace(FIRST_PLACE_HOLDER, String.valueOf(first)).replace(QUERY_PLACE_HOLDER, query);

@@ -3,6 +3,8 @@ package com.spread.general;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,5 +101,21 @@ public class GeneralTest {
 	@Test
 	public void pingSearchFetchingTest() throws Exception {
 		
+	}
+	
+	// encode to application/x-www-form-urlencoded format 
+	@Test
+	public void testFromUtf8To() throws Exception {
+		String query = "هيثم صالحي";
+		System.out.println(query);
+		
+		try {
+			System.out.println(URLEncoder.encode(query, "UTF-8"));
+			
+			System.out.println(String.format(URLEncoder.encode(query, "UTF-8")));
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 }
