@@ -93,8 +93,11 @@ public class GeneralTest {
 	
 	@Test
 	public void googleSearchCseUrlTest() throws Exception {
-		
-		
+		// Moved
+	}
+	
+	@Test
+	public void pingSearchFetchingTest() throws Exception {
 		
 	}
 }

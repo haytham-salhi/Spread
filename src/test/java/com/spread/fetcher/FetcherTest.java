@@ -40,6 +40,10 @@ public class FetcherTest {
 	@Qualifier("googleFetcher")
 	private SearchEngineFetcher googleFetcher;
 	
+	@Autowired
+	@Qualifier("bingFetcher")
+	private SearchEngineFetcher bingFetcher;
+	
 	
 
 	@Before
@@ -47,8 +51,15 @@ public class FetcherTest {
 	}
 	
 	@Test
-	public void fetchTest() throws Exception {
-		SearchResult result = googleFetcher.fetch("hdgfs34h23h42");
+	public void googleFetcherTest() throws Exception {
+		SearchResult result = googleFetcher.fetch("Adel");
+		
+		result.getSearchItems().forEach(System.out::println);
+	}
+	
+	@Test
+	public void bingFetcherTest() throws Exception {
+		SearchResult result = bingFetcher.fetch("Adel");
 		
 		result.getSearchItems().forEach(System.out::println);
 	}

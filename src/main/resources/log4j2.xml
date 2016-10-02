@@ -53,7 +53,7 @@
 	</Logger>
 	
 	<!-- Fetcher logger -->
-   	<Logger name="com.spread.fetcher.impl.GoogleFetcher"
+   	<Logger name="com.spread.fetcher.impl"
 		level="trace" additivity="true">
 		<appender-ref ref="fetcherInfoFile" level="trace" />
 	</Logger>
