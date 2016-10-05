@@ -38,9 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		    .formLogin().loginPage("/login").failureUrl("/login?error").defaultSuccessUrl("/admin")
 		    .usernameParameter("username").passwordParameter("password")
 		.and()
-		    .logout().logoutSuccessUrl("/login?logout");
-		//.and()
-		 //   .csrf();
+		    .logout().logoutSuccessUrl("/login?logout")
+		.and()
+		    .csrf().disable();
 	}
 	
 	@Bean

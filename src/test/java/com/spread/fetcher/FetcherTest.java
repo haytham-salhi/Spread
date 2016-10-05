@@ -39,12 +39,16 @@ import com.spread.model.SearchResult;
 public class FetcherTest {
 	
 	@Autowired
-	@Qualifier("googleFetcher")
-	private SearchEngineFetcher googleFetcher;
+	@Qualifier("googleCustomFetcher")
+	private SearchEngineFetcher googleCustomFetcher;
 	
 	@Autowired
 	@Qualifier("bingFetcher")
 	private SearchEngineFetcher bingFetcher;
+	
+	@Autowired
+	@Qualifier("googleFetcher")
+	private SearchEngineFetcher googleFetcher;
 	
 	
 
@@ -53,10 +57,20 @@ public class FetcherTest {
 	}
 	
 	@Test
-	public void googleFetcherTest() throws Exception {
-		SearchResult result = googleFetcher.fetch("هيثم صالحي");
+	public void googleCustomFetcherTest() throws Exception {
+		SearchResult result = googleCustomFetcher.fetch("Radi Jarrar");
 		
 		result.getSearchItems().forEach(System.out::println);
+		
+		System.out.println(result.getSearchItems().size());
+		
+		Thread.sleep(3000);
+		
+		SearchResult result1 = googleCustomFetcher.fetch("Haytham Salhi");
+		
+		result1.getSearchItems().forEach(System.out::println);
+		
+		System.out.println(result1.getSearchItems().size());
 	}
 	
 	@Test
@@ -64,5 +78,13 @@ public class FetcherTest {
 		SearchResult result = bingFetcher.fetch("Adel");
 		
 		result.getSearchItems().forEach(System.out::println);
+	}
+	
+	@Test
+	public void googleFetcherTest() throws Exception {
+		SearchResult result = googleFetcher.fetch("Haytham");
+		
+		result.getSearchItems().forEach(System.out::println);
+		System.out.println(result.getSearchItems().size());
 	}
 }

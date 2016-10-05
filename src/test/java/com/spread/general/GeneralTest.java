@@ -8,6 +8,8 @@ import java.net.URLEncoder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,9 +43,8 @@ public class GeneralTest {
 
 	
 	@Autowired
-	@Qualifier("googleFetcher")
+	@Qualifier("googleCustomFetcher")
 	SearchEngineFetcher googleFetcher;
-	
 	
 
 	@Before
@@ -112,10 +113,19 @@ public class GeneralTest {
 		try {
 			System.out.println(URLEncoder.encode(query, "UTF-8"));
 			
-			System.out.println(String.format(URLEncoder.encode(query, "UTF-8")));
+			//System.out.println(String.format(URLEncoder.encode(query, "UTF-8")));
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void testName() throws Exception {
+		Document document = Jsoup.connect("https://www.google.com/search?q=haytham").timeout(30000).userAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36").get();
+		
+		String countDes = document.select("div[id=\"resultStats\"]").first().text();
+		System.out.println(countDes.substring(countDes.indexOf("About"), countDes.indexOf("results")));
+
 	}
 }

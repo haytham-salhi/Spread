@@ -74,7 +74,7 @@ public class BingFetcher implements SearchEngineFetcher {
 		int pageNumber = 0;
 		int actualNumberOfItemsFetched = 0; // Counter
 		
-		int totalCountAsInt = -1;
+		long totalCountAsInt = -1;
 		
 		try {
 			query = URLEncoder.encode(query, "UTF-8");
@@ -113,9 +113,6 @@ public class BingFetcher implements SearchEngineFetcher {
 				if(resultElements.isEmpty()) {
 					// No results
 					LOGGER.info("Empty results!");
-					
-					LOGGER.trace("retrurning");
-					return searchResult;
 				}
 				
 				// An additional condition actualNumberOfItemsFetched < maxNumOfResultsToFetch is added here to make sure that we are not returning a value larger than it
@@ -154,43 +151,43 @@ public class BingFetcher implements SearchEngineFetcher {
 			preparedEndPoint = endPoint.replace(FIRST_PLACE_HOLDER, String.valueOf(first)).replace(QUERY_PLACE_HOLDER, query);
 			
 			// Connect and fetch
+			document = null; 
 			try {
 				document = Jsoup.connect(preparedEndPoint).timeout(30000).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36").get();
 			} catch (IOException e) {
 				LOGGER.error(ExceptionUtils.getStackTrace(e));
-				
-				LOGGER.trace("retrurning");
-				return searchResult;
 			}
 			
-			Elements resultElements = document.select(RESULTS_CSS_QUERY);
-			
-			if(resultElements.isEmpty()) {
-				// No results
-				LOGGER.info("Empty results!");
+			if(document != null) {
+				Elements resultElements = document.select(RESULTS_CSS_QUERY);
 				
-				LOGGER.trace("retrurning");
-				return searchResult;
-			}
-			
-			// An additional condition actualNumberOfItemsFetched < maxNumOfResultsToFetch is added here to make sure that we are not returning a value larger than it
-			for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
-				String title = resultElements.get(i).select(TITLE_CSS_QUERY).text();
-				String url = resultElements.get(i).select(URL_CSS_QUERY).text();
-				String snippet = resultElements.get(i).select(SNIPPET_CSS_QUERY).text();
+				if(resultElements.isEmpty()) {
+					// No results
+					LOGGER.info("Empty results!");
+				}
 				
-				// Create and add
-				SearchItem searchItem = new SearchItem();
-				searchItem.setTitle(title);
-				searchItem.setUrl(url);
-				searchItem.setShortSummary(snippet);
+				// An additional condition actualNumberOfItemsFetched < maxNumOfResultsToFetch is added here to make sure that we are not returning a value larger than it
+				for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
+					String title = resultElements.get(i).select(TITLE_CSS_QUERY).text();
+					String url = resultElements.get(i).select(URL_CSS_QUERY).text();
+					String snippet = resultElements.get(i).select(SNIPPET_CSS_QUERY).text();
+					
+					// Create and add
+					SearchItem searchItem = new SearchItem();
+					searchItem.setTitle(title);
+					searchItem.setUrl(url);
+					searchItem.setShortSummary(snippet);
 
-				searchResult.addSearchItem(searchItem);
-				
-				// Accumulate the fetched items
-				actualNumberOfItemsFetched++;
+					searchResult.addSearchItem(searchItem);
+					
+					// Accumulate the fetched items
+					actualNumberOfItemsFetched++;
+				}
+			} else {
+				LOGGER.info("Document is null. Giving opportunity to next page to be fetched!");
 			}
 			
+			// IWf the document is null, give opportunity to next page. That's why these two lines are kept out of the above if
 			first+= num; // to loop over 11, 21, 31, and so on
 			pageNumber++;
 		}
