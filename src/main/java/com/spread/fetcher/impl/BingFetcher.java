@@ -27,6 +27,8 @@ import com.spread.model.SearchResult;
 @Component
 public class BingFetcher implements SearchEngineFetcher {
 	
+	private static final long serialVersionUID = 8673457213511641887L;
+
 	/* Begin: Place Holders Variables */
 	private static final String QUERY_PLACE_HOLDER = "{query}";
 

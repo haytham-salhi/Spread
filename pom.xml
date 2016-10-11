@@ -204,8 +204,14 @@
 		  <artifactId>jsoup</artifactId>
 		  <version>1.9.2</version>
 		</dependency>
+		
+		<!-- Carrot2 dependency Clustering algorithms and document sources:  -->
+		<dependency>
+	  		<groupId>org.carrot2</groupId>
+		  	<artifactId>carrot2-core</artifactId>
+		  	<version>3.14.0</version>
+		</dependency>
 	</dependencies>
-	
 	<build>
 <!--     <sourceDirectory>src</sourceDirectory> -->
 <!--     <resources> -->

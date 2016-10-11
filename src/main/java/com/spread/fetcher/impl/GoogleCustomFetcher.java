@@ -25,6 +25,8 @@ import com.spread.model.SearchResult;
 @Component
 public class GoogleCustomFetcher implements SearchEngineFetcher {
 	
+	private static final long serialVersionUID = -6656639906931036082L;
+
 	/* Begin: Place Holders Variables */
 	private static final String QUERY_PLACE_HOLDER = "{query}";
 

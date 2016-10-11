@@ -27,6 +27,8 @@ import com.spread.model.SearchResult;
 @Component
 public class GoogleFetcher implements SearchEngineFetcher {
 	
+	private static final long serialVersionUID = 5847471656747078708L;
+
 	/* Begin: Attribute Variables */
 	private static final String HREF_FOR_URL = "href";
 	/* End: Attribute Variables */

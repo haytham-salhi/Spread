@@ -23,7 +23,7 @@ public class GoogleController implements Serializable {
 	private static final long serialVersionUID = -7119754277036775182L;
 	
 	@Autowired
-	@Qualifier("googleFetcher")
+	@Qualifier("googleCustomFetcher")
 	private SearchEngineFetcher googleSearchEngineFetcher; 
 
 	@RequestMapping(value = {"", "/"})
@@ -32,7 +32,7 @@ public class GoogleController implements Serializable {
 		return "google_index";
 	}
 	
-	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public ModelAndView search(@RequestParam("query")String query) throws Exception {
 		long startTime = System.currentTimeMillis();
 		
@@ -72,5 +72,4 @@ public class GoogleController implements Serializable {
 		
 		return model;
 	}
-	
 }

@@ -1,8 +1,10 @@
 package com.spread.fetcher;
 
+import java.io.Serializable;
+
 import com.spread.model.SearchResult;
 
-public interface SearchEngineFetcher {
+public interface SearchEngineFetcher extends Serializable {
 	
 	public static final String NOT_FOUND = "not found";
 	

@@ -165,7 +165,7 @@ input[type="text"] {
 
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Spread Google</title>
+<title>Spread Bing</title>
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -187,7 +187,7 @@ input[type="text"] {
 				<img src="${logoUrl}" align="left"/>
 			
 				<form class="tsf" style="overflow: visible"
-					action="/spread/google/search" method="GET">
+					action="/spread/bing/search" method="GET">
 					<label>What are you looking for?</label> <input type="text"
 						name="query" size="20" /> <input type="submit" value="Search!" />
 					<input type="reset" value="Reset!" />
