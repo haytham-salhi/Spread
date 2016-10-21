@@ -54,7 +54,7 @@ public class FetcherTest {
 
 	@Before
 	public void setUp() throws Exception {
-		System.out.println("Hello");
+		System.out.println("Hello Jenkins");
 	}
 	
 	@Test
