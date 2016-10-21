@@ -64,18 +64,29 @@ public class GeneralTest {
 		
 		Customsearch customsearch = new Customsearch.Builder(httpTransport, jsonFactory, null).setApplicationName("ThesisKeyCSE").build();
 		
+		// OMIS key: AIzaSyCHLDsUWX58Q-ptqs9UqHGG3qfzY8YE2j8
+		// OMIS CX: 016425044002293401958:v2_yzgxsf-0
+		
+		String omisKey = "AIzaSyCHLDsUWX58Q-ptqs9UqHGG3qfzY8YE2j8";
+		String omisCx = "016425044002293401958:v2_yzgxsf-0";
+		
+		// Spread Key: 
+		// Spread CX: 
+		String spreadKey = "AIzaSyDfS2hy1QCxb85L8GSfS-iA4SgVp1OtZ38";
+		String spreadCx = "011305709239177939329:h3wb8k8xtky";
 		
 		try {
 			List cseList = customsearch.cse().list("Python");
-			cseList.setKey("AIzaSyDfS2hy1QCxb85L8GSfS-iA4SgVp1OtZ38");
-			cseList.setCx("011305709239177939329:h3wb8k8xtky");
-			//cseList.setStart(80L);
-			cseList.setNum(5L);
+			cseList.setKey(spreadKey);
+			cseList.setCx(spreadCx);
+			cseList.setStart(91L);
+			cseList.setNum(10L);
 			cseList.setPrettyPrint(true);
 			
 			
 			
 			Search results = cseList.execute();
+			
 			
 			if(results != null && !results.isEmpty()) {
 				java.util.List<Result> resultItems = results.getItems();
