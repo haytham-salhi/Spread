@@ -54,6 +54,7 @@ public class FetcherTest {
 
 	@Before
 	public void setUp() throws Exception {
+		System.out.println("Hello");
 	}
 	
 	@Test
