@@ -27,7 +27,7 @@ public class HelloController implements Serializable {
 	public ModelAndView welcomePage() {
 		ModelAndView model = new ModelAndView();
 		model.addObject("project_name", "Spread");
-		model.addObject("description", "Hello Haytham's Thesis Project");
+		model.addObject("description", "Search Result Disambiguation Engine");
 		
 		model.setViewName("hello");
 		
