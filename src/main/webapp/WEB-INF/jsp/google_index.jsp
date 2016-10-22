@@ -179,6 +179,8 @@ input[type="text"] {
 <body>
 	<c:url value="/static/logo.png" var="logoUrl" />
 	
+	<c:url value="/google/search" var="searchPath" />
+	
 	<div class="big" id="searchform">
 		<div class="sfbg nojsv"
 			style="margin-top: -15px; visibility: visible;">
@@ -187,7 +189,7 @@ input[type="text"] {
 				<img src="${logoUrl}" align="left"/>
 			
 				<form class="tsf" style="overflow: visible"
-					action="/spread/google/search" method="GET">
+					action="${searchPath}" method="GET">
 					<label>What are you looking for?</label> <input type="text"
 						name="query" size="20" /> <input type="submit" value="Search!" />
 					<input type="reset" value="Reset!" />

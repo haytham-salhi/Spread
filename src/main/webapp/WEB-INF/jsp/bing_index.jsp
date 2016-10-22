@@ -178,6 +178,7 @@ input[type="text"] {
 </head>
 <body>
 	<c:url value="/static/logo.png" var="logoUrl" />
+	<c:url value="/bing/search" var="searchPath" />
 	
 	<div class="big" id="searchform">
 		<div class="sfbg nojsv"
@@ -187,7 +188,7 @@ input[type="text"] {
 				<img src="${logoUrl}" align="left"/>
 			
 				<form class="tsf" style="overflow: visible"
-					action="/spread/bing/search" method="GET">
+					action="${searchPath}" method="GET">
 					<label>What are you looking for?</label> <input type="text"
 						name="query" size="20" /> <input type="submit" value="Search!" />
 					<input type="reset" value="Reset!" />
