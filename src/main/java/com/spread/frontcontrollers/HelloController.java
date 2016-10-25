@@ -30,6 +30,7 @@ public class HelloController implements Serializable {
 		ModelAndView model = new ModelAndView();
 		model.addObject("project_name", "Spread");
 		model.addObject("description", "Search Result Disambiguation Engine");
+		model.setViewName("hello");
 		
 		logger.info(request.getRemoteAddr() + " accessed this!");
 		
