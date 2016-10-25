@@ -2,6 +2,8 @@ package com.spread.frontcontrollers;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
@@ -24,12 +26,12 @@ public class HelloController implements Serializable {
 	private static final long serialVersionUID = -4466170181566626934L;
 
 	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
-	public ModelAndView welcomePage() {
+	public ModelAndView welcomePage(HttpServletRequest request) {
 		ModelAndView model = new ModelAndView();
 		model.addObject("project_name", "Spread");
 		model.addObject("description", "Search Result Disambiguation Engine");
 		
-		model.setViewName("hello");
+		logger.info(request.getRemoteAddr() + " accessed this!");
 		
 		logger.debug("7ayyallah");
 		

@@ -3,6 +3,10 @@ package com.spread.frontcontrollers.ping;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -22,12 +26,16 @@ public class PingController implements Serializable {
 	
 	private static final long serialVersionUID = 2163890734295095413L;
 	
+	private static final Logger logger = LogManager.getLogger(PingController.class);
+	
 	@Autowired
 	@Qualifier("bingFetcher")
 	private SearchEngineFetcher bingSearchEngineFetcher;
 
 	@RequestMapping(value = {"", "/"})
-	public String redirectToIndex() {
+	public String redirectToIndex(HttpServletRequest request) {
+		
+		logger.info(request.getRemoteAddr() + " accessed this!");
 		
 		return "bing_index";
 	}

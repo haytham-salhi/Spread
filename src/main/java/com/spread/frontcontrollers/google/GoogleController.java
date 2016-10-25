@@ -3,6 +3,10 @@ package com.spread.frontcontrollers.google;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -22,12 +26,16 @@ public class GoogleController implements Serializable {
 	
 	private static final long serialVersionUID = -7119754277036775182L;
 	
+	private static final Logger logger = LogManager.getLogger(GoogleController.class);
+	
 	@Autowired
 	@Qualifier("googleCustomFetcher")
 	private SearchEngineFetcher googleSearchEngineFetcher; 
 
 	@RequestMapping(value = {"", "/"})
-	public String redirectToIndex() {
+	public String redirectToIndex(HttpServletRequest request) {
+		
+		logger.info(request.getRemoteAddr() + " accessed this!");
 		
 		return "google_index";
 	}
