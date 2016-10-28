@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 
@@ -12,8 +13,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  *
  */
 @Configuration
-@ComponentScan({"com.spread.config.others", "com.spread.fetcher"}) 
+@ComponentScan({"com.spread.config.others", "com.spread.fetcher", "com.spread.jobs"}) 
 @PropertySource("classpath:/application.properties")
+@EnableScheduling
 public class RootConfig {
 	
 	@Bean
