@@ -42,7 +42,9 @@ public class BingFetcher implements SearchEngineFetcher {
 
 	private static final String SNIPPET_CSS_QUERY = "li.b_algo p";
 
-	private static final String URL_CSS_QUERY = "li.b_algo cite";
+	private static final String URL_CSS_QUERY = "li.b_algo > h2 a[href]";
+	
+	private static final String CITE_CSS_QUERY = "li.b_algo cite";
 
 	private static final String TITLE_CSS_QUERY = "li.b_algo h2";
 	/* End: CSS Queries Variables */
@@ -119,17 +121,9 @@ public class BingFetcher implements SearchEngineFetcher {
 				
 				// An additional condition actualNumberOfItemsFetched < maxNumOfResultsToFetch is added here to make sure that we are not returning a value larger than it
 				for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
-					String title = resultElements.get(i).select(TITLE_CSS_QUERY).text();
-					String url = resultElements.get(i).select(URL_CSS_QUERY).text();
-					String snippet = resultElements.get(i).select(SNIPPET_CSS_QUERY).text();
-					
-					// Create and add
-					SearchItem searchItem = new SearchItem();
-					searchItem.setTitle(title);
-					searchItem.setUrl(url);
-					searchItem.setShortSummary(snippet);
-
-					searchResult.addSearchItem(searchItem);
+					// Whenever you modify here, don't forget below
+					Element resultElement = resultElements.get(i);
+					parseAndAddToSearchResult(searchResult, resultElement);
 					
 					// Accumulate the fetched items
 					actualNumberOfItemsFetched++;
@@ -170,17 +164,9 @@ public class BingFetcher implements SearchEngineFetcher {
 				
 				// An additional condition actualNumberOfItemsFetched < maxNumOfResultsToFetch is added here to make sure that we are not returning a value larger than it
 				for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
-					String title = resultElements.get(i).select(TITLE_CSS_QUERY).text();
-					String url = resultElements.get(i).select(URL_CSS_QUERY).text();
-					String snippet = resultElements.get(i).select(SNIPPET_CSS_QUERY).text();
-					
-					// Create and add
-					SearchItem searchItem = new SearchItem();
-					searchItem.setTitle(title);
-					searchItem.setUrl(url);
-					searchItem.setShortSummary(snippet);
-
-					searchResult.addSearchItem(searchItem);
+					// Whenever you modify here, don't forget above
+					Element resultElement = resultElements.get(i);
+					parseAndAddToSearchResult(searchResult, resultElement);
 					
 					// Accumulate the fetched items
 					actualNumberOfItemsFetched++;
@@ -196,5 +182,22 @@ public class BingFetcher implements SearchEngineFetcher {
 		
 		LOGGER.trace("retrurning");
 		return searchResult;
+	}
+
+	private void parseAndAddToSearchResult(SearchResult searchResult,
+			Element resultElement) {
+		String title = resultElement.select(TITLE_CSS_QUERY).text();
+		String url = resultElement.select(URL_CSS_QUERY).attr("href").trim();
+		String snippet = resultElement.select(SNIPPET_CSS_QUERY).text();
+		String cite = resultElement.select(CITE_CSS_QUERY).text();
+		
+		// Create and add
+		SearchItem searchItem = new SearchItem();
+		searchItem.setTitle(title);
+		searchItem.setCite(cite);
+		searchItem.setUrl(url);
+		searchItem.setShortSummary(snippet);
+
+		searchResult.addSearchItem(searchItem);
 	}
 }

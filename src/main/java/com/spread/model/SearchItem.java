@@ -9,6 +9,10 @@ package com.spread.model;
 public class SearchItem {
 	
 	private String title;
+	// This should be the same as url but sometimes it is e.g., www.blahblah.com/dsda/.../ddsa.html
+	// In Bing: the cite tag.
+	// In Google: the formattedUrl attribute in json response. 
+	private String cite;
 	private String url;
 	private String shortSummary;
 	private String innerPage;
@@ -30,7 +34,23 @@ public class SearchItem {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getCite() {
+		return cite;
+	}
+	
+	/**
+	 * 
+	 * @param cite
+	 */
+	public void setCite(String cite) {
+		this.cite = cite;
+	}
+	
 	/**
 	 * @return the url
 	 */

@@ -1,4 +1,4 @@
-package com.spread.views;
+package com.spread.frontcontrollers.model;
 
 public class ResponseStatusHolder {
 	

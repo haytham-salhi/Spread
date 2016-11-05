@@ -38,7 +38,9 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 	/* Begin: JSON Path Variables */
 	private static final String CONTENT_NO_FORMATTING_JSON_PATH = "contentNoFormatting";
 
-	private static final String URL_JSON_PATH = "url";
+	private static final String URL_JSON_PATH = "unescapedUrl"; // This must be the unescaped one
+	
+	private static final String FOMATTED_URL_JSON_PATH = "formattedUrl";
 
 	private static final String TITLE_NO_FORMATTING_JSON_PATH = "titleNoFormatting";
 
@@ -110,17 +112,7 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
 				JsonNode searchElement = searchElements.next();
 				
-				String title = searchElement.path(TITLE_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-				String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND);
-				String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-				
-				// Create and add
-				SearchItem searchItem = new SearchItem();
-				searchItem.setTitle(title);
-				searchItem.setUrl(url);
-				searchItem.setShortSummary(snippet);
-
-				searchResult.addSearchItem(searchItem);
+				parseAndAddToSearchResult(searchResult, searchElement);
 				
 				// Accumulate the fetched items
 				actualNumberOfItemsFetched++;
@@ -164,17 +156,7 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
 				JsonNode searchElement = searchElements.next();
 				
-				String title = searchElement.path(TITLE_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-				String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND);
-				String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-				
-				// Create and add
-				SearchItem searchItem = new SearchItem();
-				searchItem.setTitle(title);
-				searchItem.setUrl(url);
-				searchItem.setShortSummary(snippet);
-
-				searchResult.addSearchItem(searchItem);
+				parseAndAddToSearchResult(searchResult, searchElement);
 				
 				// Accumulate the fetched items
 				actualNumberOfItemsFetched++;
@@ -186,6 +168,24 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 		
 		LOGGER.trace("retrurning");
 		return searchResult;
+	}
+
+	private void parseAndAddToSearchResult(SearchResult searchResult,
+			JsonNode searchElement) {
+		String title = searchElement.path(TITLE_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
+		String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND).trim();
+		String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
+		String formattedUrl = searchElement.path(FOMATTED_URL_JSON_PATH).asText(NOT_FOUND);
+
+		
+		// Create and add
+		SearchItem searchItem = new SearchItem();
+		searchItem.setTitle(title);
+		searchItem.setCite(formattedUrl);
+		searchItem.setUrl(url);
+		searchItem.setShortSummary(snippet);
+
+		searchResult.addSearchItem(searchItem);
 	}
 	
 	

@@ -60,7 +60,7 @@ public class GoogleFetcher implements SearchEngineFetcher {
 	public SearchResult fetch(String query) {
 		LOGGER.trace("query=" + query);
 		
-		SearchResult results = fetch(query, 200);
+		SearchResult results = fetch(query, 100);
 		
 		LOGGER.trace("retrurning");
 		return results;

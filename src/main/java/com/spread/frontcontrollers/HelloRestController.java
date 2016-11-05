@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spread.views.ResponseStatusHolder;
+import com.spread.frontcontrollers.model.ResponseStatusHolder;
 
 
 /**

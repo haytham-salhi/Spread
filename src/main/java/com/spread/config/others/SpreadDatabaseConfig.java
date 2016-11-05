@@ -42,6 +42,9 @@ public class SpreadDatabaseConfig {
 			@Value("${db.url}") String url) {
 		
 		logger.info("Building the data source ...");
+		logger.info("url=" + url);
+		logger.info("username=" + username);
+		logger.info("password=" + password);
 		
 		// This class is not an actual connection pool; it does not actually pool Connections. 
 		// It just serves as simple replacement for a full-blown connection pool, 

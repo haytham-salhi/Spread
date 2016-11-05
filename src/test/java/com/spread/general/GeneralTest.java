@@ -2,6 +2,8 @@ package com.spread.general;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -30,6 +32,7 @@ import com.google.api.services.customsearch.Customsearch;
 import com.google.api.services.customsearch.Customsearch.Cse.List;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
+import com.opencsv.CSVReader;
 import com.spread.config.RootConfig;
 import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.frontcontrollers.HelloController;
@@ -138,5 +141,16 @@ public class GeneralTest {
 		String countDes = document.select("div[id=\"resultStats\"]").first().text();
 		System.out.println(countDes.substring(countDes.indexOf("About"), countDes.indexOf("results")));
 
+	}
+	
+	@Test
+	public void test() throws Exception {
+		File file = new File("src/main/resources/arabic-queries.txt");
+		
+		CSVReader reader  = new CSVReader(new FileReader(file), ',');
+		String [] nextLine;
+	    while ((nextLine = reader.readNext()) != null) {
+	    	System.out.println(nextLine[0] + " " + nextLine[1]);
+	    }
 	}
 }
