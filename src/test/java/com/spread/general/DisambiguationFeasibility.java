@@ -40,7 +40,7 @@ public class DisambiguationFeasibility {
 	// googleCustomFetcher
 	// bingFetcher
 	@Autowired
-	@Qualifier("googleCustomFetcher")
+	@Qualifier("bingFetcher")
 	private SearchEngineFetcher fetcher;
 	
 
@@ -51,12 +51,12 @@ public class DisambiguationFeasibility {
 	@Test
 	public void test() {
 		
-		//String ambigousQuery = "عدنان ابراهيم";
-		//List<String> meanings = Arrays.asList(new String[] {"مفكر فلسطيني", "مخرج عراقي"});
+		String ambigousQuery = "عدنان ابراهيم";
+		List<String> meanings = Arrays.asList(new String[] {"مفكر فلسطيني", "مخرج عراقي"});
 		
-		String ambigousQuery = "الجامعة العربية";
-		List<String> meanings = Arrays.asList(new String[] {"الجامعة العربية المفتوحة", "جامعة الدول العربية", "الجامعة العربية الامريكية جنين", "الجامعة العربية الدولية"});
-		boolean appendAmbQueryWithMeaning = false;
+		//String ambigousQuery = "الجامعة العربية";
+		//List<String> meanings = Arrays.asList(new String[] {"الجامعة العربية المفتوحة", "جامعة الدول العربية", "الجامعة العربية الامريكية جنين", "الجامعة العربية الدولية"});
+		boolean appendAmbQueryWithMeaning = true;
 		
 		Map<String, SearchResult> meaningSearchResults = new HashMap<String, SearchResult>();
 		

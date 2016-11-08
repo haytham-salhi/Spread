@@ -18,6 +18,7 @@ public class FetcherTestConfig {
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		System.out.println("This should not be appeared when running the app in tomcat!");
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 }

@@ -49,6 +49,11 @@ public class SearchResult {
 	public void addSearchItem(SearchItem searchItem) {
 		searchItems.add(searchItem);
 	}
+	
+	// This is for .searchItemsSize in jsp
+	public int getSearchItemsSize() {
+		return searchItems.size();
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
