@@ -42,7 +42,7 @@ public class BingFetcher implements SearchEngineFetcher {
 
 	private static final String SNIPPET_CSS_QUERY = "li.b_algo p";
 
-	private static final String URL_CSS_QUERY = "li.b_algo > h2 a[href]";
+	private static final String URL_CSS_QUERY = "li.b_algo h2 a[href]";
 	
 	private static final String CITE_CSS_QUERY = "li.b_algo cite";
 
