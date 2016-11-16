@@ -60,7 +60,7 @@ public class GoogleController implements Serializable {
 		//query = StringEscapeUtils.unescapeHtml4(query);
 
 		// Retrieve the documents
-		SearchResult searchResult = googleSearchEngineFetcher.fetch(query);
+		SearchResult searchResult = googleSearchEngineFetcher.fetch(query, false);
 		model.addObject("results", searchResult.getSearchItems());
 		
 		long endTime = System.currentTimeMillis();

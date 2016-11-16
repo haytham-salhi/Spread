@@ -57,17 +57,17 @@ public class GoogleFetcher implements SearchEngineFetcher {
 	private String endPoint;
 	
 	@Override
-	public SearchResult fetch(String query) {
+	public SearchResult fetch(String query, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query);
 		
-		SearchResult results = fetch(query, 100);
+		SearchResult results = fetch(query, 100, fetchInnerPage);
 		
 		LOGGER.trace("retrurning");
 		return results;
 	}
 	
 	@Override
-	public SearchResult fetch(String query, int maxNumOfResultsToFetch) {
+	public SearchResult fetch(String query, int maxNumOfResultsToFetch, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query + ", maxNumOfResultsToFetch=" + maxNumOfResultsToFetch);
 
 		SearchResult searchResult = new SearchResult();

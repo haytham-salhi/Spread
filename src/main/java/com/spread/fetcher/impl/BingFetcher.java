@@ -26,7 +26,7 @@ import com.spread.model.SearchResult;
  *
  */
 @Component
-public class BingFetcher implements SearchEngineFetcher {
+public class BingFetcher extends BaseFetcher implements SearchEngineFetcher {
 	
 	private static final long serialVersionUID = 8673457213511641887L;
 
@@ -56,17 +56,17 @@ public class BingFetcher implements SearchEngineFetcher {
 	private String endPoint;
 	
 	@Override
-	public SearchResult fetch(String query) {
+	public SearchResult fetch(String query, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query);
 		
-		SearchResult results = fetch(query, 200);
+		SearchResult results = fetch(query, 200, fetchInnerPage);
 		
 		LOGGER.trace("retrurning");
 		return results;
 	}
 	
 	@Override
-	public SearchResult fetch(String query, int maxNumOfResultsToFetch) {
+	public SearchResult fetch(String query, int maxNumOfResultsToFetch, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query + ", maxNumOfResultsToFetch=" + maxNumOfResultsToFetch);
 
 		SearchResult searchResult = new SearchResult();
@@ -93,7 +93,7 @@ public class BingFetcher implements SearchEngineFetcher {
 		// Connect and fetch
 		Document document = null;
 		try {
-			document = Jsoup.connect(preparedEndPoint).timeout(30000).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36").get();
+			document = Jsoup.connect(preparedEndPoint).timeout(30000).userAgent(MY_PC_USERAGENT).get();
 		} catch (IOException e) {
 			LOGGER.error(ExceptionUtils.getStackTrace(e));
 			
@@ -124,7 +124,7 @@ public class BingFetcher implements SearchEngineFetcher {
 				for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
 					// Whenever you modify here, don't forget below
 					Element resultElement = resultElements.get(i);
-					parseAndAddToSearchResult(searchResult, resultElement);
+					parseAndAddToSearchResult(searchResult, resultElement, fetchInnerPage);
 					
 					// Accumulate the fetched items
 					actualNumberOfItemsFetched++;
@@ -150,7 +150,7 @@ public class BingFetcher implements SearchEngineFetcher {
 			// Connect and fetch
 			document = null; 
 			try {
-				document = Jsoup.connect(preparedEndPoint).timeout(30000).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36").get();
+				document = Jsoup.connect(preparedEndPoint).timeout(30000).userAgent(MY_PC_USERAGENT).get();
 			} catch (IOException e) {
 				LOGGER.error(ExceptionUtils.getStackTrace(e));
 			}
@@ -167,7 +167,7 @@ public class BingFetcher implements SearchEngineFetcher {
 				for (int i = 0; i < resultElements.size() && actualNumberOfItemsFetched < maxNumOfResultsToFetch; i++) {
 					// Whenever you modify here, don't forget above
 					Element resultElement = resultElements.get(i);
-					parseAndAddToSearchResult(searchResult, resultElement);
+					parseAndAddToSearchResult(searchResult, resultElement, fetchInnerPage);
 					
 					// Accumulate the fetched items
 					actualNumberOfItemsFetched++;
@@ -186,7 +186,7 @@ public class BingFetcher implements SearchEngineFetcher {
 	}
 
 	private void parseAndAddToSearchResult(SearchResult searchResult,
-			Element resultElement) {
+			Element resultElement, boolean fetchInnerPage) {
 		String title = resultElement.select(TITLE_CSS_QUERY).text();
 		String url = resultElement.select(URL_CSS_QUERY).attr("href").trim();
 		String snippet = resultElement.select(SNIPPET_CSS_QUERY).text();
@@ -205,6 +205,10 @@ public class BingFetcher implements SearchEngineFetcher {
 		searchItem.setCite(cite);
 		searchItem.setUrl(url);
 		searchItem.setShortSummary(snippet);
+		
+		if(fetchInnerPage) {
+			searchItem.setInnerPage(getInnerPage(url));
+		}
 
 		searchResult.addSearchItem(searchItem);
 	}

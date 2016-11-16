@@ -61,7 +61,7 @@ public class DisambiguationFeasibility {
 		Map<String, SearchResult> meaningSearchResults = new HashMap<String, SearchResult>();
 		
 		// Fetch the main query
-		SearchResult ambQueryResult = fetcher.fetch(ambigousQuery);
+		SearchResult ambQueryResult = fetcher.fetch(ambigousQuery, false);
 		System.out.println("Ambiguous Query: " + ambQueryResult.getSearchItems().size());
 		
 		// Fetch the meanings
@@ -71,7 +71,7 @@ public class DisambiguationFeasibility {
 			if(appendAmbQueryWithMeaning)
 				formulatedQuery = ambigousQuery + " " + meaning;
 			
-			SearchResult clearQueryResult = fetcher.fetch(formulatedQuery);
+			SearchResult clearQueryResult = fetcher.fetch(formulatedQuery, false);
 			System.out.println("Result size of " + formulatedQuery + " query: " + clearQueryResult.getSearchItems().size());
 			
 			meaningSearchResults.put(meaning, clearQueryResult);

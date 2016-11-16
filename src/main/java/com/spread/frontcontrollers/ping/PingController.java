@@ -60,7 +60,7 @@ public class PingController implements Serializable {
 		//query = StringEscapeUtils.unescapeHtml4(query);
 
 		// Retrieve the documents
-		SearchResult searchResult = bingSearchEngineFetcher.fetch(query);
+		SearchResult searchResult = bingSearchEngineFetcher.fetch(query, false);
 		model.addObject("results", searchResult.getSearchItems());
 		
 		long endTime = System.currentTimeMillis();

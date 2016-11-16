@@ -18,7 +18,7 @@ public interface SearchEngineFetcher extends Serializable {
 	 * @param query
 	 * @return
 	 */
-	public SearchResult fetch(String query);
+	public SearchResult fetch(String query, boolean fetchInnerPage);
 	
 	/**
 	 * 
@@ -27,5 +27,5 @@ public interface SearchEngineFetcher extends Serializable {
 	 * @param maxNumOfResultsToFetch
 	 * @return
 	 */
-	public SearchResult fetch(String query, int maxNumOfResultsToFetch);
+	public SearchResult fetch(String query, int maxNumOfResultsToFetch, boolean fetchInnerPage);
 }

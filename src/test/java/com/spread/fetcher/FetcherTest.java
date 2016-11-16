@@ -28,12 +28,13 @@ import com.google.api.services.customsearch.Customsearch;
 import com.google.api.services.customsearch.Customsearch.Cse.List;
 import com.google.api.services.customsearch.model.Result;
 import com.google.api.services.customsearch.model.Search;
+import com.spread.config.FetcherTestConfig;
 import com.spread.config.RootConfig;
 import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.frontcontrollers.HelloController;
 import com.spread.model.SearchResult;
 
-@ContextConfiguration(classes = { RootConfig.class })
+@ContextConfiguration(classes = { FetcherTestConfig.class })
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class FetcherTest {
@@ -59,7 +60,7 @@ public class FetcherTest {
 	
 	@Test
 	public void googleCustomFetcherTest() throws Exception {
-		SearchResult result = googleCustomFetcher.fetch("Radi Jarrar");
+		SearchResult result = googleCustomFetcher.fetch("Radi Jarrar", false);
 		
 		result.getSearchItems().forEach(System.out::println);
 		
@@ -67,7 +68,7 @@ public class FetcherTest {
 		
 		Thread.sleep(3000);
 		
-		SearchResult result1 = googleCustomFetcher.fetch("Haytham Salhi");
+		SearchResult result1 = googleCustomFetcher.fetch("Haytham Salhi", false);
 		
 		result1.getSearchItems().forEach(System.out::println);
 		
@@ -76,14 +77,22 @@ public class FetcherTest {
 	
 	@Test
 	public void bingFetcherTest() throws Exception {
-		SearchResult result = bingFetcher.fetch("Adel");
+		SearchResult result = bingFetcher.fetch("Adel", false);
 		
 		result.getSearchItems().forEach(System.out::println);
 	}
 	
 	@Test
 	public void googleFetcherTest() throws Exception {
-		SearchResult result = googleFetcher.fetch("Haytham");
+		SearchResult result = googleFetcher.fetch("الجامعة العربية", false);
+		
+		result.getSearchItems().forEach(System.out::println);
+		System.out.println(result.getSearchItems().size());
+	}
+	
+	@Test
+	public void innerPageTest() throws Exception {
+		SearchResult result = googleCustomFetcher.fetch("الجامعة العربية", true);
 		
 		result.getSearchItems().forEach(System.out::println);
 		System.out.println(result.getSearchItems().size());

@@ -25,7 +25,7 @@ import com.spread.model.SearchResult;
  *
  */
 @Component
-public class GoogleCustomFetcher implements SearchEngineFetcher {
+public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetcher {
 	
 	private static final long serialVersionUID = -6656639906931036082L;
 
@@ -59,17 +59,17 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 	private String cseEndPoint;
 	
 	@Override
-	public SearchResult fetch(String query) {
+	public SearchResult fetch(String query, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query);
 		
-		SearchResult results = fetch(query, 100);
+		SearchResult results = fetch(query, 100, fetchInnerPage);
 		
 		LOGGER.trace("retrurning");
 		return results;
 	}
 
 	@Override
-	public SearchResult fetch(String query, int maxNumOfResultsToFetch) {
+	public SearchResult fetch(String query, int maxNumOfResultsToFetch, boolean fetchInnerPage) {
 		LOGGER.trace("query=" + query + ", maxNumOfResultsToFetch=" + maxNumOfResultsToFetch);
 		
 		SearchResult searchResult = new SearchResult();
@@ -118,7 +118,7 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
 				JsonNode searchElement = searchElements.next();
 				
-				parseAndAddToSearchResult(searchResult, searchElement);
+				parseAndAddToSearchResult(searchResult, searchElement, fetchInnerPage);
 				
 				// Accumulate the fetched items
 				actualNumberOfItemsFetched++;
@@ -162,7 +162,7 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
 				JsonNode searchElement = searchElements.next();
 				
-				parseAndAddToSearchResult(searchResult, searchElement);
+				parseAndAddToSearchResult(searchResult, searchElement, fetchInnerPage);
 				
 				// Accumulate the fetched items
 				actualNumberOfItemsFetched++;
@@ -177,7 +177,7 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 	}
 
 	private void parseAndAddToSearchResult(SearchResult searchResult,
-			JsonNode searchElement) {
+			JsonNode searchElement, boolean fetchInnerPage) {
 		String title = searchElement.path(TITLE_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
 		String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND).trim();
 		String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
@@ -196,6 +196,10 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 		searchItem.setCite(formattedUrl);
 		searchItem.setUrl(url);
 		searchItem.setShortSummary(snippet);
+		
+		if(fetchInnerPage) {
+			searchItem.setInnerPage(getInnerPage(url));
+		}
 
 		searchResult.addSearchItem(searchItem);
 	}

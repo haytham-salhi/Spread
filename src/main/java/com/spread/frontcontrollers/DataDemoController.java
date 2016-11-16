@@ -107,7 +107,7 @@ public class DataDemoController implements Serializable {
 			Map<String, SearchResult> meaningSearchResults = new HashMap<String, SearchResult>();
 			
 			// Fetch the main query
-			SearchResult ambQueryResult = fetcher.fetch(ambigousQuery);
+			SearchResult ambQueryResult = fetcher.fetch(ambigousQuery, false);
 			logger.info("Ambiguous Query: " + ambQueryResult.getSearchItems().size());
 			model.addObject("size", ambQueryResult.getSearchItems().size());
 			
@@ -118,7 +118,7 @@ public class DataDemoController implements Serializable {
 				if(queryFormulatioNStrategy == QueryFormulationStartegy.APPEND)
 					formulatedQuery = ambigousQuery + " " + meaning;
 				
-				SearchResult clearQueryResult = fetcher.fetch(formulatedQuery);
+				SearchResult clearQueryResult = fetcher.fetch(formulatedQuery, false);
 				logger.info("Result size of " + formulatedQuery + " query: " + clearQueryResult.getSearchItems().size());
 				
 				meaningSearchResults.put(meaning, clearQueryResult);

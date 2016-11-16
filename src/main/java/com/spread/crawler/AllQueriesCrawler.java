@@ -89,13 +89,15 @@ public class AllQueriesCrawler extends Crawler {
 				// For each sense
 				// Check if (q_id and se_id + startegy) exists in query_search_engine table
 		
-		fetchAndStore(queries, queryFormulationStartegy, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
+		fetchAndStore(fetchInnerPage, size, queries, queryFormulationStartegy, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
-		fetchAndStore(queries, queryFormulationStartegy, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
+		fetchAndStore(fetchInnerPage, size, queries, queryFormulationStartegy, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
 	}
 
-	private void fetchAndStore(Map<String, List<Meaning>> queries,
+	private void fetchAndStore(boolean fetchInnerPage,
+			int size,
+			Map<String, List<Meaning>> queries,
 			QueryFormulationStartegy queryFormulationStartegy,
 			SearchEngineCode sec,
 			SearchEngineFetcher fetcher,
@@ -152,7 +154,7 @@ public class AllQueriesCrawler extends Crawler {
 				LOGGER.info("Fetching the search results...");
 				
 				// Fetch
-				SearchResult searchResult = fetcher.fetch(ambiguousQuery);
+				SearchResult searchResult = fetcher.fetch(ambiguousQuery, size, fetchInnerPage);
 				
 				LOGGER.info("Storing...");
 				// Store the items 
@@ -215,7 +217,7 @@ public class AllQueriesCrawler extends Crawler {
 					LOGGER.info("Fetching the search results...");
 					
 					// Fetch
-					SearchResult searchResult = fetcher.fetch(clearQuery);
+					SearchResult searchResult = fetcher.fetch(clearQuery, size, fetchInnerPage);
 					
 					LOGGER.info("Storing...");
 					

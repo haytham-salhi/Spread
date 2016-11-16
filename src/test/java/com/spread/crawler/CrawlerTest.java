@@ -46,12 +46,28 @@ public class CrawlerTest {
 						new Meaning("مدينة عمان", "عاصمة الأردن", "city")}));
 		
 		crawler.handleQueries(true,
-		100,
+		15,
 		queries,
 		Language.AR,
 		SearchEngineLanguage.DEFAULT,
 		Location.PALESTINE,
 		QueryFormulationStartegy.NO_APPEND);
+		
+		
+		
+		queries = new HashMap<String, List<Meaning>>();
+		queries.put("Java", 
+				Arrays.asList(new Meaning[] {
+						new Meaning("Programming Language", "Popular Programming Language", "programming language"), 
+						new Meaning("Island", "An island of Indonesia", "location")}));
+		
+		crawler.handleQueries(true,
+		15,
+		queries,
+		Language.EN,
+		SearchEngineLanguage.DEFAULT,
+		Location.PALESTINE,
+		QueryFormulationStartegy.APPEND);
 	}
 	
 }
