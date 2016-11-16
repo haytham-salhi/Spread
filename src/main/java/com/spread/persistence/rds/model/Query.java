@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.spread.persistence.rds.model.enums.Language;
+import com.spread.persistence.rds.model.enums.QueryFormulationStartegy;
 
 /**
  * 
@@ -36,6 +37,10 @@ public class Query {
 	@Column(name = "is_ambiguous")
 	private Boolean isAmbiguous;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "query_formulation_strategy", columnDefinition = "enum('APPEND','NO_APPEND')", nullable = false)
+	private QueryFormulationStartegy queryFormulationStartegy;
+	
 	// is_ambiguous = true, parent = null --> the ambiguous query
 	// is_ambiguous = false, parent = someId --> the clear query and someId is the ambiguous one
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -45,12 +50,13 @@ public class Query {
 	public Query() {
 	}
 
-	public Query(String name, Language language,
-			Boolean isAmbiguous, Query parent) {
+	public Query(String name, Language language, Boolean isAmbiguous,
+			QueryFormulationStartegy queryFormulationStartegy, Query parent) {
 		super();
 		this.name = name;
 		this.language = language;
 		this.isAmbiguous = isAmbiguous;
+		this.queryFormulationStartegy = queryFormulationStartegy;
 		this.parent = parent;
 	}
 
@@ -111,6 +117,21 @@ public class Query {
 	}
 
 	/**
+	 * @return the queryFormulationStartegy
+	 */
+	public QueryFormulationStartegy getQueryFormulationStartegy() {
+		return queryFormulationStartegy;
+	}
+
+	/**
+	 * @param queryFormulationStartegy the queryFormulationStartegy to set
+	 */
+	public void setQueryFormulationStartegy(
+			QueryFormulationStartegy queryFormulationStartegy) {
+		this.queryFormulationStartegy = queryFormulationStartegy;
+	}
+
+	/**
 	 * @return the parent
 	 */
 	public Query getParent() {
@@ -129,8 +150,9 @@ public class Query {
 	 */
 	@Override
 	public String toString() {
-		return "Query [id=" + id + ", name=" + name
-				+ ", language=" + language + ", isAmbiguous=" + isAmbiguous
+		return "Query [id=" + id + ", name=" + name + ", language=" + language
+				+ ", isAmbiguous=" + isAmbiguous
+				+ ", queryFormulationStartegy=" + queryFormulationStartegy
 				+ "]";
 	}
 }

@@ -9,14 +9,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Demo</title>
 	<style type="text/css">
-		div {
+		.main-div {
     		width: 50%;
     		margin: 0 auto; 
 		}
 	</style>
 </head>
 <body>
-	<div align="center">
+	<div class="main-div" align="center">
 		<table class="table" border="0">
             <tr>
                 <td colspan="2" align="center">
@@ -51,5 +51,28 @@
             </c:forEach>
         </table>
 	</div>
+	<c:forEach var="mil" items="${meaningIntersectionsListOfSearchItems}">
+			<div>
+				<h2 style="text-align: center">Commons with ${mil.key}:</h2>
+				<ol style="list-style-type:none">
+					<c:forEach var="result" items="${mil.value}">
+						<li>
+							<div>
+								<h3>
+									<font color="blue">
+										<b>${result.title}</b>
+									</font>
+								</h3>
+								<a href="${result.url}">
+									<span>${result.url}</span>
+								</a>
+								<br>
+									<span>${result.shortSummary}</span>
+							</div>
+						</li>
+					</c:forEach>
+				</ol>
+			</div>
+	 </c:forEach>
 </body>
 </html>

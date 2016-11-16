@@ -2,6 +2,7 @@ package com.spread.fetcher.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -190,6 +191,13 @@ public class BingFetcher implements SearchEngineFetcher {
 		String url = resultElement.select(URL_CSS_QUERY).attr("href").trim();
 		String snippet = resultElement.select(SNIPPET_CSS_QUERY).text();
 		String cite = resultElement.select(CITE_CSS_QUERY).text();
+		
+		// Decode the url
+		try {
+			url = URLDecoder.decode(url, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(ExceptionUtils.getStackTrace(e));
+		}
 		
 		// Create and add
 		SearchItem searchItem = new SearchItem();

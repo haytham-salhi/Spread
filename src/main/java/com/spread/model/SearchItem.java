@@ -101,4 +101,12 @@ public class SearchItem {
 		return "SearchItem [title=" + title + ", url=" + url
 				+ ", shortSummary=" + shortSummary + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(getUrl() == null || obj == null) {
+			return false;
+		}
+		return getUrl().equals(((SearchItem)obj).getUrl());
+	}
 }

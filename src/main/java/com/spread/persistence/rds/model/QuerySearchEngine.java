@@ -88,7 +88,7 @@ public class QuerySearchEngine {
 	public void setSearchEngine(SearchEngine searchEngine) {
 		this.searchEngine = searchEngine;
 	}
-
+	
 	/**
 	 * @return the createdDate
 	 */
@@ -108,7 +108,8 @@ public class QuerySearchEngine {
 	 */
 	@Override
 	public String toString() {
-		return "QuerySearchEngine [id=" + id + ", createdDate=" + createdDate
-				+ "]";
+		return "QuerySearchEngine [id=" + id + ", query=" + query
+				+ ", searchEngine=" + searchEngine
+				+ ", createdDate=" + createdDate + "]";
 	}
 }

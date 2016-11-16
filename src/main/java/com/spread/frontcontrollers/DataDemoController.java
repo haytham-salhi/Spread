@@ -24,9 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.frontcontrollers.model.IntersectDemoData;
-import com.spread.frontcontrollers.model.QueryFormulationStartegy;
 import com.spread.model.SearchItem;
 import com.spread.model.SearchResult;
+import com.spread.persistence.rds.model.enums.QueryFormulationStartegy;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 
 /**
@@ -127,15 +127,19 @@ public class DataDemoController implements Serializable {
 			
 			// Find intersections
 			Map<String, Integer> meaningIntersections = new HashMap<String, Integer>();
+			Map<String, List<SearchItem>> meaningIntersectionsListOfSearchItems = new HashMap<String, List<SearchItem>>();
 			for (String meaning : meaningSearchResults.keySet()) {
-				List<String> commonsBetweenAmbAndClear = intersect(ambQueryResult.getSearchItems(), meaningSearchResults.get(meaning).getSearchItems());
+				List<SearchItem> commonsBetweenAmbAndClear = intersect2(ambQueryResult.getSearchItems(), meaningSearchResults.get(meaning).getSearchItems());
 				
 				logger.info("Number of common items between " + ambigousQuery + " and " + meaning + " is " + commonsBetweenAmbAndClear.size());
-				logger.info(commonsBetweenAmbAndClear);
 				
 				meaningIntersections.put(meaning, commonsBetweenAmbAndClear.size());
+				// Add the item lists as well
+				meaningIntersectionsListOfSearchItems.put(meaning, commonsBetweenAmbAndClear);
 			}
 			model.addObject("meaningIntersections", meaningIntersections);
+			model.addObject("meaningIntersectionsListOfSearchItems", meaningIntersectionsListOfSearchItems);
+			
 			
 			// ###########################
 			
@@ -176,6 +180,37 @@ public class DataDemoController implements Serializable {
 		for (String url : startList) {
 			if(otherList.contains(url)) {
 				common.add(url);
+			}
+		}
+		
+		return common;
+	}
+	
+	private List<SearchItem> intersect2(List<SearchItem> searchItems1, List<SearchItem> searchItems2) {
+		List<SearchItem> common = new ArrayList<SearchItem>();
+		
+		if(searchItems1 == null || searchItems1.isEmpty()
+				|| searchItems2 == null || searchItems2.isEmpty()) {
+			return common;
+		}
+		
+		// List of urls
+		List<SearchItem> startList;
+		List<SearchItem> otherList;
+		
+		// Start with the shorter one
+		if(searchItems2.size() < searchItems1.size()) {
+			startList = searchItems2;
+			otherList = searchItems1;
+		} else {
+			startList = searchItems1;
+			otherList = searchItems2;
+		}
+		
+		for (SearchItem searchItem : startList) {
+			// contains will use the equals overrided in SearchItem class
+			if(otherList.contains(searchItem)) {
+				common.add(searchItem);
 			}
 		}
 		

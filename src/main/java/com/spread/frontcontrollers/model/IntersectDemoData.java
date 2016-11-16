@@ -2,6 +2,7 @@ package com.spread.frontcontrollers.model;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.spread.persistence.rds.model.enums.QueryFormulationStartegy;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 
 public class IntersectDemoData {

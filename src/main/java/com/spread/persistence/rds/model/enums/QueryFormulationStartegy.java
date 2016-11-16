@@ -1,4 +1,4 @@
-package com.spread.frontcontrollers.model;
+package com.spread.persistence.rds.model.enums;
 
 /**
  * 

@@ -14,8 +14,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
 import com.spread.persistence.rds.model.Query;
+import com.spread.persistence.rds.model.SearchEngine;
 import com.spread.persistence.rds.model.enums.Language;
+import com.spread.persistence.rds.model.enums.Location;
+import com.spread.persistence.rds.model.enums.SearchEngineCode;
+import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
 import com.spread.persistence.rds.repository.QueryRepository;
+import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.TestRepository;
 
 @ContextConfiguration(classes = { RootConfig.class })
@@ -30,6 +35,9 @@ public class GeneralTest {
 	
 	@Autowired
 	private QueryRepository queryRepository;
+	
+	@Autowired
+	private SearchEngineRepository searchEngineRepository;
 
 	
 	@Before
@@ -56,8 +64,17 @@ public class GeneralTest {
 	
 	@Test
 	public void queryTest() throws Exception {
-		Query query = new Query("الله أكبر ولله الحمد", Language.EN, true, null);
+		Query query = new Query("الله أكبر ولله الحمد", Language.EN, true, null, null);
 		
-		queryRepository.save(query);
+		query = queryRepository.save(query);
+		
+		System.out.println(query);
+	}
+	
+	@Test
+	public void findByCodeAndLanguageAndLocationTest() throws Exception {
+		SearchEngine se = searchEngineRepository.findByCodeAndLanguageAndLocation(SearchEngineCode.GOOGLE, SearchEngineLanguage.AR, Location.PALESTINE);
+		
+		System.out.println(se);
 	}
 }

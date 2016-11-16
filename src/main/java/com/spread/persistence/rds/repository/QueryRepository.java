@@ -9,6 +9,6 @@ import org.springframework.data.repository.CrudRepository;
  * @author Haytham Salhi
  *
  */
-public interface QueryRepository extends CrudRepository<Query, Integer>{
-
+public interface QueryRepository extends CrudRepository<Query, Integer> {
+	public Query findByName(String name);
 }

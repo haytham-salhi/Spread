@@ -22,8 +22,14 @@ public class Meaning {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(name = "description", nullable = false)
+	@Column(name = "name", nullable = false)
+	private String name;
+	
+	@Column(name = "description")
 	private String description;
+	
+	@Column(name = "class")
+	private String clazz;
 	
 	// Indicates if it is manually added, that is it is not from the Wikipedia disambiguation list
 	@Column(name = "is_new")
@@ -36,9 +42,12 @@ public class Meaning {
 	public Meaning() {
 	}
 
-	public Meaning(String description, Boolean isNew, Query query) {
+	public Meaning(String name, String description, String clazz,
+			Boolean isNew, Query query) {
 		super();
+		this.name = name;
 		this.description = description;
+		this.clazz = clazz;
 		this.isNew = isNew;
 		this.query = query;
 	}
@@ -58,6 +67,20 @@ public class Meaning {
 	}
 
 	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
 	 * @return the description
 	 */
 	public String getDescription() {
@@ -69,6 +92,20 @@ public class Meaning {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/**
+	 * @return the clazz
+	 */
+	public String getClazz() {
+		return clazz;
+	}
+
+	/**
+	 * @param clazz the clazz to set
+	 */
+	public void setClazz(String clazz) {
+		this.clazz = clazz;
 	}
 
 	/**
@@ -104,7 +141,7 @@ public class Meaning {
 	 */
 	@Override
 	public String toString() {
-		return "Meaning [id=" + id + ", description=" + description
-				+ ", isNew=" + isNew + "]";
+		return "Meaning [id=" + id + ", name=" + name + ", description="
+				+ description + ", clazz=" + clazz + ", isNew=" + isNew + "]";
 	}
 }

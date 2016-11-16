@@ -8,7 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
+import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
 
 /**
  * 
@@ -29,6 +31,14 @@ public class SearchEngine {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "code", columnDefinition= "enum('GOOGLE','BING')", nullable = false)
 	private SearchEngineCode code;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "language", columnDefinition= "enum('DEFAULT','EN','AR')")
+	private SearchEngineLanguage language;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "location", columnDefinition= "enum('PALESTINE','IRELAND')")
+	private Location location;
 	
 	public SearchEngine() {
 	}
@@ -80,6 +90,23 @@ public class SearchEngine {
 	public void setCode(SearchEngineCode code) {
 		this.code = code;
 	}
+	
+	public SearchEngineLanguage getLanguage() {
+		return language;
+	}
+	
+	public void setLanguage(
+			SearchEngineLanguage language) {
+		this.language = language;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
+	
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -87,6 +114,6 @@ public class SearchEngine {
 	@Override
 	public String toString() {
 		return "SearchEngine [id=" + id + ", name=" + name + ", code=" + code
-				+ "]";
+				+ ", language=" + language + ", location=" + location + "]";
 	}
 }

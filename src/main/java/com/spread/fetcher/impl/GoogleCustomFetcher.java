@@ -1,6 +1,8 @@
 package com.spread.fetcher.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -80,6 +82,10 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 		
 		int start = 0;
 		int pageNumber = 0;
+		
+		// Don't encode the query here as Google will be unhappy
+		
+		LOGGER.info("Encoded query: " + query);
 		
 		// Prepare the endPoint
 		String preparedEndPoint = cseEndPoint.replace(NUM_PLACE_HOLDER, String.valueOf(num)).replace(START_PLACE_HOLDER, String.valueOf(start)).replace(QUERY_PLACE_HOLDER, query);
@@ -176,7 +182,13 @@ public class GoogleCustomFetcher implements SearchEngineFetcher {
 		String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND).trim();
 		String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
 		String formattedUrl = searchElement.path(FOMATTED_URL_JSON_PATH).asText(NOT_FOUND);
-
+		
+		// Decode the url
+		try {
+			url = URLDecoder.decode(url, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error(ExceptionUtils.getStackTrace(e));
+		}
 		
 		// Create and add
 		SearchItem searchItem = new SearchItem();

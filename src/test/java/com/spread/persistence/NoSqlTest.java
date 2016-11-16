@@ -37,8 +37,10 @@ public class NoSqlTest {
 	public void testSpring() {
 		logger.info("Hello");
 		
-		InnerPage page = new InnerPage("الله أكبر");
-		innerPageRepository.save(page);
+		InnerPage page = new InnerPage("<html>الله أكبر ولله الحمد</html>");
+		page = innerPageRepository.save(page);
+		
+		System.out.println(page);
 	}
 	
 	@Test
