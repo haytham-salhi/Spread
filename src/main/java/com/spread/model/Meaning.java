@@ -14,9 +14,9 @@ public class Meaning {
 	public Meaning() {
 	}
 	
-	public Meaning(String query, String decription, String clazz) {
+	public Meaning(String name, String decription, String clazz) {
 		super();
-		this.name = query;
+		this.name = name;
 		this.decription = decription;
 		this.clazz = clazz;
 	}
@@ -68,7 +68,7 @@ public class Meaning {
 	 */
 	@Override
 	public String toString() {
-		return "Sense [name=" + name + ", decription=" + decription
+		return "Meaning [name=" + name + ", decription=" + decription
 				+ ", clazz=" + clazz + "]";
 	}
 }

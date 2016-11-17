@@ -76,4 +76,15 @@ public class GeneralNonSpringTest {
 
 	}
 	
+	@Test
+	public void testName() throws Exception {
+		File file = new File("src/main/resources/Ambigous Queries Data Set - Collection.csv");
+		
+		CSVReader reader  = new CSVReader(new FileReader(file), ',');
+		String [] nextLine;
+	    while ((nextLine = reader.readNext()) != null) {
+	    	System.out.println(nextLine[4] + " ");
+	    }
+	}
+	
 }

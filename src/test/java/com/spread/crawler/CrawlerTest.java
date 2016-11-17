@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
+import com.spread.data.FileDataLoader;
 import com.spread.model.Meaning;
 import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
@@ -30,6 +31,9 @@ public class CrawlerTest {
 	@Qualifier("MODE-2")
 	private Crawler crawler;
 	
+	@Autowired
+	@Qualifier("FILE-AR")
+	private FileDataLoader arabicDataLoader;
 	
 
 	@Before
@@ -68,6 +72,20 @@ public class CrawlerTest {
 		SearchEngineLanguage.DEFAULT,
 		Location.PALESTINE,
 		QueryFormulationStartegy.APPEND);
+	}
+	
+	@Test
+	public void firstTakenCrawler() throws Exception {
+		Map<String, List<Meaning>> queries = arabicDataLoader.loadQueries2();
+		
+		crawler.handleQueries(true,
+		100,
+		queries,
+		Language.AR,
+		SearchEngineLanguage.AR,
+		Location.PALESTINE,
+		QueryFormulationStartegy.NO_APPEND);
+		
 	}
 	
 }

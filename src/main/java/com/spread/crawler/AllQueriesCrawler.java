@@ -91,7 +91,7 @@ public class AllQueriesCrawler extends Crawler {
 		
 		fetchAndStore(fetchInnerPage, size, queries, queryFormulationStartegy, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
-		fetchAndStore(fetchInnerPage, size, queries, queryFormulationStartegy, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
+		//fetchAndStore(fetchInnerPage, size, queries, queryFormulationStartegy, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
 	}
 
@@ -157,6 +157,12 @@ public class AllQueriesCrawler extends Crawler {
 				SearchResult searchResult = fetcher.fetch(ambiguousQuery, size, fetchInnerPage);
 				
 				LOGGER.info("Storing...");
+				
+				if(searchResult.getSearchItemsSize() == 0) {
+					LOGGER.info("Fetched search items are 0!!!! Why?");
+					LOGGER.error("Fetched search items are 0!!!! Why?");
+				}
+				
 				// Store the items 
 				for (SearchItem searchItem : searchResult.getSearchItems()) {
 					// Store the inner page in mongo
@@ -221,6 +227,11 @@ public class AllQueriesCrawler extends Crawler {
 					
 					LOGGER.info("Storing...");
 					
+					if(searchResult.getSearchItemsSize() == 0) {
+						LOGGER.info("Fetched search items are 0!!!! Why?");
+						LOGGER.error("Fetched search items are 0!!!! Why?");
+					}
+					
 					// Store the items 
 					for (SearchItem searchItem : searchResult.getSearchItems()) {
 						// Store the inner page in mongo
@@ -239,7 +250,6 @@ public class AllQueriesCrawler extends Crawler {
 					}
 				} // else skip
 			}
-			
 		}
 	}
 
