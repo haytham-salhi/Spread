@@ -39,7 +39,7 @@ public abstract class BaseFetcher {
 		// It is not correct to encode the whole url here!! You might need to query part of it(value of param of path param!)
 		
 		try {
-			Document document = Jsoup.connect(url).timeout(30000).userAgent(MY_PC_USERAGENT).get();
+			Document document = Jsoup.connect(url).timeout(40000).userAgent(MY_PC_USERAGENT).get();
 			
 			if(document != null) {
 				return document.outerHtml();

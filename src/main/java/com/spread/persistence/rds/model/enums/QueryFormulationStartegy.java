@@ -7,7 +7,10 @@ package com.spread.persistence.rds.model.enums;
  */
 public enum QueryFormulationStartegy {
 	
-	APPEND("Append the meaning to the query"), NO_APPEND("Don't append the meaning");
+	APPEND("Append the meaning to the query"), // == APPEND_RIGHT
+	NO_APPEND("Don't append the meaning");
+	//APPEND_RIGHT("Append the meaning to the right of the query"), Just in case uin future
+	//APPEND_LEFT("Append the meaning to the left of the query");
 	
 	private String name;
 	

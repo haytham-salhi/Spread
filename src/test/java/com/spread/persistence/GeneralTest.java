@@ -60,14 +60,14 @@ public class GeneralTest {
 		//System.out.println(googleFetcher.fetch(2));
 		
 		com.spread.persistence.rds.model.Test t = new com.spread.persistence.rds.model.Test();
-		t.setName("عدي الصالحي"); // Such these chars are solved after we append character_set_server=utf8mb4 and remove the characterEncoding=utf8
+		t.setName("عدي الصالحيddsda d 👽💔"); // Such these chars are solved after we append character_set_server=utf8mb4 and remove the characterEncoding=utf8
 		
 		testRepository.save(t); 
 	}
 	
 	@Test
 	public void test1() throws Exception {
-		com.spread.persistence.rds.model.Test ob = testRepository.findOne(18);
+		com.spread.persistence.rds.model.Test ob = testRepository.findOne(54);
 		
 		System.out.println(ob.getName());
 	}

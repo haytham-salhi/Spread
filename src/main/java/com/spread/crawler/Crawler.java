@@ -6,7 +6,6 @@ import java.util.Map;
 import com.spread.model.Meaning;
 import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
-import com.spread.persistence.rds.model.enums.QueryFormulationStartegy;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
 
 public abstract class Crawler {
@@ -21,8 +20,7 @@ public abstract class Crawler {
 	public void handleQueries(boolean innerPage, int size,
 			Map<String, List<Meaning>> queries, Language lang,
 			SearchEngineLanguage searchEngineLanguage,
-			Location locationOfFetching,
-			QueryFormulationStartegy queryFormulationStartegy) {
+			Location locationOfFetching) {
 		// TODO Auto-generated method stub
 		
 	}

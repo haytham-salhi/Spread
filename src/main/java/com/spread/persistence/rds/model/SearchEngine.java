@@ -29,7 +29,7 @@ public class SearchEngine {
 	private String name;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "code", columnDefinition= "enum('GOOGLE','BING')", nullable = false)
+	@Column(name = "code", columnDefinition= "enum('GOOGLE','BING', 'YAHOO')", nullable = false)
 	private SearchEngineCode code;
 	
 	@Enumerated(EnumType.STRING)

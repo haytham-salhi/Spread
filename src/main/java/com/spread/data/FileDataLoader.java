@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
 import com.spread.model.Meaning;
+import com.spread.persistence.rds.model.enums.QueryFormulationStartegy;
 
 /**
  * 
@@ -27,6 +28,8 @@ public abstract class FileDataLoader {
 	
 	/**
 	 * File structure: 
+	 * <br>
+	 * Note: It will skip the first line
 	 * 
 	 * @return
 	 */
@@ -47,11 +50,11 @@ public abstract class FileDataLoader {
 				
 				if(!nextLine[0].isEmpty()) {
 					ArrayList<Meaning> meanings = new ArrayList<Meaning>();
-					meanings.add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim()));
+					meanings.add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim(), QueryFormulationStartegy.valueOf(nextLine[4].trim())));
 					
 					queryMap.put(ambiguousQuery, meanings);
 				} else {
-					queryMap.get(ambiguousQuery).add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim()));
+					queryMap.get(ambiguousQuery).add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim(), QueryFormulationStartegy.valueOf(nextLine[4].trim())));
 				}
 				
 		    }

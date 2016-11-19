@@ -46,32 +46,30 @@ public class CrawlerTest {
 		Map<String, List<Meaning>> queries = new HashMap<String, List<Meaning>>();
 		queries.put("عمان", 
 				Arrays.asList(new Meaning[] {
-						new Meaning("سلطنة عمان", "دولة عربية تقع في آسيا", "country"), 
-						new Meaning("مدينة عمان", "عاصمة الأردن", "city")}));
+						new Meaning("سلطنة", "دولة عربية تقع في آسيا", "country", QueryFormulationStartegy.APPEND), 
+						new Meaning("مدينة", "عاصمة الأردن", "city", QueryFormulationStartegy.APPEND)}));
 		
 		crawler.handleQueries(true,
 		15,
 		queries,
 		Language.AR,
 		SearchEngineLanguage.DEFAULT,
-		Location.PALESTINE,
-		QueryFormulationStartegy.NO_APPEND);
+		Location.PALESTINE);
 		
 		
 		
 		queries = new HashMap<String, List<Meaning>>();
 		queries.put("Java", 
 				Arrays.asList(new Meaning[] {
-						new Meaning("Programming Language", "Popular Programming Language", "programming language"), 
-						new Meaning("Island", "An island of Indonesia", "location")}));
+						new Meaning("Programming Language", "Popular Programming Language", "programming language", QueryFormulationStartegy.APPEND), 
+						new Meaning("Island", "An island of Indonesia", "location", QueryFormulationStartegy.APPEND)}));
 		
 		crawler.handleQueries(true,
 		15,
 		queries,
 		Language.EN,
 		SearchEngineLanguage.DEFAULT,
-		Location.PALESTINE,
-		QueryFormulationStartegy.APPEND);
+		Location.PALESTINE);
 	}
 	
 	@Test
@@ -82,9 +80,9 @@ public class CrawlerTest {
 		100,
 		queries,
 		Language.AR,
-		SearchEngineLanguage.AR,
-		Location.PALESTINE,
-		QueryFormulationStartegy.NO_APPEND);
+		SearchEngineLanguage.AR, // Make sure to enable it in the application.pros to activate it (Just symbolic here)
+		Location.PALESTINE); // Make sure you run from the specified country (ip address in that country)
+
 		
 	}
 	

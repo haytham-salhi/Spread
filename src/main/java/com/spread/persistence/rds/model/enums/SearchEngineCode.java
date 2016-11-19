@@ -7,7 +7,7 @@ package com.spread.persistence.rds.model.enums;
  */
 public enum SearchEngineCode {
 	
-	GOOGLE("Google"), BING("Bing");
+	GOOGLE("Google"), BING("Bing"), YAHOO("Yahoo");
 	
 	private String name;
 	

@@ -87,4 +87,18 @@ public class GeneralNonSpringTest {
 	    }
 	}
 	
+	@Test
+	public void testName1() throws Exception {
+		String query = "عدنان ابراهيم";
+		
+		System.out.println(query + " " + "المخرج");
+		
+		System.out.println("Adnan Ibrahim"  + " " + "ALMO5REJ" );
+	}
+	
+	@Test
+	public void testName2() throws Exception {
+		System.out.println(132_217_728);
+	}
+	
 }

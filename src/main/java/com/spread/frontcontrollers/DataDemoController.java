@@ -57,6 +57,7 @@ public class DataDemoController implements Serializable {
 		List<SearchEngineCode> searchEngines = new ArrayList<SearchEngineCode>();
 		searchEngines.add(SearchEngineCode.GOOGLE);
 		searchEngines.add(SearchEngineCode.BING);
+		searchEngines.add(SearchEngineCode.YAHOO);
 		model.addObject("searchEngineList", searchEngines);
 		
 		// Another way
@@ -96,6 +97,9 @@ public class DataDemoController implements Serializable {
 				break;
 			case BING:
 				fetcher = (SearchEngineFetcher) applicationContext.getBean("bingFetcher");
+				break;
+			case YAHOO:
+				fetcher = (SearchEngineFetcher) applicationContext.getBean("yahooFetcher");
 				break;
 			default:
 				break;

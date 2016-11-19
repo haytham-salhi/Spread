@@ -26,9 +26,9 @@ import com.spread.model.SearchResult;
  *
  */
 @Component
-public class BingFetcher extends BaseFetcher implements SearchEngineFetcher {
-	
-	private static final long serialVersionUID = 8673457213511641887L;
+public class YahooFetcher extends BaseFetcher implements SearchEngineFetcher {
+
+	private static final long serialVersionUID = -3509508446307464331L;
 
 	/* Begin: Place Holders Variables */
 	private static final String QUERY_PLACE_HOLDER = "{query}";
@@ -37,22 +37,22 @@ public class BingFetcher extends BaseFetcher implements SearchEngineFetcher {
 	/* End: Place Holders Variables */
 
 	/* Begin: CSS Queries Variables */
-	private static final String RESULTS_COUNT_CSS_QUERY = "div[id=\"b_content\"] > div[id=\"b_tween\"] > span.sb_count";
+	private static final String RESULTS_COUNT_CSS_QUERY = "ol.searchBottom span";
 
-	private static final String RESULTS_CSS_QUERY = "li.b_algo";
+	private static final String RESULTS_CSS_QUERY = "ol.searchCenterMiddle li div.dd.algo";
 
-	private static final String SNIPPET_CSS_QUERY = "li.b_algo p";
+	private static final String SNIPPET_CSS_QUERY = "div.compText";
 
-	private static final String URL_CSS_QUERY = "li.b_algo h2 a[href]";
+	private static final String URL_CSS_QUERY = "h3.title a[href]";
 	
-	private static final String CITE_CSS_QUERY = "li.b_algo cite";
+	private static final String CITE_CSS_QUERY = "span.fz-ms";
 
-	private static final String TITLE_CSS_QUERY = "li.b_algo h2";
+	private static final String TITLE_CSS_QUERY = "h3.title";
 	/* End: CSS Queries Variables */
 	
-	private static final Logger LOGGER = LogManager.getLogger(BingFetcher.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(YahooFetcher.class.getName());
 	
-	@Value("${bing.search.engine.url}")
+	@Value("${yahoo.search.engine.url}")
 	private String endPoint;
 	
 	@Override
@@ -71,7 +71,7 @@ public class BingFetcher extends BaseFetcher implements SearchEngineFetcher {
 
 		SearchResult searchResult = new SearchResult();
 		
-		// Bing fetches data in 10's only, not as google as it has two options either in 10's or in 20's
+		// Let's fetch 10's
 		int num = 10;
 		
 		// The start here differs from google as they start from 1, 11, 21, 31,..., 91, and so on
@@ -121,7 +121,6 @@ public class BingFetcher extends BaseFetcher implements SearchEngineFetcher {
 				if(resultElements.isEmpty()) {
 					// No results
 					emptyResults = true;
-					
 					LOGGER.info("Empty results!");
 				}
 				

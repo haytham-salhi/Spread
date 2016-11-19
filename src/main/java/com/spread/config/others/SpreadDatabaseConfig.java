@@ -90,6 +90,7 @@ public class SpreadDatabaseConfig {
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
+		entityManagerFactoryBean.setPersistenceUnitName("spreadPU");
 		
 		Properties jpaProperties = new Properties();
 		jpaProperties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
