@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,43 @@ public abstract class FileDataLoader {
 	 */
 	public Map<String, List<Meaning>> loadQueries2() {
 		Map<String, List<Meaning>> queryMap = new HashMap<String, List<Meaning>>();
+		
+		File file = new File(getClass().getClassLoader().getResource(getFileName()).getFile());
+		
+		try (CSVReader reader = new CSVReader(new FileReader(file), getSeperator(), CSVParser.DEFAULT_QUOTE_CHARACTER, 1)) {
+			
+			String ambiguousQuery = null;
+			String [] nextLine;
+			while ((nextLine = reader.readNext()) != null) {
+				
+				if(!nextLine[0].isEmpty()) {
+					ambiguousQuery = nextLine[0].trim();
+				}
+				
+				if(!nextLine[0].isEmpty()) {
+					ArrayList<Meaning> meanings = new ArrayList<Meaning>();
+					meanings.add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim(), QueryFormulationStartegy.valueOf(nextLine[4].trim())));
+					
+					queryMap.put(ambiguousQuery, meanings);
+				} else {
+					queryMap.get(ambiguousQuery).add(new Meaning(nextLine[1].trim(), nextLine[2].trim(), nextLine[3].trim(), QueryFormulationStartegy.valueOf(nextLine[4].trim())));
+				}
+				
+		    }
+			
+		} catch (IOException e) {
+			LOGGER.error(e);
+		}
+		
+		return queryMap;
+	}
+	
+	/**
+	 * Same as loadQueries2 method but returns linked hash map instaed of hashmap
+	 * @return
+	 */
+	public Map<String, List<Meaning>> loadQueriesAsLinkedHashMap() {
+		Map<String, List<Meaning>> queryMap = new LinkedHashMap<String, List<Meaning>>();
 		
 		File file = new File(getClass().getClassLoader().getResource(getFileName()).getFile());
 		

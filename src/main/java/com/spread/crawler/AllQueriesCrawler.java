@@ -3,7 +3,6 @@ package com.spread.crawler;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.model.SearchItem;
 import com.spread.model.SearchResult;
 import com.spread.model.Meaning;
-import com.spread.persistence.nosql.model.InnerPage;
 import com.spread.persistence.nosql.repository.InnerPageRepository;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.QuerySearchEngine;
@@ -90,7 +88,7 @@ public class AllQueriesCrawler extends Crawler {
 				// Check if (q_id and se_id + startegy) exists in query_search_engine table
 		
 		// TODO change to size variable below later
-		fetchAndStore(fetchInnerPage, 100, queries, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
+		//fetchAndStore(fetchInnerPage, 100, queries, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
 		fetchAndStore(fetchInnerPage, 200, queries, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
@@ -168,23 +166,23 @@ public class AllQueriesCrawler extends Crawler {
 				// Store the items 
 				for (SearchItem searchItem : searchResult.getSearchItems()) {
 					// Store the inner page in mongo
-					InnerPage innerPage = null;
-					String innerPageAsString = searchItem.getInnerPage();
-					if(innerPageAsString != null && !innerPageAsString.isEmpty()) {
-						if(innerPageAsString.length() < 134_217_728) { // 134_217_728 ~ 512 MB string!!
-							innerPage = new InnerPage(innerPageAsString);
-							try {
-								innerPage = innerPageRepository.save(innerPage);
-							} catch (Exception e) {
-								LOGGER.error(ExceptionUtils.getStackTrace(e));
-								innerPage = null;
-							}
-						} else {
-							LOGGER.info("Inner page is too long!");
-						}
-					}
+//					InnerPage innerPage = null;
+//					String innerPageAsString = searchItem.getInnerPage();
+//					if(innerPageAsString != null && !innerPageAsString.isEmpty()) {
+//						if(innerPageAsString.length() < 134_217_728) { // 134_217_728 ~ 512 MB string!!
+//							innerPage = new InnerPage(innerPageAsString);
+//							try {
+//								innerPage = innerPageRepository.save(innerPage);
+//							} catch (Exception e) {
+//								LOGGER.error(ExceptionUtils.getStackTrace(e));
+//								innerPage = null;
+//							}
+//						} else {
+//							LOGGER.info("Inner page is too long!");
+//						}
+//					}
 					
-					com.spread.persistence.rds.model.SearchResult searchResultItem = new com.spread.persistence.rds.model.SearchResult(searchItem.getTitle(), searchItem.getUrl(), searchItem.getShortSummary(), innerPage != null ? innerPage.getId() : null, ambiguousQuerySearchEngine);
+					com.spread.persistence.rds.model.SearchResult searchResultItem = new com.spread.persistence.rds.model.SearchResult(ambiguousQuerySearchEngine, searchItem.getTitle(), searchItem.getUrl(), searchItem.getShortSummary(), searchItem.getInnerPage());
 					
 					searchResultRepository.save(searchResultItem);
 				}
@@ -252,23 +250,23 @@ public class AllQueriesCrawler extends Crawler {
 					// Store the items 
 					for (SearchItem searchItem : searchResult.getSearchItems()) {
 						// Store the inner page in mongo
-						InnerPage innerPage = null;
-						String innerPageAsString = searchItem.getInnerPage();
-						if(innerPageAsString != null && !innerPageAsString.isEmpty()) {
-							if(innerPageAsString.length() < 134_217_728) { // 134_217_728 ~ 512 MB string!!
-								innerPage = new InnerPage(innerPageAsString);
-								try {
-									innerPage = innerPageRepository.save(innerPage);
-								} catch (Exception e) {
-									LOGGER.error(ExceptionUtils.getStackTrace(e));
-									innerPage = null;
-								}
-							} else {
-								LOGGER.info("Inner page is too long!");
-							}
-						}
+//						InnerPage innerPage = null;
+//						String innerPageAsString = searchItem.getInnerPage();
+//						if(innerPageAsString != null && !innerPageAsString.isEmpty()) {
+//							if(innerPageAsString.length() < 134_217_728) { // 134_217_728 ~ 512 MB string!!
+//								innerPage = new InnerPage(innerPageAsString);
+//								try {
+//									innerPage = innerPageRepository.save(innerPage);
+//								} catch (Exception e) {
+//									LOGGER.error(ExceptionUtils.getStackTrace(e));
+//									innerPage = null;
+//								}
+//							} else {
+//								LOGGER.info("Inner page is too long!");
+//							}
+//						}
 						
-						com.spread.persistence.rds.model.SearchResult searchResultItem = new com.spread.persistence.rds.model.SearchResult(searchItem.getTitle(), searchItem.getUrl(), searchItem.getShortSummary(), innerPage != null ? innerPage.getId() : null, clearQuerySearchEngine);
+						com.spread.persistence.rds.model.SearchResult searchResultItem = new com.spread.persistence.rds.model.SearchResult(clearQuerySearchEngine, searchItem.getTitle(), searchItem.getUrl(), searchItem.getShortSummary(), searchItem.getInnerPage());
 						
 						searchResultRepository.save(searchResultItem);
 					}

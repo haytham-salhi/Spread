@@ -2,6 +2,8 @@ package com.spread.persistence;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Before;
@@ -16,6 +18,8 @@ import com.spread.config.RootConfig;
 import com.spread.config.others.MongoConfig;
 import com.spread.persistence.nosql.model.InnerPage;
 import com.spread.persistence.nosql.repository.InnerPageRepository;
+import com.spread.persistence.rds.model.SearchResult;
+import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
 
 @ContextConfiguration(classes = { RootConfig.class })
@@ -27,6 +31,9 @@ public class NoSqlTest {
 	
 	@Autowired
 	private InnerPageRepository innerPageRepository;
+	
+	@Autowired
+	private SearchResultRepository searchResultRepository;
 
 	
 	@Before
@@ -44,7 +51,21 @@ public class NoSqlTest {
 	}
 	
 	@Test
-	public void testName() throws Exception {
-		System.out.println(innerPageRepository.findOne("581238e9a6c6b822be2e4106"));
+	public void migrationFromMongoToMySql() throws Exception {
+		List<SearchResult> res = searchResultRepository.findByInnerPageIdIsNotNullAndInnerPageIsNull();
+		
+		int i = 0;
+		
+		for (SearchResult searchResult : res) {
+			InnerPage innerPage = innerPageRepository.findOne(searchResult.getInnerPageId());
+			
+			searchResultRepository.setInnerPageFor(innerPage.getContent(), searchResult.getId());
+			
+			i++;
+			
+			System.out.println(i + " done");
+		}
+		
+		//System.out.println(innerPageRepository.findOne("5830722bbe5256b8f87487b3"));;
 	}
 }

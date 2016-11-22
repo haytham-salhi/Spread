@@ -36,6 +36,9 @@ public class SearchResult {
 	@Column(name = "snippet")
 	private String snippet;
 	
+	@Column(name = "inner_page", columnDefinition = "longtext")
+	private String innerPage;
+	
 	@Column(name = "inner_page_id")
 	private String innerPageId;
 	
@@ -61,6 +64,16 @@ public class SearchResult {
 		this.url = url;
 		this.snippet = snippet;
 		this.innerPageId = innerPageId;
+		this.querySearchEngine = querySearchEngine;
+	}
+	
+	public SearchResult(QuerySearchEngine querySearchEngine, String title, String url, 
+			String snippet, String innerPage) {
+		super();
+		this.title = title;
+		this.url = url;
+		this.snippet = snippet;
+		this.innerPage = innerPage;
 		this.querySearchEngine = querySearchEngine;
 	}
 
@@ -118,6 +131,20 @@ public class SearchResult {
 	 */
 	public void setSnippet(String snippet) {
 		this.snippet = snippet;
+	}
+	
+	/**
+	 * @return the innerPage
+	 */
+	public String getInnerPage() {
+		return innerPage;
+	}
+
+	/**
+	 * @param innerPage the innerPage to set
+	 */
+	public void setInnerPage(String innerPage) {
+		this.innerPage = innerPage;
 	}
 
 	/**
