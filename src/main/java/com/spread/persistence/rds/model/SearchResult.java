@@ -56,6 +56,13 @@ public class SearchResult {
 	
 	public SearchResult() {
 	}
+	
+	public SearchResult(String title, String url, String snippet) {
+		super();
+		this.title = title;
+		this.url = url;
+		this.snippet = snippet;
+	}
 
 	public SearchResult(String title, String url, String snippet,
 			String innerPageId, QuerySearchEngine querySearchEngine) {

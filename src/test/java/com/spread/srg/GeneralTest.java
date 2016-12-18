@@ -1,4 +1,4 @@
-package com.spread.persistence;
+package com.spread.srg;
 
 import static org.junit.Assert.*;
 
@@ -15,6 +15,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
+import com.spread.experiment.RawSearchResult;
+import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.SearchEngine;
 import com.spread.persistence.rds.model.SearchResult;
@@ -22,6 +24,7 @@ import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
+import com.spread.persistence.rds.repository.MeaningRepository;
 import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
@@ -46,6 +49,8 @@ public class GeneralTest {
 	@Autowired
 	private SearchEngineRepository searchEngineRepository;
 
+	@Autowired
+	private MeaningRepository meaningRepository;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -54,53 +59,30 @@ public class GeneralTest {
 	@Test
 	public void SearchResultRepositoryTest() throws Exception {
 		//searchResultRepository.findByQuerySearchEngine_Query_NameAndQuerySearchEngine_SearchEngine_Code("عمان", SearchEngineCode.GOOGLE);
+		List<SearchResult> ambigQueryResults = searchResultRepository.findByQueryAndSearchEngine("عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
+		List<SearchResult> clearQueryResults1 = searchResultRepository.findByQueryAndSearchEngine("مدينة عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
+		List<SearchResult> clearQueryResults2 = searchResultRepository.findByQueryAndSearchEngine("سلطنة عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
+
+		//results.forEach(System.out::println);
+		System.out.println(ambigQueryResults.size());
+		System.out.println(clearQueryResults1.size());
+		System.out.println(clearQueryResults2.size());
+
+	}
+	
+	@Test
+	public void testName() throws Exception {
 		List<SearchResult> results = searchResultRepository.findByQueryAndSearchEngine("عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
 		
-		results.forEach(System.out::println);
 		System.out.println(results.size());
-	}
-
-	@Test
-	public void test2() {
-		logger.info("Hello");
-		//System.out.println(googleFetcher.fetch(2));
-		
-		com.spread.persistence.rds.model.Test t = new com.spread.persistence.rds.model.Test();
-		t.setName("👽💔"); // Such these chars are solved after we append character_set_server=utf8mb4 and remove the characterEncoding=utf8
-		
-		testRepository.save(t); 
-	}
-	@Test
-	public void test3() {
-		logger.info("Hello");
-		//System.out.println(googleFetcher.fetch(2));
-		
-		com.spread.persistence.rds.model.Test t = new com.spread.persistence.rds.model.Test();
-		t.setName("عدي الصالحيddsda d 👽💔"); // Such these chars are solved after we append character_set_server=utf8mb4 and remove the characterEncoding=utf8
-		
-		testRepository.save(t); 
+		System.out.println(results.get(0).toString());
 	}
 	
 	@Test
-	public void test1() throws Exception {
-		com.spread.persistence.rds.model.Test ob = testRepository.findOne(54);
+	public void testName1() throws Exception {
+		Meaning meaning = meaningRepository.findByClearQuery_Id(2);
 		
-		System.out.println(ob.getName());
-	}
-	
-	@Test
-	public void queryTest() throws Exception {
-		Query query = new Query("الله أكبر ولله الحمد", Language.EN, true, null, null);
-		
-		query = queryRepository.save(query);
-		
-		System.out.println(query);
-	}
-	
-	@Test
-	public void findByCodeAndLanguageAndLocationTest() throws Exception {
-		SearchEngine se = searchEngineRepository.findByCodeAndLanguageAndLocation(SearchEngineCode.GOOGLE, SearchEngineLanguage.AR, Location.PALESTINE);
-		
-		System.out.println(se);
+		System.out.println(meaning);
+		System.out.println(meaning.getClearQuery());
 	}
 }

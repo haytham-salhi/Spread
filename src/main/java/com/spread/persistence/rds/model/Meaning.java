@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -35,9 +36,16 @@ public class Meaning {
 	@Column(name = "is_new")
 	private Boolean isNew;
 	
+	// Ambiguous Query
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "query_id", nullable = false)
 	private Query query;
+	
+	// Clear Query
+	@OneToOne
+	@JoinColumn(name = "clear_query_id")
+	private Query clearQuery;
+
 	
 	public Meaning() {
 	}
@@ -134,6 +142,22 @@ public class Meaning {
 	 */
 	public void setQuery(Query query) {
 		this.query = query;
+	}
+	
+	/**
+	 * 
+	 * @return clearQuery
+	 */
+	public Query getClearQuery() {
+		return clearQuery;
+	}
+	
+	/**
+	 * 
+	 * @param clearQuery
+	 */
+	public void setClearQuery(Query clearQuery) {
+		this.clearQuery = clearQuery;
 	}
 
 	/* (non-Javadoc)

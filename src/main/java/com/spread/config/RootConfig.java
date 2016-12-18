@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  *
  */
 @Configuration
-@ComponentScan({"com.spread.config.others", "com.spread.fetcher", "com.spread.jobs", "com.spread.data", "com.spread.crawler"}) 
+@ComponentScan({"com.spread.config.others", "com.spread.fetcher", "com.spread.jobs", "com.spread.data", "com.spread.crawler", "com.spread.experiment"}) 
 @PropertySource("classpath:/application.properties")
 //@EnableScheduling
 public class RootConfig {

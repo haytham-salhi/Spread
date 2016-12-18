@@ -2,6 +2,7 @@ package com.spread.general;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -100,5 +101,15 @@ public class GeneralNonSpringTest {
 	public void testName2() throws Exception {
 		System.out.println(132_217_728);
 	}
+	
+	@Test
+	public void testName3() throws Exception {
+		File file = new File(getClass().getClassLoader().getResource("stopwords.txt").getFile());
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		
+		String line;
+		while ((line = reader.readLine()) != null)
+			System.out.println(line);	
+		}
 	
 }

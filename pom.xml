@@ -254,7 +254,6 @@
 			<version>3.8</version>
 		</dependency>
 		
-		
 		<!-- Added to resolve the exception when running a junit with spring, as it says: Unable to load blah blah -->
 		<dependency>
 		    <groupId>javax.el</groupId>
@@ -262,7 +261,13 @@
 		    <version>2.2</version>
 		</dependency>
 		
-    
+		
+		<dependency>
+		    <groupId>nz.ac.waikato.cms.weka</groupId>
+		    <artifactId>weka-stable</artifactId>
+		    <version>3.8.0</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 <!--     <sourceDirectory>src</sourceDirectory> -->
