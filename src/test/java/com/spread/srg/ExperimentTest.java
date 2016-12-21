@@ -2,6 +2,10 @@ package com.spread.srg;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,9 +20,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import weka.clusterers.ClusterEvaluation;
+import weka.clusterers.SimpleKMeans;
+import weka.core.EuclideanDistance;
+import weka.core.Instances;
+
+import com.google.common.io.Files;
 import com.spread.config.RootConfig;
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.Data;
+import com.spread.experiment.data.stemmers.ArabicStemmerKhoja;
 import com.spread.experiment.preparation.FeatureSelectionModes;
 import com.spread.experiment.preparation.WClusteringPreprocessor;
 import com.spread.persistence.rds.model.Meaning;
@@ -97,12 +108,12 @@ public class ExperimentTest {
 
 		// ------------- Data 
 		// This will be the input for preparation
-		List<RawSearchResult> rawSearchResults = data.getSearchResults(Arrays.asList(new Integer[] {2, 3, 4}), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, true, 2);
-		rawSearchResults.forEach(n -> System.out.println(n.getInnerPage()));
+		List<RawSearchResult> rawSearchResults = data.getSearchResults(Arrays.asList(new Integer[] {9,10,11,12,13,14,15,16}), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, false, 100);
+		//rawSearchResults.forEach(n -> System.out.println(n.getInnerPage()));
 		System.out.println(rawSearchResults.size());
 		
 		// This will be the input for preparation
-		List<String> meaningsList = data.getMeaningsForClearQueries(Arrays.asList(new Integer[] {2, 3, 4}));
+		List<String> meaningsList = data.getMeaningsForClearQueries(Arrays.asList(new Integer[] {9,10,11,12,13,14,15,16}));
 		
 		System.out.println(meaningsList);
 		
@@ -112,18 +123,65 @@ public class ExperimentTest {
 		// -------- Preparation
 		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList);
 		
-		preprocessor.prepare(FeatureSelectionModes.TITLE_ONLY);
+		// 1. 
+		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET);
 		
-		preprocessor.preprocessTrainingDataset(null, false, 1000, false, false);
+		System.out.println(preprocessor.getTrainingDataSet());
+
+		
+		// 2.
+		preprocessor.preprocessTrainingDataset(new ArabicStemmerKhoja(), true, 1000, false, true);
+		
 		
 		System.out.println(preprocessor.getTrainingDataSet());;
 		
 		
 		// --------- Clustering
+		// User input:
+		// 1- Algorithm/s
+		// 2- Algorithm parameters 
+			// (like K)
+			// - K = # of meanings
+			// - K = custome value
+			// - k = multi value of k
+		
+			// Distance measure (the applicable ones depend on the algorithm itself)
+			// For example k means support only euclidean and manhatten
+			// - Euclidean
+			// - Manhatten
+			// - others 
+		SimpleKMeans kmeansModel = new SimpleKMeans();
+		
+		int k = clearMeaningsWithClearQueriesForAq.size();
+		kmeansModel.setNumClusters(k);
+		kmeansModel.setDistanceFunction(new EuclideanDistance());
+		
+		kmeansModel.buildClusterer(preprocessor.getTrainingDataSet());
+		
+		System.out.println(kmeansModel);
 		
 		
 		
 		// --------- Evaluation
+		ClusterEvaluation eval = new ClusterEvaluation();
+		eval.setClusterer(kmeansModel);
+		
+		Instances labeledTrainingDataset = preprocessor.getTrainingDataSetWithClassAttr();
+		labeledTrainingDataset.setClassIndex(0);
+		System.out.println(labeledTrainingDataset);
+		
+		//eval.evaluateClusterer(new Instances(preprocessor.getTrainingDataSet()));
+		eval.evaluateClusterer(labeledTrainingDataset);
+		System.out.println(eval.clusterResultsToString());
+		
+		System.out.println(Arrays.toString(eval.getClusterAssignments()));
+		
+		double[] assignments = eval.getClusterAssignments();
+		
+		for (int i = 0; i < assignments.length; i++) {
+			System.out.println(rawSearchResults.get(i) + " --------->" + " cluster " + assignments[i]);
+		}
+		
 		
 //		//searchResultRepository.findByQuerySearchEngine_Query_NameAndQuerySearchEngine_SearchEngine_Code("عمان", SearchEngineCode.GOOGLE);
 //		List<SearchResult> ambigQueryResults = searchResultRepository.findByQueryAndSearchEngine("عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);

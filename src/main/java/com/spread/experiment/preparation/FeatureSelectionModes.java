@@ -25,4 +25,8 @@ public enum FeatureSelectionModes {
 	public String getName() {
 		return name;
 	}
+	
+	public String getFileLabel() {
+		return name().toLowerCase();
+	}
 }

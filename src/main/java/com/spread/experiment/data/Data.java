@@ -30,7 +30,7 @@ public abstract class Data {
 	@Autowired
 	protected MeaningRepository meaningRepository;
 	
-	public abstract List<RawSearchResult> labelTheResultsAndConvertToDtos(Integer queryId, List<SearchResult> searchResults) throws Exception;
+	protected abstract List<RawSearchResult> labelTheResultsAndConvertToDtos(Integer queryId, List<SearchResult> searchResults) throws Exception;
 	
 	/**
 	 * Get search results labeled for a specific query-search engine

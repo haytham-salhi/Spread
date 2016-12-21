@@ -35,6 +35,30 @@
        </Filters>
 	</RollingFile>
 	
+	<!--experimentApproach3InfoFile -->
+	<RollingFile name="experimentApproach3InfoFile" fileName="/mnt/tomcat/spread/logs/experiment_approach3_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/experiment_approach3_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
+   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+       </Filters>
+	</RollingFile>
+	
+	<!--experimentNoLabaledInfoFile -->
+	<RollingFile name="experimentNoLabaledInfoFile" fileName="/mnt/tomcat/spread/logs/experiment_no_labaled_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/experiment_no_labaled_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
+   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+       </Filters>
+	</RollingFile>
+	
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
@@ -56,6 +80,18 @@
    	<Logger name="com.spread.fetcher.impl"
 		level="trace" additivity="true">
 		<appender-ref ref="fetcherInfoFile" level="trace" />
+	</Logger>
+	
+	<!-- experimentApproach3 logger -->
+   	<Logger name="experimentApproach3"
+		level="trace" additivity="false">
+		<appender-ref ref="experimentApproach3InfoFile" level="trace" />
+	</Logger>
+	
+	<!-- Fetcher logger -->
+   	<Logger name="experimentNoLabaled"
+		level="trace" additivity="false">
+		<appender-ref ref="experimentNoLabaledInfoFile" level="trace" />
 	</Logger>
 	
   </Loggers>

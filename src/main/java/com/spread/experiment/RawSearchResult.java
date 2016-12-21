@@ -83,4 +83,12 @@ public class RawSearchResult {
 				+ ", snippet=" + snippet + ", meaning=" + meaning + ", clazz="
 				+ clazz + "]";
 	}
+	
+	public String getFormedBriefString() {
+		return "Title: " + title + "\n"
+				+ "Url: " + url + "\n"
+				+ "Snippet: " + snippet + "\n"
+				+ "Meaning: " + meaning + "\n"
+				+ "Class: " + clazz;
+	}
 }

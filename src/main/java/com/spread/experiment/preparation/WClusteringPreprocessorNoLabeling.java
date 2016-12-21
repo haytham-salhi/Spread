@@ -25,22 +25,27 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.stopwordshandlers.RegExpStopWordHandler;
 
-public class WClusteringPreprocessor {
+/**
+ * This class is specific for Clustering preprocessing with no labeling
+ * 
+ * We just removed the meanings and trainingDatasetWithClassAtrr members and their related code.
+ * 
+ * TODO: This can be enhanced by generalizing the clustering processor 
+ * 
+ * @author Haytham Salhi
+ *
+ */
+public class WClusteringPreprocessorNoLabeling {
 	
 	// These two variables are input to this class
-	// Meanings in rawSearchResults and meanings lists should be consistent!!
 	private List<RawSearchResult> rawSearchResults;
-	private List<String> meanings; // The classes in terms of clustering/classification
 	
 	// These two variables are modified through this class, and thus they are the output
 	private Instances trainingDataset;
-	// For evaluation
-	private Instances trainingDatasetWithClassAtrr;
 	
 	
-	public WClusteringPreprocessor(List<RawSearchResult> rawSearchResults, List<String> meanings) {
+	public WClusteringPreprocessorNoLabeling(List<RawSearchResult> rawSearchResults) {
 		this.rawSearchResults = rawSearchResults;
-		this.meanings = meanings;
 	}
 	
 	/**
@@ -54,10 +59,6 @@ public class WClusteringPreprocessor {
 		
 		if(rawSearchResults == null) {
 			throw new Exception("Raw search results is null");
-		}
-		
-		if(meanings == null) {
-			throw new Exception("Meanings is null");
 		}
 		
 		// 1. Declare the attributes (features) with the class atrribute
@@ -96,10 +97,6 @@ public class WClusteringPreprocessor {
 			break;
 		}
 		
-		// Declare the class attribute along with its values
-		Attribute classAttr = new Attribute("spread_meaning", meanings);
-		attributes.add(classAttr);
-
 		//2. Create the instances (traimning data set (ARFF data set))
 		trainingDataset = new Instances("SpreadRelation", attributes, rawSearchResults.size()); // Creates an empty set of instances. Uses the given attribute information. Sets the capacity of the set of instances to 0 if its negative. Given attribute information must not be changed after this constructor has been used
 		
@@ -113,25 +110,15 @@ public class WClusteringPreprocessor {
 			//innerPage = doSpecialProcess(innerPage);
 			
 			if(titleAttribute != null) {
-				if(title == null) {
-					title = "";
-				}
-				
 				instance.setValue(titleAttribute, title);
 			}
 			
 			if(snippetAttribute != null) {
-				if(snippet == null) {
-					snippet = "";
-				}
-				
 				instance.setValue(snippetAttribute, snippet);
 			}
 			
 			// Add here other attributes as needed 
 			
-			// Do these always
-			instance.setValue(classAttr, rawSearchResult.getMeaning());
 			instance.setDataset(trainingDataset);
 			
 			// Add the instance
@@ -186,7 +173,7 @@ public class WClusteringPreprocessor {
 		filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 		filter.setLowerCaseTokens(true);
  		//filter.setTokenizer(value); // default is worktokenizaer (we can use ngrams here)
-
+		
 		// Stop words and special filtering
 		// 1. 
 		WordsFromFile wordsFromFile = new WordsFromFile();
@@ -202,13 +189,9 @@ public class WClusteringPreprocessor {
 		MultiStopwords multiStopwords = new MultiStopwords();
 		multiStopwords.setStopwords(new StopwordsHandler[] {wordsFromFile, punctuationsStopHnadler});
 		
-		
-		filter.setStopwordsHandler(multiStopwords);
-		
-		
-		
-		
 		// TODO Add my stop word handler to
+
+		filter.setStopwordsHandler(multiStopwords);
 		
 		trainingDataset = Filter.useFilter(trainingDataset, filter);
 		// Now it is represented in document vector space
@@ -216,10 +199,6 @@ public class WClusteringPreprocessor {
 		// We can shuffle if needed 
 		//trainingdataSetFiltered.randomize(new Random()); // For shuffling the instances :)))))
 		
-		// 4. 
-		// Make a copy for evaluation
-		trainingDatasetWithClassAtrr = new Instances(trainingDataset);
-
 		// Let's remove the class attribute as it is no longer needed for clustering
 		String[] opts= {"-R", "1"};
 		Remove remove = new Remove(); // There are many types of filters!!
@@ -232,10 +211,5 @@ public class WClusteringPreprocessor {
 	// The output after calling prepare, preprocess
 	public Instances getTrainingDataSet() {
 		return trainingDataset;
-	}
-	
-	// The output after calling prepare, preprocess
-	public Instances getTrainingDataSetWithClassAttr() {
-		return trainingDatasetWithClassAtrr;
 	}
 }
