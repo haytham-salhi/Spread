@@ -157,7 +157,7 @@ public class ExperimentAQDifferentKsTest {
 						// Difference here
 						// ---------- Store the results
 						// Create the directory
-						String dirPath = "results/k-means/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel() + "/" + "k_" + k;
+						String dirPath = "results2/k-means/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel() + "/" + "k_" + k;
 						new File(dirPath).mkdirs();
 						
 						// Write the evaluation

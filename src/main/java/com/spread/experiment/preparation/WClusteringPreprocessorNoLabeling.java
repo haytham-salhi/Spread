@@ -19,7 +19,6 @@ import weka.core.stopwords.MultiStopwords;
 import weka.core.stopwords.StopwordsHandler;
 import weka.core.stopwords.WordsFromFile;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import com.spread.experiment.RawSearchResult;
@@ -110,10 +109,18 @@ public class WClusteringPreprocessorNoLabeling {
 			//innerPage = doSpecialProcess(innerPage);
 			
 			if(titleAttribute != null) {
+				if(title == null) {
+					title = "";
+				}
+				
 				instance.setValue(titleAttribute, title);
 			}
 			
 			if(snippetAttribute != null) {
+				if(snippet == null) {
+					snippet = "";
+				}
+				
 				instance.setValue(snippetAttribute, snippet);
 			}
 			
@@ -199,13 +206,6 @@ public class WClusteringPreprocessorNoLabeling {
 		// We can shuffle if needed 
 		//trainingdataSetFiltered.randomize(new Random()); // For shuffling the instances :)))))
 		
-		// Let's remove the class attribute as it is no longer needed for clustering
-		String[] opts= {"-R", "1"};
-		Remove remove = new Remove(); // There are many types of filters!!
-		remove.setOptions(opts);
-		remove.setInputFormat(trainingDataset);
-		// Apply the filter
-		trainingDataset = Filter.useFilter(trainingDataset, remove);
 	}
 	
 	// The output after calling prepare, preprocess
