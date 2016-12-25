@@ -1,49 +1,39 @@
-package com.spread.srg;
-
-import static org.junit.Assert.*;
+package com.spread.experiment.experiments;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.stereotype.Component;
 
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
+import weka.core.stemmers.Stemmer;
 
 import com.google.common.io.Files;
-import com.spread.config.RootConfig;
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.Data;
 import com.spread.experiment.data.stemmers.ArabicStemmerKhoja;
 import com.spread.experiment.preparation.FeatureSelectionModes;
-import com.spread.experiment.preparation.WClusteringPreprocessor;
 import com.spread.experiment.preparation.WClusteringPreprocessorNoLabeling;
-import com.spread.fetcher.impl.BingFetcher;
-import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
-import com.spread.persistence.rds.model.SearchEngine;
-import com.spread.persistence.rds.model.SearchResult;
-import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
@@ -52,17 +42,20 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
+import com.spread.util.charts.SpreadPieChart;
 
 /**
- * The first experiment (ExperimentAQDifferentKs) before refactoring
+ * 1- Set the variables first; otherwise they will take the default ones
+ * 
+ * 2- Set experimentName and algorithmName (to be appended in the folders names)
+ * 
+ * 3- Invoke Run
  * 
  * @author Haytham Salhi
  *
  */
-@ContextConfiguration(classes = { RootConfig.class })
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-public class ExperimentAQDifferentKsTest {
+@Component
+public class AQDifferentKsExperiment extends BaseExperiment {
 	
 	@Autowired
 	private SearchResultRepository searchResultRepository;
@@ -86,12 +79,52 @@ public class ExperimentAQDifferentKsTest {
 	
 	private static final Logger LOGGER = LogManager.getLogger("experimentNoLabaled");
 	
-	@Before
-	public void setUp() throws Exception {
+	// Variables
+	private int[] sizes = {10, 100}; // Mainly we change this in this experiment
+	private FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
+			FeatureSelectionModes.SNIPPET_ONLY,
+			FeatureSelectionModes.TITLE_WITH_SNIPPET}; // Mainly we change this in this experiment
+	// Difference here
+	int[] ks = {2, 3, 4, 5, 6, 7, 8};
+	
+	// These are usually neutralized
+	private SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
+	private boolean withInnerPage = false;
+	private Stemmer stemmer = new ArabicStemmerKhoja(); 
+	private boolean countWords = true;
+	private int wordsToKeep = 1000;
+	private boolean TF = false;
+	private boolean IDF = true;
+	
+	
+	public void setVariables(int[] sizes,
+			FeatureSelectionModes[] featureSelectionModes,
+			int[] ks,
+			SearchEngineCode searchEngineCode,
+			boolean withInnerPage,
+			Stemmer stemmer,
+			boolean countWords,
+			int wordsToKeep,
+			boolean tF,
+			boolean iDF) {
+		this.sizes = sizes;
+		this.featureSelectionModes = featureSelectionModes;
+		this.ks = ks;
+		this.searchEngineCode = searchEngineCode;
+		this.withInnerPage = withInnerPage;
+		this.stemmer = stemmer;
+		this.countWords = countWords;
+		this.wordsToKeep = wordsToKeep;
+		this.TF = tF;
+		this.IDF = iDF;
 	}
 	
-	@Test
-	public void experimentsTest() throws Exception {
+	@Override
+	public void run() throws Exception {
+		if(getExperimentName() == null || getAlgorithmName() == null) {
+			throw new Exception("Experiment name or algorithm name is not set!");
+		}
+		
 		long startTime = System.currentTimeMillis();
 		
 		// UI Input:
@@ -115,17 +148,14 @@ public class ExperimentAQDifferentKsTest {
 		for (Query query : ambiguousQueries) {
 			LOGGER.info("Processing for A.Q: " + query.getName());
 			
-			int[] sizes = {10, 100};
-			
 			for (int size : sizes) {
-				FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY, FeatureSelectionModes.SNIPPET_ONLY, FeatureSelectionModes.TITLE_WITH_SNIPPET};
 				
 				for (FeatureSelectionModes featureSelectionMode : featureSelectionModes) {
 					LOGGER.info("Working for size=" + size + ", and featureSelectionMode=" + featureSelectionMode);
 
 					// ------------- Data 
 					// This will be the input for preparation
-					List<RawSearchResult> rawSearchResults = data.getSearchResults(query.getId(), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, false, size);
+					List<RawSearchResult> rawSearchResults = data.getSearchResults(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
 					
 					
 					// Difference here
@@ -136,10 +166,8 @@ public class ExperimentAQDifferentKsTest {
 					preprocessor.prepare(featureSelectionMode);
 					
 					// 2.
-					preprocessor.preprocessTrainingDataset(new ArabicStemmerKhoja(), true, 1000, false, true);
+					preprocessor.preprocessTrainingDataset(stemmer, countWords, wordsToKeep, TF, IDF);
 					
-					// Difference here
-					int[] ks = {2, 3, 4, 5, 6, 7, 8};
 					
 					for (int k : ks) {
 						// --------- Clustering
@@ -164,7 +192,7 @@ public class ExperimentAQDifferentKsTest {
 						// Difference here
 						// ---------- Store the results
 						// Create the directory
-						String dirPath = "results2/k-means/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel() + "/" + "k_" + k;
+						String dirPath = getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel() + "/" + "k_" + k;
 						new File(dirPath).mkdirs();
 						
 						// Write the evaluation
@@ -191,6 +219,21 @@ public class ExperimentAQDifferentKsTest {
 							}
 							
 						}
+						
+						// ------------- Create the cluster analysis chart
+						// Example double[] assignments = {1.0, 2.0, 1.0, 3.0, 3.0, 3.0};
+						// The output of counts is {2.0=1, 1.0=2, 3.0=3}
+						Map<Double, Long> counts = Arrays.stream(assignments).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+						
+						// Fill the chart data set
+						DefaultPieDataset dataset = new DefaultPieDataset();
+						counts.keySet().forEach(key -> dataset.setValue("C" + key.intValue() + " = " + counts.get(key), counts.get(key)));
+						
+						JFreeChart pieChart = new SpreadPieChart("Cluster Analysis (k = " + k + ") for " + query.getName(), dataset, true, true, true).getPieChart();
+						int width = 640; 
+						int height = 480;  
+						File pieChartFile = new File(dirPath + "/" + "cluster_analysis.png"); 
+						ChartUtilities.saveChartAsPNG(pieChartFile, pieChart, width, height);
 						
 						LOGGER.info("Done for k=" + k);
 					}
@@ -222,4 +265,6 @@ public class ExperimentAQDifferentKsTest {
 		long totalTime = endTime - startTime;
 		LOGGER.info("Total time for experiment 2 (Unlabeled data): " + totalTime/1000 + " secs");
 	}
+	
+	
 }

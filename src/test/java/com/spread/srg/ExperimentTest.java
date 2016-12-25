@@ -45,7 +45,13 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
+import com.spread.util.WekaHelper;
 
+/**
+ * For experiment general testing
+ * @author Haytham Salhi
+ *
+ */
 @ContextConfiguration(classes = { RootConfig.class })
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -108,7 +114,7 @@ public class ExperimentTest {
 
 		// ------------- Data 
 		// This will be the input for preparation
-		List<RawSearchResult> rawSearchResults = data.getSearchResults(Arrays.asList(new Integer[] {9,10,11,12,13,14,15,16}), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, false, 100);
+		List<RawSearchResult> rawSearchResults = data.getSearchResults(Arrays.asList(new Integer[] {9,10,11,12,13,14,15,16}), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, false, 2);
 		//rawSearchResults.forEach(n -> System.out.println(n.getInnerPage()));
 		System.out.println(rawSearchResults.size());
 		
@@ -173,6 +179,15 @@ public class ExperimentTest {
 		//eval.evaluateClusterer(new Instances(preprocessor.getTrainingDataSet()));
 		eval.evaluateClusterer(labeledTrainingDataset);
 		System.out.println(eval.clusterResultsToString());
+		
+		String evalString = eval.clusterResultsToString();
+		
+		double[] values = WekaHelper.getIncorrectlyClassifiedInstances(evalString);
+		
+		System.out.println("Number: " + values[0]);
+		System.out.println("Percentage: " + values[1]);
+
+		
 		
 		System.out.println(Arrays.toString(eval.getClusterAssignments()));
 		

@@ -1,48 +1,38 @@
-package com.spread.srg;
-
-import static org.junit.Assert.*;
+package com.spread.experiment.experiments;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.stereotype.Component;
 
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
+import weka.core.stemmers.Stemmer;
 
 import com.google.common.io.Files;
-import com.spread.config.RootConfig;
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.Data;
 import com.spread.experiment.data.stemmers.ArabicStemmerKhoja;
 import com.spread.experiment.preparation.FeatureSelectionModes;
 import com.spread.experiment.preparation.WClusteringPreprocessor;
-import com.spread.fetcher.impl.BingFetcher;
 import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
-import com.spread.persistence.rds.model.SearchEngine;
-import com.spread.persistence.rds.model.SearchResult;
-import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
@@ -51,17 +41,21 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
+import com.spread.util.WekaHelper;
+import com.spread.util.charts.SpreadBarChart;
 
 /**
- * The first experiment (ExperimentCQ) before refactoring
+ * 1- Set the variables first; otherwise they will take the default ones
+ * 
+ * 2- Set experimentName and algorithmName (to be appended in the folders names)
+ * 
+ * 3- Invoke Run
  * 
  * @author Haytham Salhi
  *
  */
-@ContextConfiguration(classes = { RootConfig.class })
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-public class ExperimentCQTest {
+@Component
+public class CQExperiment extends BaseExperiment {
 	
 	@Autowired
 	private SearchResultRepository searchResultRepository;
@@ -84,12 +78,45 @@ public class ExperimentCQTest {
 	
 	private static final Logger LOGGER = LogManager.getLogger("experimentApproach3");
 	
-	@Before
-	public void setUp() throws Exception {
-	}
+	// Variables
+	private int[] sizes = {10, 100}; // Mainly we change this in this experiment
+	private FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
+			FeatureSelectionModes.SNIPPET_ONLY,
+			FeatureSelectionModes.TITLE_WITH_SNIPPET}; // Mainly we change this in this experiment
+	// These are usually neutralized
+	private SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
+	private boolean withInnerPage = false;
+	private Stemmer stemmer = new ArabicStemmerKhoja(); 
+	private boolean countWords = true;
+	private int wordsToKeep = 1000;
+	private boolean TF = false;
+	private boolean IDF = true;
 	
-	@Test
-	public void experimentsTest() throws Exception {
+	public void setVariables(int[] sizes,
+			FeatureSelectionModes[] featureSelectionModes,
+			SearchEngineCode searchEngineCode,
+			boolean withInnerPage,
+			Stemmer stemmer,
+			boolean countWords,
+			int wordsToKeep,
+			boolean tF,
+			boolean iDF) {
+		this.sizes = sizes;
+		this.featureSelectionModes = featureSelectionModes;
+		this.searchEngineCode = searchEngineCode;
+		this.withInnerPage = withInnerPage;
+		this.stemmer = stemmer;
+		this.countWords = countWords;
+		this.wordsToKeep = wordsToKeep;
+		this.TF = tF;
+		this.IDF = iDF;
+	}
+
+	@Override
+	public void run() throws Exception {
+		if(getExperimentName() == null || getAlgorithmName() == null) {
+			throw new Exception("Experiment name or algorithm name is not set!");
+		}
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -117,11 +144,11 @@ public class ExperimentCQTest {
 			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findMeaningsWithClearQueries(query.getId());
 			
 			LOGGER.info("Its meanings are: " + clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getName()).collect(Collectors.toList()));
-
-			int[] sizes = {10, 100};
+			
+			// Define a chart dataset
+			DefaultCategoryDataset chartDataset = new DefaultCategoryDataset();
 			
 			for (int size : sizes) {
-				FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY, FeatureSelectionModes.SNIPPET_ONLY, FeatureSelectionModes.TITLE_WITH_SNIPPET};
 				
 				for (FeatureSelectionModes featureSelectionMode : featureSelectionModes) {
 					LOGGER.info("Working for size=" + size + ", and featureSelectionMode=" + featureSelectionMode);
@@ -129,7 +156,7 @@ public class ExperimentCQTest {
 					// ------------- Data 
 					// This will be the input for preparation
 					List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
-					List<RawSearchResult> rawSearchResults = data.getSearchResults(clearQueryIds, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, false, size);
+					List<RawSearchResult> rawSearchResults = data.getSearchResults(clearQueryIds, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
 					
 					// This will be the input for preparation
 					List<String> meaningsList = data.getMeaningsForClearQueries(clearQueryIds);
@@ -142,10 +169,10 @@ public class ExperimentCQTest {
 					preprocessor.prepare(featureSelectionMode);
 					
 					// 2.
-					preprocessor.preprocessTrainingDataset(new ArabicStemmerKhoja(), true, 1000, false, true);
+					preprocessor.preprocessTrainingDataset(stemmer, countWords, wordsToKeep, TF, IDF);
 					
 					// --------- Clustering
-					
+					// TODO Refactor this for other algorithms
 					SimpleKMeans kmeansModel = new SimpleKMeans();
 					int k = clearMeaningsWithClearQueriesForAq.size();
 					kmeansModel.setNumClusters(k);
@@ -163,27 +190,32 @@ public class ExperimentCQTest {
 					labeledTrainingDataset.setClassIndex(0);
 					
 					eval.evaluateClusterer(labeledTrainingDataset);
+					String evaluationString = eval.clusterResultsToString(); 
 					
 					
 					// ---------- Store the results
 					// Create the directory
-					String dirPath = "results/k-means/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel();
+					String dirPath = getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel();
 					new File(dirPath).mkdirs();
 					
 					// Write the evaluation
-					try (BufferedWriter writer = Files.newWriter(Paths.get(dirPath + "/evaluation.txt").toFile(), Charset.forName("utf-8"))) {
-						writer.write(eval.clusterResultsToString());
+					try (BufferedWriter writer = Files.newWriter(Paths.get(dirPath + "/evaluation.txt").toFile(), Charset.forName("UTF-8"))) {
+						writer.write(evaluationString);
 						
 					} catch (Exception e) {
 						System.err.println(e);
 						LOGGER.error(e.getMessage());
 					}
 					
+					// Add it to the chart data set -------------------- Charts step
+					double[] evaluationValues = WekaHelper.getIncorrectlyClassifiedInstances(evaluationString);
+					chartDataset.addValue((100.0 - evaluationValues[1]), new Integer(size), featureSelectionMode);
+					
 					// Create clusters
 					double[] assignments = eval.getClusterAssignments();
 					
 					for (int i = 0; i < assignments.length; i++) {
-						// This file code is differnet from above because we need to append
+						// This file code is different from above because we need to append
 						try (BufferedWriter writer = new BufferedWriter
 							    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/cluster_" + (int)assignments[i] + ".txt").toFile(), true), "UTF-8"))) {
 							writer.write(rawSearchResults.get(i).getFormedBriefString() + "\n\n");
@@ -200,6 +232,13 @@ public class ExperimentCQTest {
 				
 				LOGGER.info("Done for size" + size);
 			}
+			
+			// ============ Persist a chart -------------------- Charts step
+			JFreeChart barChart = new SpreadBarChart(0, 100, query.getName(), "Features", "Percentage of Correctly Clustered Instances (%)", chartDataset, PlotOrientation.VERTICAL, true, true, false).getBarChart();
+			int width = 640; 
+			int height = 480;  
+			File barChartFile = new File(getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/" + "evaluation_summary.png"); 
+			ChartUtilities.saveChartAsPNG(barChartFile, barChart, width, height);
 			
 			LOGGER.info("Done for query" + query.getName());
 		}

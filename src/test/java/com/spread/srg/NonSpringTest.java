@@ -14,9 +14,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,5 +116,25 @@ public class NonSpringTest {
 	        }
 	}
 	
+	@Test
+	public void testSplit() throws Exception {
+		String[] values = "Incorrectly clustered instances :	11.0	 68.75   %".split("[ \r\n\t]");
+		
+		for (String string : values) {
+			System.out.println(string + " >>" + string.length());
+			
+		}
+		
+		System.out.println(values.length);
+	}
+	
+	@Test
+	public void testGrouping() throws Exception {
+		double[] assignments = {1.0, 2.0, 1.0, 3.0, 3.0, 3.0};
+		
+		Map<Double, Long> counts = Arrays.stream(assignments).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+		
+		System.out.println(counts);
+	}
 		
 }
