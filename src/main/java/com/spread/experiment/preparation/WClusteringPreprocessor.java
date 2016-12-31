@@ -291,12 +291,12 @@ public class WClusteringPreprocessor {
 		trainingDataset = Filter.useFilter(trainingDataset, remove);
 	}
 	
-	// The output after calling prepare, preprocess
+	// The output after calling prepare, buildVectorSpaceDataset
 	public Instances getTrainingDataSet() {
 		return trainingDataset;
 	}
 	
-	// The output after calling prepare, preprocess
+	// The output after calling prepare, buildVectorSpaceDataset
 	public Instances getTrainingDataSetWithClassAttr() {
 		return trainingDatasetWithClassAtrr;
 	}

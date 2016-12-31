@@ -274,7 +274,7 @@ public class WClusteringPreprocessorNoLabeling {
 		
 	}
 	
-	// The output after calling prepare, preprocess
+	// The output after calling prepare, buildVectorSpaceDataset
 	public Instances getTrainingDataSet() {
 		return trainingDataset;
 	}
