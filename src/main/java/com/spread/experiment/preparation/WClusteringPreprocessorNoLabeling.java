@@ -73,7 +73,10 @@ public class WClusteringPreprocessorNoLabeling {
 		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
 		
 		// Ambiguous query 
-		String wordToRemove = ambiguousQueryRemoval ? spreadArabicPreprocessor.processAmbiguousQuery(this.ambiguousQuery) : null;
+		ArrayList<String> wordsToRemove = new ArrayList<String>();
+		if(ambiguousQueryRemoval) {
+			wordsToRemove.add(spreadArabicPreprocessor.processAmbiguousQuery(this.ambiguousQuery));
+		}
 		
 		// 1. Declare the attributes (features) with the class atrribute
 		// Declare the feature vector
@@ -140,7 +143,7 @@ public class WClusteringPreprocessorNoLabeling {
 				// ==============
 				if(!title.isEmpty()) {
 					title = spreadArabicPreprocessor.process(title, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordsToRemove);
 					
 					if(title.isEmpty()) {
 						LOGGER.warn("The title becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
@@ -160,7 +163,7 @@ public class WClusteringPreprocessorNoLabeling {
 				// ==============
 				if(!snippet.isEmpty()) {
 					snippet = spreadArabicPreprocessor.process(snippet, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordsToRemove);
 					
 					if(snippet.isEmpty()) {
 						LOGGER.warn("The snippet becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
@@ -185,7 +188,7 @@ public class WClusteringPreprocessorNoLabeling {
 				// ==============
 				if(!innerPage.isEmpty()) {
 					innerPage = spreadArabicPreprocessor.process(innerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordsToRemove);
 					
 					if(innerPage.isEmpty()) {
 						LOGGER.warn("The innerPage becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
