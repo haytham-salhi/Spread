@@ -96,6 +96,7 @@ public class CQExperiment extends BaseExperiment {
 	boolean arabicNumbersRemoval;
 	boolean nonAlphabeticWordsRemoval;
 	boolean stopWordsRemoval;
+	boolean ambiguousQueryRemoval;
 	
 	// Vector-space representation related
 	private boolean countWords = true;
@@ -120,6 +121,7 @@ public class CQExperiment extends BaseExperiment {
 			boolean arabicNumbersRemoval,
 			boolean nonAlphabeticWordsRemoval,
 			boolean stopWordsRemoval,
+			boolean ambiguousQueryRemoval,
 			boolean countWords,
 			int wordsToKeep,
 			int wordsToKeepInCaseOfInnerPage,
@@ -142,6 +144,7 @@ public class CQExperiment extends BaseExperiment {
 		this.arabicNumbersRemoval = arabicNumbersRemoval;
 		this.nonAlphabeticWordsRemoval = nonAlphabeticWordsRemoval;
 		this.stopWordsRemoval = stopWordsRemoval;
+		this.ambiguousQueryRemoval = ambiguousQueryRemoval; 
 		
 		// Vector-space representation related
 		this.countWords = countWords;
@@ -209,7 +212,7 @@ public class CQExperiment extends BaseExperiment {
 					
 					// 1. 
 					preprocessor.prepare(featureSelectionMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval,
-							nonAlphabeticWordsRemoval, stopWordsRemoval);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval);
 					
 					// 2.
 					preprocessor.buildVectorSpaceDataset(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);

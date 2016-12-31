@@ -100,6 +100,7 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 	boolean arabicNumbersRemoval;
 	boolean nonAlphabeticWordsRemoval;
 	boolean stopWordsRemoval;
+	boolean ambiguousQueryRemoval;
 	
 	// Vector-space representation related
 	private boolean countWords = true;
@@ -125,6 +126,7 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 			boolean arabicNumbersRemoval,
 			boolean nonAlphabeticWordsRemoval,
 			boolean stopWordsRemoval,
+			boolean ambiguousQueryRemoval,
 			boolean countWords,
 			int wordsToKeep,
 			int wordsToKeepInCaseOfInnerPage,
@@ -148,6 +150,7 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 		this.arabicNumbersRemoval = arabicNumbersRemoval;
 		this.nonAlphabeticWordsRemoval = nonAlphabeticWordsRemoval;
 		this.stopWordsRemoval = stopWordsRemoval;
+		this.ambiguousQueryRemoval = ambiguousQueryRemoval;
 		
 		// Vector-space representation related
 		this.countWords = countWords;
@@ -205,7 +208,7 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 					
 					// 1. 
 					preprocessor.prepare(featureSelectionMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval,
-							stopWordsRemoval);
+							stopWordsRemoval, ambiguousQueryRemoval);
 					
 					// 2.
 					preprocessor.buildVectorSpaceDataset(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);

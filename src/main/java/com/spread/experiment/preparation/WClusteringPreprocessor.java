@@ -57,7 +57,8 @@ public class WClusteringPreprocessor {
 			boolean nonArabicWordsRemoval,
 			boolean arabicNumbersRemoval,
 			boolean nonAlphabeticWordsRemoval,
-			boolean stopWordsRemoval) throws Exception {
+			boolean stopWordsRemoval,
+			boolean ambiguousQueryRemoval) throws Exception {
 		
 		if(rawSearchResults == null) {
 			throw new Exception("Raw search results is null");
@@ -69,6 +70,9 @@ public class WClusteringPreprocessor {
 		
 		// Decleare our own preprocessor
 		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+		
+		// Ambiguous query 
+		String wordToRemove = ambiguousQueryRemoval ? spreadArabicPreprocessor.processAmbiguousQuery(this.ambiguousQuery) : null;
 		
 		// 1. Declare the attributes (features) with the class atrribute
 		// Declare the feature vector
@@ -139,7 +143,7 @@ public class WClusteringPreprocessor {
 				// ==============
 				if(!title.isEmpty()) {
 					title = spreadArabicPreprocessor.process(title, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
 					
 					if(title.isEmpty()) {
 						LOGGER.warn("The title becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
@@ -159,7 +163,7 @@ public class WClusteringPreprocessor {
 				// ==============
 				if(!snippet.isEmpty()) {
 					snippet = spreadArabicPreprocessor.process(snippet, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
 					
 					if(snippet.isEmpty()) {
 						LOGGER.warn("The snippet becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
@@ -184,7 +188,7 @@ public class WClusteringPreprocessor {
 				// ==============
 				if(!innerPage.isEmpty()) {
 					innerPage = spreadArabicPreprocessor.process(innerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
-							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+							nonAlphabeticWordsRemoval, stopWordsRemoval, wordToRemove);
 					
 					if(innerPage.isEmpty()) {
 						LOGGER.warn("The innerPage becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());

@@ -28,6 +28,25 @@ public class SpreadArabicPreprocessor {
 	private static final Logger LOGGER = LogManager.getLogger("spreadArabicPreprocessorLogger");
 	
 	/**
+	 * It normalizes the query (Letter normalization only!)
+	 * @param query
+	 * @return
+	 */
+	public String processAmbiguousQuery(String query) {
+		LOGGER.info("Initial query:");
+		LOGGER.info(query);
+		LOGGER.info("==================");
+		
+		query = normalize(query);
+		
+		LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
+		LOGGER.info(query);
+		LOGGER.info("==================");
+		
+		return query;
+	}
+	
+	/**
 	 * It does the following: 
 	 * <br>
 	 * 1- Normalization of ALEF, HAA, YAA, and Tatweel<br>
