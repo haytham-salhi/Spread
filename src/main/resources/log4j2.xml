@@ -59,6 +59,18 @@
        </Filters>
 	</RollingFile>
 	
+	<!--Spread Arabic Preprocessor -->
+	<RollingFile name="arabicPreprocessorFile" fileName="/mnt/tomcat/spread/logs/arabic_preprocessor_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/arabic_preprocessor_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
+   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+       </Filters>
+	</RollingFile>
+	
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
@@ -92,6 +104,12 @@
    	<Logger name="experimentNoLabaled"
 		level="trace" additivity="false">
 		<appender-ref ref="experimentNoLabaledInfoFile" level="trace" />
+	</Logger>
+	
+	<!-- Fetcher logger -->
+   	<Logger name="spreadArabicPreprocessorLogger"
+		level="trace" additivity="false">
+		<appender-ref ref="arabicPreprocessorFile" level="trace" />
 	</Logger>
 	
   </Loggers>

@@ -1,4 +1,4 @@
-package com.spread.srg;
+package com.spread.util;
 
 import static org.junit.Assert.*;
 
@@ -50,47 +50,17 @@ import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
 import com.spread.persistence.rds.repository.MeaningRepository;
 import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
+import com.spread.util.nlp.arabic.SpreadArabicPreprocessor;
 import com.spread.util.nlp.arabic.thirdparty.maha.AraNormalizer;
 import com.spread.util.nlp.arabic.thirdparty.maha.DiacriticsRemover;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-public class NonSpringTest {
+public class UtilTest {
 	
 	
 	@Before
 	public void setUp() throws Exception {
-	}
-	
-	
-	@Test
-	public void testName1() throws Exception {
-		
-		Path path = Paths.get("Results/someFile/ss.txt");
-		
-		new File("Results/someFile/mam/sas").mkdirs();
-		
-		// This creates the file each time is executed
-//		try (BufferedWriter writer = Files.newWriter(path.toFile(), Charset.forName("utf-8"))) {
-//			writer.append("Hello mamss\n");
-//			
-//			writer.append("Hello mam");
-//			FileWriter writer2 = new FileWriter(fileName, append);
-//			
-//		} catch (Exception e) {
-//			System.out.println(e);
-//		}
-		
-		try (BufferedWriter out = new BufferedWriter
-			    (new OutputStreamWriter(new FileOutputStream(path.toFile(), true),"UTF-8"))){
-			
-			out.write("\n7ayyallah");
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		
 	}
 	
 	@Test
@@ -241,10 +211,108 @@ public class NonSpringTest {
 	
 	@Test
 	public void nonArabicWords() throws Exception {
-		  Pattern arabic = Pattern.compile("[^\\p{InArabic}]+"); //""[[]+[0-9]*]
+		  Pattern arabic = Pattern.compile("\\p{InArabic}+"); //""[[]+[0-9]*]
 		  
-		  System.out.println(arabic.matcher("dsd").matches());
+		  System.out.println(arabic.matcher("۵").matches());
 
 	}
+	
+	@Test
+	public void numbersTest() throws Exception {
+		  Pattern arabic = Pattern.compile("[٠-٩]+"); //""[[]+[0-9]*]
+		  
+		  System.out.println(arabic.matcher("۹").matches());
+
+	}
+	
+	
+	@Test
+	public void fullPreproccessingPipelineTest() throws Exception {
+		SpreadArabicPreprocessor preprocessor = new SpreadArabicPreprocessor();
+		
+		//String test = "كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِبْ  شركة أبو أحمد للتوزيت وآلتجارة۩";
+		
+		String test = "كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِبْ ۩ haytham is the best ; / () ۵ ، 23 324 434 2012/12/44 ١";
+		
+		
+		System.out.println("Initial:");
+		System.out.println(test);
+		System.out.println("==================");
+
+		test = preprocessor.normalize(test);
+		
+		System.out.println("After removing tatweel, working on alef wal yaa wal haa:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeDiacritics(test);
+		
+		System.out.println("After removing diacs:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removePunctuations(test);
+		
+		System.out.println("After removing puncuations:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeNonArabicWords(test);
+		
+		System.out.println("After removing non arabic words:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeNumbers(test);
+		
+		System.out.println("After removing numbers:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeNonAlphabeticWords(test);
+		
+		System.out.println("After removing AlphabeticWords:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeStopWords(test);
+		
+		System.out.println("After removing stopWords:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		test = preprocessor.removeSpecificWords(test, "واسجد", "تطعه");
+		
+		System.out.println("After removing specific words:");
+		System.out.println(test);
+		System.out.println("==================");
+
+		test = preprocessor.stemText(test, new ArabicStemmerKhoja());
+		
+		System.out.println("After stemming:");
+		System.out.println(test);
+		System.out.println("==================");
+		
+		
+	}
+	
+	@Test
+	public void testName() throws Exception {
+		String test = "كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِبْ ۩ haytham is the best ; / () ، 23 324 434 2012/12/44";
+
+		for (int i = 0; i < test.length(); i++) {
+			System.out.println(test.charAt(i) + " --> " + Character.isLetter(test.charAt(i)) + " ---> " + Character.isAlphabetic(test.charAt(i)));
+			
+		}
+	}
+	
+	@Test
+	public void dummy() throws Exception {
+		String s = "";
+		
+		System.out.println(s.charAt(0));
+	}
+	
+	
 		
 }

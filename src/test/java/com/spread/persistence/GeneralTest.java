@@ -52,6 +52,14 @@ public class GeneralTest {
 	}
 	
 	@Test
+	public void findByQueryAndSearchEngineWithBasicInfoTest() throws Exception {
+		List<SearchResult> results = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo("عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
+		
+		results.forEach(System.out::println);
+		System.out.println(results.size());
+	}
+	
+	@Test
 	public void SearchResultRepositoryTest() throws Exception {
 		//searchResultRepository.findByQuerySearchEngine_Query_NameAndQuerySearchEngine_SearchEngine_Code("عمان", SearchEngineCode.GOOGLE);
 		List<SearchResult> results = searchResultRepository.findByQueryAndSearchEngine("عمان", SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);

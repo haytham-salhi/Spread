@@ -126,17 +126,17 @@ public class ExperimentTest {
 		// Note that 2, 3, 4 ids the same for getSearchResults and getMeaningsForClearQuerirs of course :)
 		
 		
-		// -------- Preparation
-		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList);
+		// -------- Preparation // TODO I added null after editing, check it if feasible here !
+		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, null);
 		
 		// 1. 
-		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET);
+		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET, new ArabicStemmerKhoja(), false, false, false, false, false, false, false);
 		
 		System.out.println(preprocessor.getTrainingDataSet());
 
 		
 		// 2.
-		preprocessor.preprocessTrainingDataset(new ArabicStemmerKhoja(), true, 1000, false, true);
+		preprocessor.buildVectorSpaceDataset(true, 1000, 2000, false, true, 1, 1, 1);
 		
 		
 		System.out.println(preprocessor.getTrainingDataSet());;

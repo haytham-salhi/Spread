@@ -9,7 +9,8 @@ public enum FeatureSelectionModes {
 	
 	TITLE_ONLY("Title only"), 
 	TITLE_WITH_SNIPPET("Title with snippet"),
-	SNIPPET_ONLY("Snippet only");
+	SNIPPET_ONLY("Snippet only"),
+	INNER_PAGE("Inner page");
 	
 	private String name;
 	

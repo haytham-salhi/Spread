@@ -39,7 +39,7 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 	@Query("update SearchResult s set s.innerPage = :innerPage where s.id = :id")
 	int setInnerPageFor(@Param("innerPage") String innerPage, @Param("id") Integer id);
 	
-	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.title, searchResult.url, searchResult.snippet) "
+	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.id, searchResult.title, searchResult.url, searchResult.snippet) "
 			+ "FROM SearchResult searchResult " 
 			+ "JOIN searchResult.querySearchEngine querySearchEngine "
 			+ "JOIN querySearchEngine.query query "
@@ -57,7 +57,7 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 	List<SearchResult> findByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 	
 	// The same as above but by query id
-	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.title, searchResult.url, searchResult.snippet) "
+	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.id, searchResult.title, searchResult.url, searchResult.snippet) "
 			+ "FROM SearchResult searchResult " 
 			+ "JOIN searchResult.querySearchEngine querySearchEngine "
 			+ "JOIN querySearchEngine.query query "

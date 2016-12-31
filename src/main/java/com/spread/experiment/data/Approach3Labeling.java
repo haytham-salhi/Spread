@@ -35,7 +35,7 @@ public class Approach3Labeling extends Data {
 		List<RawSearchResult> searchResultDtos = new ArrayList<RawSearchResult>();
 		// Converts to the DTO
 		for (SearchResult searchResult : searchResults) {
-			searchResultDtos.add(new RawSearchResult(searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), searchResult.getInnerPage(), meaningName, clazz));
+			searchResultDtos.add(new RawSearchResult(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), searchResult.getInnerPage(), meaningName, clazz));
 		}
 		
 		return searchResultDtos;

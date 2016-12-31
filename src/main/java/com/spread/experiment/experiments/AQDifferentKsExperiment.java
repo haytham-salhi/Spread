@@ -90,11 +90,26 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 	// These are usually neutralized
 	private SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
 	private boolean withInnerPage = false;
+	
+	// Text Preprocessing related 
 	private Stemmer stemmer = new ArabicStemmerKhoja(); 
+	boolean letterNormalization;
+	boolean diacriticsRemoval;
+	boolean puncutationRemoval;
+	boolean nonArabicWordsRemoval;
+	boolean arabicNumbersRemoval;
+	boolean nonAlphabeticWordsRemoval;
+	boolean stopWordsRemoval;
+	
+	// Vector-space representation related
 	private boolean countWords = true;
 	private int wordsToKeep = 1000;
+	int wordsToKeepInCaseOfInnerPage = 2000;
 	private boolean TF = false;
 	private boolean IDF = true;
+	int nGramMinSize = 1; // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
+	int nGramMaxSize = 1; // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
+	int minTermFreqToKeep = 1;
 	
 	
 	public void setVariables(int[] sizes,
@@ -103,20 +118,46 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 			SearchEngineCode searchEngineCode,
 			boolean withInnerPage,
 			Stemmer stemmer,
+			boolean letterNormalization,
+			boolean diacriticsRemoval,
+			boolean puncutationRemoval,
+			boolean nonArabicWordsRemoval,
+			boolean arabicNumbersRemoval,
+			boolean nonAlphabeticWordsRemoval,
+			boolean stopWordsRemoval,
 			boolean countWords,
 			int wordsToKeep,
+			int wordsToKeepInCaseOfInnerPage,
 			boolean tF,
-			boolean iDF) {
+			boolean iDF,
+			int nGramMinSize, // min=1 and max=1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
+			int nGramMaxSize,
+			int minTermFreqToKeep) {
 		this.sizes = sizes;
 		this.featureSelectionModes = featureSelectionModes;
 		this.ks = ks;
 		this.searchEngineCode = searchEngineCode;
 		this.withInnerPage = withInnerPage;
+		
+		// Text Preprocessing related 
 		this.stemmer = stemmer;
+		this.letterNormalization = letterNormalization;
+		this.diacriticsRemoval = diacriticsRemoval;
+		this.puncutationRemoval = puncutationRemoval;
+		this.nonArabicWordsRemoval = nonArabicWordsRemoval;
+		this.arabicNumbersRemoval = arabicNumbersRemoval;
+		this.nonAlphabeticWordsRemoval = nonAlphabeticWordsRemoval;
+		this.stopWordsRemoval = stopWordsRemoval;
+		
+		// Vector-space representation related
 		this.countWords = countWords;
 		this.wordsToKeep = wordsToKeep;
+		this.wordsToKeepInCaseOfInnerPage = wordsToKeepInCaseOfInnerPage;
 		this.TF = tF;
 		this.IDF = iDF;
+		this.nGramMinSize = nGramMinSize;
+		this.nGramMaxSize = nGramMaxSize;
+		this.minTermFreqToKeep = minTermFreqToKeep;
 	}
 	
 	@Override
@@ -160,13 +201,14 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 					
 					// Difference here
 					// -------- Preparation
-					WClusteringPreprocessorNoLabeling preprocessor = new WClusteringPreprocessorNoLabeling(rawSearchResults);
+					WClusteringPreprocessorNoLabeling preprocessor = new WClusteringPreprocessorNoLabeling(rawSearchResults, query.getName());
 					
 					// 1. 
-					preprocessor.prepare(featureSelectionMode);
+					preprocessor.prepare(featureSelectionMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval,
+							stopWordsRemoval);
 					
 					// 2.
-					preprocessor.preprocessTrainingDataset(stemmer, countWords, wordsToKeep, TF, IDF);
+					preprocessor.buildVectorSpaceDataset(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);
 					
 					
 					for (int k : ks) {

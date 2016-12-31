@@ -8,6 +8,8 @@ package com.spread.experiment;
  */
 public class RawSearchResult {
 	
+	// Useful for further investigation
+	private Integer searchResultId;
 	private String title;
 	private String url;
 	private String snippet;
@@ -24,9 +26,10 @@ public class RawSearchResult {
 //		this.snippet = snippet;
 //	}
 	
-	public RawSearchResult(String title, String url, String snippet,
+	public RawSearchResult(Integer searchResultId, String title, String url, String snippet,
 			String innerPage, String meaning, String clazz) {
 		super();
+		this.searchResultId = searchResultId;
 		this.title = title;
 		this.url = url;
 		this.snippet = snippet;
@@ -34,6 +37,15 @@ public class RawSearchResult {
 		this.meaning = meaning;
 		this.clazz = clazz;
 	}
+	
+	public Integer getSearchResultId() {
+		return searchResultId;
+	}
+	
+	public void setSearchResultId(Integer searchResultId) {
+		this.searchResultId = searchResultId;
+	}
+	
 	/**
 	 * @return the title
 	 */
@@ -79,7 +91,7 @@ public class RawSearchResult {
 	 */
 	@Override
 	public String toString() {
-		return "SearchResultDTO [title=" + title + ", url=" + url
+		return "SearchResultDTO [searchResultId=" + searchResultId + ", title=" + title + ", url=" + url
 				+ ", snippet=" + snippet + ", meaning=" + meaning + ", clazz="
 				+ clazz + "]";
 	}

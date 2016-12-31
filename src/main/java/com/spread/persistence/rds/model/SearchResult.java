@@ -57,8 +57,9 @@ public class SearchResult {
 	public SearchResult() {
 	}
 	
-	public SearchResult(String title, String url, String snippet) {
+	public SearchResult(Integer id, String title, String url, String snippet) {
 		super();
+		this.id = id;
 		this.title = title;
 		this.url = url;
 		this.snippet = snippet;

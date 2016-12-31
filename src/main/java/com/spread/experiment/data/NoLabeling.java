@@ -23,7 +23,7 @@ public class NoLabeling extends Data {
 		List<RawSearchResult> searchResultDtos = new ArrayList<RawSearchResult>();
 		// Converts to the DTO
 		for (SearchResult searchResult : searchResults) {
-			searchResultDtos.add(new RawSearchResult(searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), searchResult.getInnerPage(), null, null));
+			searchResultDtos.add(new RawSearchResult(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), searchResult.getInnerPage(), null, null));
 		}
 		
 		return searchResultDtos;

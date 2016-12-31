@@ -1,13 +1,9 @@
 package com.spread.experiment.preparation;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -15,14 +11,14 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SelectedTag;
 import weka.core.stemmers.Stemmer;
-import weka.core.stopwords.MultiStopwords;
-import weka.core.stopwords.StopwordsHandler;
-import weka.core.stopwords.WordsFromFile;
+import weka.core.tokenizers.NGramTokenizer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import com.spread.experiment.RawSearchResult;
-import com.spread.experiment.data.stopwordshandlers.RegExpStopWordHandler;
+import com.spread.experiment.preparation.specialpreprocessing.InnerPagePreprocessor;
+import com.spread.experiment.preparation.specialpreprocessing.TextPreprocesser;
+import com.spread.util.nlp.arabic.SpreadArabicPreprocessor;
 
 /**
  * This class is specific for Clustering preprocessing with no labeling
@@ -38,13 +34,16 @@ public class WClusteringPreprocessorNoLabeling {
 	
 	// These two variables are input to this class
 	private List<RawSearchResult> rawSearchResults;
+	private String ambiguousQuery;
 	
 	// These two variables are modified through this class, and thus they are the output
 	private Instances trainingDataset;
 	
+	private static final Logger LOGGER = LogManager.getLogger("experimentNoLabaled");
 	
-	public WClusteringPreprocessorNoLabeling(List<RawSearchResult> rawSearchResults) {
+	public WClusteringPreprocessorNoLabeling(List<RawSearchResult> rawSearchResults, String ambiguousQuery) {
 		this.rawSearchResults = rawSearchResults;
+		this.ambiguousQuery = ambiguousQuery;
 	}
 	
 	/**
@@ -54,11 +53,22 @@ public class WClusteringPreprocessorNoLabeling {
 	 * @throws Exception
 	 */
 	public void prepare(
-			FeatureSelectionModes featureSelectionModes) throws Exception {
+			FeatureSelectionModes featureSelectionModes, 
+			Stemmer stemmer,
+			boolean letterNormalization,
+			boolean diacriticsRemoval,
+			boolean puncutationRemoval,
+			boolean nonArabicWordsRemoval,
+			boolean arabicNumbersRemoval,
+			boolean nonAlphabeticWordsRemoval,
+			boolean stopWordsRemoval) throws Exception {
 		
 		if(rawSearchResults == null) {
 			throw new Exception("Raw search results is null");
 		}
+		
+		// Decleare our own preprocessor
+		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
 		
 		// 1. Declare the attributes (features) with the class atrribute
 		// Declare the feature vector
@@ -66,6 +76,7 @@ public class WClusteringPreprocessorNoLabeling {
 		// Possible attributes
 		Attribute titleAttribute = null;
 		Attribute snippetAttribute = null;
+		Attribute innerPageAttribute = null;
 		// Add here other attributes as needed
 		
 		
@@ -92,6 +103,12 @@ public class WClusteringPreprocessorNoLabeling {
 			attributes.add(snippetAttribute);
 
 			break;
+		case INNER_PAGE:
+			// Declare the text attr
+			innerPageAttribute = new Attribute("innerPage", (List<String>)null); // The way you define a string attribute See constructor documentation
+			attributes.add(innerPageAttribute);
+			
+			break;
 		default:
 			break;
 		}
@@ -104,6 +121,7 @@ public class WClusteringPreprocessorNoLabeling {
 			
 			String title = rawSearchResult.getTitle();
 			String snippet = rawSearchResult.getSnippet();
+			String innerPage = rawSearchResult.getInnerPage();
 			// Add others as needed
 			// Here we might do some special processing before adding them to the instance for example to parse HTML or smth
 			//innerPage = doSpecialProcess(innerPage);
@@ -113,6 +131,18 @@ public class WClusteringPreprocessorNoLabeling {
 					title = "";
 				}
 				
+				// Preprocessing, pass it if is not empty
+				// ==============
+				if(!title.isEmpty()) {
+					title = spreadArabicPreprocessor.process(title, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
+							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+					
+					if(title.isEmpty()) {
+						LOGGER.warn("The title becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+					}
+				}
+				// =============
+				
 				instance.setValue(titleAttribute, title);
 			}
 			
@@ -121,7 +151,44 @@ public class WClusteringPreprocessorNoLabeling {
 					snippet = "";
 				}
 				
+				// Preprocessing, pass it if is not empty
+				// ==============
+				if(!snippet.isEmpty()) {
+					snippet = spreadArabicPreprocessor.process(snippet, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
+							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+					
+					if(snippet.isEmpty()) {
+						LOGGER.warn("The snippet becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+					}
+				}
+				// =============
+				
 				instance.setValue(snippetAttribute, snippet);
+			}
+			
+			if(innerPageAttribute != null) {
+				if(innerPage == null) {
+					innerPage = "";
+				}
+				
+				// Here you might need to do some preprocessing before adding it to ARFF as an instance. For example using JSOUP
+				// Preprocessing
+				//1.
+				TextPreprocesser innerPagePreprocessor = new InnerPagePreprocessor();
+				innerPage = innerPagePreprocessor.process(innerPage);
+				//2. Preprocessing, pass it if is not empty
+				// ==============
+				if(!innerPage.isEmpty()) {
+					innerPage = spreadArabicPreprocessor.process(innerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, 
+							nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQuery);
+					
+					if(innerPage.isEmpty()) {
+						LOGGER.warn("The innerPage becomes empty after preprocessing for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+					}
+				}
+				// =============
+				
+				instance.setValue(innerPageAttribute, innerPage);
 			}
 			
 			// Add here other attributes as needed 
@@ -136,18 +203,23 @@ public class WClusteringPreprocessorNoLabeling {
 	/**
 	 * This shoud be called after prepare
 	 * 
-	 * @param stemmer The stemmer to be used. Null means no stemming!
 	 * @param countWords If set to true, a count matrix will be used. Otherwise, incidence matrix will be used.
 	 * @param wordsToKeep // Per class if there is a class
 	 * @param TF
 	 * @param IDF
+	 * @param nGramMaxSize the max of n
+	 * @param nGramMinSize the min of n
 	 * @throws Exception
 	 */
-	public void preprocessTrainingDataset(Stemmer stemmer,
+	public void buildVectorSpaceDataset(
 			boolean countWords,
 			int wordsToKeep,
+			int wordsToKeepInCaseOfInnerPage,
 			boolean TF,
-			boolean IDF) throws Exception {
+			boolean IDF,
+			int nGramMinSize,
+			int nGramMaxSize,
+			int minTermFreqToKeep) throws Exception {
 		
 		if(trainingDataset == null) {
 			throw new Exception("Training data set is null. Make sure that you call prepare before this!");
@@ -171,34 +243,28 @@ public class WClusteringPreprocessorNoLabeling {
 		StringToWordVector filter = new StringToWordVector(); // It converts it to SparseData Repesentation :)))
 		
 		filter.setInputFormat(trainingDataset);
-		filter.setStemmer(stemmer);
+		filter.setStemmer(null);
 		filter.setOutputWordCounts(countWords);
-		filter.setWordsToKeep(wordsToKeep);
+		
+		if(trainingDataset.attribute("innerPage") != null) {
+			filter.setWordsToKeep(wordsToKeepInCaseOfInnerPage);
+		} else {
+			filter.setWordsToKeep(wordsToKeep);
+		}
+		
 		filter.setTFTransform(TF);
 		filter.setIDFTransform(IDF);
 		filter.setDoNotOperateOnPerClassBasis(true); // I think it should be like that because we do clustering
 		filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 		filter.setLowerCaseTokens(true);
  		//filter.setTokenizer(value); // default is worktokenizaer (we can use ngrams here)
+		NGramTokenizer nGramTokenizer = new NGramTokenizer();
+		nGramTokenizer.setNGramMinSize(nGramMinSize);
+		nGramTokenizer.setNGramMaxSize(nGramMaxSize);
+		filter.setTokenizer(nGramTokenizer);
 		
-		// Stop words and special filtering
-		// 1. 
-		WordsFromFile wordsFromFile = new WordsFromFile();
-		File file = new File(getClass().getClassLoader().getResource("stopwords.txt").getFile());
-		wordsFromFile.setStopwords(file);
-		wordsFromFile.setDebug(true);
-		
-		// 2. 
-		RegExpStopWordHandler punctuationsStopHnadler = new RegExpStopWordHandler("[\\p{Punct}،؛,]");
-		punctuationsStopHnadler.setDebug(true);
-		
-		// 3. Add them
-		MultiStopwords multiStopwords = new MultiStopwords();
-		multiStopwords.setStopwords(new StopwordsHandler[] {wordsFromFile, punctuationsStopHnadler});
-		
-		// TODO Add my stop word handler to
+		filter.setMinTermFreq(minTermFreqToKeep); // Default is 1, the idea is to prune the dictionary of low frequency terms
 
-		filter.setStopwordsHandler(multiStopwords);
 		
 		trainingDataset = Filter.useFilter(trainingDataset, filter);
 		// Now it is represented in document vector space
