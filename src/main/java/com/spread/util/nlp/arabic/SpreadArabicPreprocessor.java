@@ -73,7 +73,7 @@ public class SpreadArabicPreprocessor {
 			boolean arabicNumbersRemoval,
 			boolean nonAlphabeticWordsRemoval,
 			boolean stopWordsRemoval,
-			String... wordsToRemove) {
+			List<String> wordsToRemove) {
 		LOGGER.info("Initial:");
 		LOGGER.info(text);
 		LOGGER.info("==================");
@@ -134,7 +134,7 @@ public class SpreadArabicPreprocessor {
 			LOGGER.info("==================");
 		}
 		
-		if(wordsToRemove != null && wordsToRemove.length > 0) {
+		if(wordsToRemove != null && wordsToRemove.size() > 0) {
 			text = removeSpecificWords(text, wordsToRemove);
 			
 			LOGGER.info("After removing specific words:");
@@ -450,8 +450,8 @@ public class SpreadArabicPreprocessor {
 	    return result;
 	}
 	
-	public String removeSpecificWords(String text, String... toRemoveWords) {
-		if(toRemoveWords == null || toRemoveWords.length < 1) {
+	public String removeSpecificWords(String text, List<String> toRemoveWords) {
+		if(toRemoveWords == null || toRemoveWords.size() < 1) {
 			return text;
 		}
 		
@@ -462,7 +462,7 @@ public class SpreadArabicPreprocessor {
 			 String ctoken = modifiedText.get(i);
 			 
 			 // If this token is not in toRemove list, then add it
-			 if(!Arrays.asList(toRemoveWords).contains(ctoken)) {
+			 if(!toRemoveWords.contains(ctoken)) {
 				 tokens.add(ctoken);
 			 }
 		}  // for each token in the text

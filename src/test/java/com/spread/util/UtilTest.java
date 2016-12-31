@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -281,7 +282,11 @@ public class UtilTest {
 		System.out.println(test);
 		System.out.println("==================");
 		
-		test = preprocessor.removeSpecificWords(test, "واسجد", "تطعه");
+		ArrayList<String> wordsToRemove = new ArrayList<String>();
+		wordsToRemove.add("واسجد");
+		wordsToRemove.add("تطعه");
+		
+		test = preprocessor.removeSpecificWords(test, wordsToRemove);
 		
 		System.out.println("After removing specific words:");
 		System.out.println(test);
