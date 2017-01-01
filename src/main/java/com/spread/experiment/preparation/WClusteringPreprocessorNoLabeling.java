@@ -135,7 +135,9 @@ public class WClusteringPreprocessorNoLabeling {
 			//innerPage = doSpecialProcess(innerPage);
 			
 			if(titleAttribute != null) {
-				if(title == null) {
+				if(title == null || title.isEmpty()) {
+					LOGGER.warn("The title is null/Empty for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+
 					title = "";
 				}
 				
@@ -155,7 +157,9 @@ public class WClusteringPreprocessorNoLabeling {
 			}
 			
 			if(snippetAttribute != null) {
-				if(snippet == null) {
+				if(snippet == null || snippet.isEmpty()) {
+					LOGGER.warn("The snippet is null/Empty for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+
 					snippet = "";
 				}
 				
@@ -175,7 +179,9 @@ public class WClusteringPreprocessorNoLabeling {
 			}
 			
 			if(innerPageAttribute != null) {
-				if(innerPage == null) {
+				if(innerPage == null || innerPage.isEmpty()) {
+					LOGGER.warn("The innerPage is null/Empty for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+
 					innerPage = "";
 				}
 				
@@ -195,6 +201,13 @@ public class WClusteringPreprocessorNoLabeling {
 					}
 				}
 				// =============
+				
+				// If the innerpage is missing (or empty), set it to processed title and snippet.
+				if(innerPage.isEmpty()) {
+					LOGGER.warn("Replacing the inner page with processed title and snippet for A.Q: " + ambiguousQuery + ", searchResultId=" + rawSearchResult.getSearchResultId());
+
+					innerPage = title + " " + snippet;
+				}
 				
 				instance.setValue(innerPageAttribute, innerPage);
 			}

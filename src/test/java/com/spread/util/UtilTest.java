@@ -60,6 +60,8 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 public class UtilTest {
 	
+	private static final Logger LOGGER = LogManager.getLogger("spreadArabicPreprocessorLogger");
+
 	
 	@Before
 	public void setUp() throws Exception {
@@ -343,8 +345,13 @@ public class UtilTest {
 		
 		ArabicStemmerKhoja stemmer = new ArabicStemmerKhoja();
 		System.out.println(stemmer.stem(token));
+		
+		
 	}
 	
-	
+	@Test
+	public void loggerTest() throws Exception {
+		LOGGER.info("This is me man!!");
+	}
 		
 }
