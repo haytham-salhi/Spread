@@ -52,6 +52,7 @@ import com.spread.persistence.rds.repository.MeaningRepository;
 import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.util.nlp.arabic.SpreadArabicPreprocessor;
+import com.spread.util.nlp.arabic.stemmers.LightStemmer10;
 import com.spread.util.nlp.arabic.thirdparty.maha.AraNormalizer;
 import com.spread.util.nlp.arabic.thirdparty.maha.DiacriticsRemover;
 
@@ -316,6 +317,32 @@ public class UtilTest {
 		String s = "";
 		
 		System.out.println(s.charAt(0));
+	}
+	
+	@Test
+	public void normTest() throws Exception {
+		SpreadArabicPreprocessor preprocessor = new SpreadArabicPreprocessor();
+		
+		String text = "الله أكبر ولله الحمد، القدس في فلسطين آنيي إحمد منة ومنى وعبسية وحميديه";
+		
+		text = preprocessor.normalizeAlif(text);
+		text = preprocessor.normalizeTaa(text);
+		text = preprocessor.normalizeAlifMaqsoura(text);
+		
+		System.out.println(text);
+	}
+	
+	@Test
+	public void stemmerTest() throws Exception {
+
+		//LightStemmer10 lightStemmer = new LightStemmer10();
+		
+		String token = "البلد";
+		
+		//System.out.println(lightStemmer.findStem(token));
+		
+		ArabicStemmerKhoja stemmer = new ArabicStemmerKhoja();
+		System.out.println(stemmer.stem(token));
 	}
 	
 	

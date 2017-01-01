@@ -3,6 +3,7 @@ package com.spread.experiment.experiments;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -25,6 +26,7 @@ import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 import weka.core.stemmers.Stemmer;
 
 import com.google.common.io.Files;
@@ -283,6 +285,9 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 						LOGGER.info("Done for k=" + k);
 					}
 					
+					// Store the training data set just for debugging and investigation
+					storeTrainingDataset(preprocessor.getTrainingDataSet(), getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/size_" + size + "/" + featureSelectionMode.getFileLabel());
+					
 					LOGGER.info("Done for featureSelectionMode=" + featureSelectionMode);
 				}
 				
@@ -311,5 +316,15 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 		LOGGER.info("Total time for experiment 2 (Unlabeled data): " + totalTime/1000 + " secs");
 	}
 	
-	
+	private void storeTrainingDataset(Instances labeledTrainingDataset, String dirPath) {
+		ArffSaver saver = new ArffSaver();
+		saver.setInstances(labeledTrainingDataset);
+		try {
+			saver.setFile(Paths.get(dirPath + "/processed_data.arff").toFile());
+			saver.writeBatch();		
+		} catch (IOException e) {
+			e.printStackTrace();
+			LOGGER.error(e.getMessage());
+		}
+	}
 }

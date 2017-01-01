@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -28,16 +27,32 @@ public class SpreadArabicPreprocessor {
 	private static final Logger LOGGER = LogManager.getLogger("spreadArabicPreprocessorLogger");
 	
 	/**
-	 * It normalizes the query (Letter normalization only!)
+	 * It normalizes the query (Letter normalization with stemmer only!)
 	 * @param query
 	 * @return
 	 */
-	public String processAmbiguousQuery(String query) {
+	public String processAmbiguousQuery(String query, boolean letterNormalization, Stemmer stemmer) {
 		LOGGER.info("Initial query:");
 		LOGGER.info(query);
 		LOGGER.info("==================");
 		
-		query = normalize(query);
+		if(letterNormalization) {
+			query = normalize(query);
+			
+			LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
+			LOGGER.info(query);
+			LOGGER.info("==================");
+		}
+		
+		// No need for other preprocessors because it is a query made by us, so it will not contain punct, diac, etc 
+		
+		if(stemmer != null) {
+			query = stemText(query, stemmer);
+			
+			LOGGER.info("After stemming:");
+			LOGGER.info(query);
+			LOGGER.info("==================");
+		}
 		
 		LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
 		LOGGER.info(query);
@@ -134,14 +149,6 @@ public class SpreadArabicPreprocessor {
 			LOGGER.info("==================");
 		}
 		
-		if(wordsToRemove != null && wordsToRemove.size() > 0) {
-			text = removeSpecificWords(text, wordsToRemove);
-			
-			LOGGER.info("After removing specific words:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
-		}
-		
 		if(stemmer != null) {
 			text = stemText(text, stemmer);
 			
@@ -149,6 +156,15 @@ public class SpreadArabicPreprocessor {
 			LOGGER.info(text);
 			LOGGER.info("==================");
 		}
+		
+		if(wordsToRemove != null && wordsToRemove.size() > 0) {
+			text = removeSpecificWords(text, wordsToRemove);
+			
+			LOGGER.info("After removing specific words:");
+			LOGGER.info(text);
+			LOGGER.info("==================");
+		}
+
 		
 		LOGGER.info("==================");
 		LOGGER.info("==================");
@@ -178,8 +194,8 @@ public class SpreadArabicPreprocessor {
 	    	 // Normalization of taa  marbutah to haa   
 	    	 ctoken=ctoken.replace(Constants.TAA_MARBUTA, Constants.HAA);
 	    	 
-	    	 // Normalization of yaa to dotless yaa
-	    	 ctoken=ctoken.replace(Constants.YAA, Constants.DOTLESS_YAA);
+	    	 // Normalization of dotless yaa to yaa 
+	    	 ctoken=ctoken.replace(Constants.DOTLESS_YAA, Constants.YAA);
 
 	    	 for (int j=0; j<ctoken.length(); j++) {
 	    		 if ( !(Constants.TATWEEL.contains(ctoken.substring(j,j+1))) )
@@ -189,8 +205,176 @@ public class SpreadArabicPreprocessor {
 	             }
 	    	}
 	    	 tokens.add(modifiedWord.toString());
-	     }  
-	        String result = "";
+	    }  
+	    
+	    String result = "";
+	
+	    for (String t: tokens) {
+		    result=result+t+" ";
+	    }
+	    
+	    if(!result.isEmpty()) {
+	    	return result.substring(0, result.length()-1);
+	    } else {
+	      	return result;
+	    }
+	}
+	
+	
+	public String normalizeTatweel(String text) {
+		// Tatweel remover
+		
+		ArrayList<String> tokens = new ArrayList<String>();
+    	StringBuffer modifiedWord = new StringBuffer("");
+	    ArrayList<String> modifiedText = tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+	    
+	    // For each token in the text
+	    for (int i=0;i<modifiedText.size();i++) {
+	    	 modifiedWord.setLength(0);
+	    	 String ctoken=modifiedText.get(i);
+
+	    	 for (int j=0; j<ctoken.length(); j++) {
+	    		 if ( !(Constants.TATWEEL.contains(ctoken.substring(j,j+1))) )
+	                 modifiedWord.append(ctoken.substring(j,j+1));
+	             else {
+	                 
+	             }
+	    	}
+	    	 tokens.add(modifiedWord.toString());
+	    }
+	    
+	    String result = "";
+	
+	    for (String t: tokens) {
+		    result=result+t+" ";
+	    }
+	    
+	    if(!result.isEmpty()) {
+	    	return result.substring(0, result.length()-1);
+	    } else {
+	      	return result;
+	    }
+	}
+	
+	public String normalizeAlif(String text) {
+		// Removes excessive spaces
+		// Letter normalization (ALIF, TAA, AND YAA)
+		// Tatweel remover
+		
+		ArrayList<String> tokens = new ArrayList<String>();
+    	StringBuffer modifiedWord = new StringBuffer("");
+	    ArrayList<String> modifiedText = tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+	    
+	    // For each token in the text
+	    for (int i=0;i<modifiedText.size();i++) {
+	    	 modifiedWord.setLength(0);
+	    	 String ctoken=modifiedText.get(i);
+	    	 // normalization of hamzated alif to bare alif 
+	    	 ctoken=ctoken.replace(Constants.ALIF_HAMZA_ABOVE, Constants.ALIF);
+	    	 ctoken=ctoken.replace(Constants.ALIF_HAMZA_BELOW, Constants.ALIF);
+	    	 ctoken=ctoken.replace(Constants.ALIF_HAMZA_ABOVE, Constants.ALIF);
+	    	 ctoken=ctoken.replace(Constants.ALIF_MADDA, Constants.ALIF);
+	    	 
+	    	 for (int j=0; j<ctoken.length(); j++) {
+	    		 if ( !(Constants.TATWEEL.contains(ctoken.substring(j,j+1))) )
+	                 modifiedWord.append(ctoken.substring(j,j+1));
+	             else {
+	                 
+	             }
+	    	}
+	    	 tokens.add(modifiedWord.toString());
+	    }  
+	    
+	    String result = "";
+	
+	    for (String t: tokens) {
+		    result=result+t+" ";
+	    }
+	    
+	    if(!result.isEmpty()) {
+	    	return result.substring(0, result.length()-1);
+	    } else {
+	      	return result;
+	    }
+	}
+	
+	/**
+	 * Normlaizes taa marbouta
+	 * @param text
+	 * @return
+	 */
+	public String normalizeTaa(String text) {
+		// Removes excessive spaces
+		// Letter normalization (ALIF, TAA, AND YAA)
+		// Tatweel remover
+		
+		ArrayList<String> tokens = new ArrayList<String>();
+    	StringBuffer modifiedWord = new StringBuffer("");
+	    ArrayList<String> modifiedText = tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+	    
+	    // For each token in the text
+	    for (int i=0;i<modifiedText.size();i++) {
+	    	 modifiedWord.setLength(0);
+	    	 String ctoken=modifiedText.get(i);
+	    	 // Normalization of taa  marbutah to haa   
+	    	 ctoken=ctoken.replace(Constants.TAA_MARBUTA, Constants.HAA);
+	    	 
+	    	 for (int j=0; j<ctoken.length(); j++) {
+	    		 if ( !(Constants.TATWEEL.contains(ctoken.substring(j,j+1))) )
+	                 modifiedWord.append(ctoken.substring(j,j+1));
+	             else {
+	                 
+	             }
+	    	}
+	    	 tokens.add(modifiedWord.toString());
+	    }  
+	    
+	    String result = "";
+	
+	    for (String t: tokens) {
+		    result=result+t+" ";
+	    }
+	    
+	    if(!result.isEmpty()) {
+	    	return result.substring(0, result.length()-1);
+	    } else {
+	      	return result;
+	    }
+	}
+	
+	/**
+	 * Normalizes alif maqsora to yaa
+	 * @param text
+	 * @return
+	 */
+	public String normalizeAlifMaqsoura(String text) {
+		// Removes excessive spaces
+		// Letter normalization (ALIF, TAA, AND YAA)
+		// Tatweel remover
+		
+		ArrayList<String> tokens = new ArrayList<String>();
+    	StringBuffer modifiedWord = new StringBuffer("");
+	    ArrayList<String> modifiedText = tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+	    
+	    // For each token in the text
+	    for (int i=0;i<modifiedText.size();i++) {
+	    	 modifiedWord.setLength(0);
+	    	 String ctoken=modifiedText.get(i);
+	    	 
+	    	// Normalization of dotless yaa to yaa 
+	    	 ctoken=ctoken.replace(Constants.DOTLESS_YAA, Constants.YAA);
+
+	    	 for (int j=0; j<ctoken.length(); j++) {
+	    		 if ( !(Constants.TATWEEL.contains(ctoken.substring(j,j+1))) )
+	                 modifiedWord.append(ctoken.substring(j,j+1));
+	             else {
+	                 
+	             }
+	    	}
+	    	 tokens.add(modifiedWord.toString());
+	    }  
+	    
+	    String result = "";
 	
 	    for (String t: tokens) {
 		    result=result+t+" ";

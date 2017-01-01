@@ -90,7 +90,8 @@ public class ExperimentsTest {
 		boolean TF = false;
 		boolean IDF = true;
 		
-		((CQExperiment)cQExperiment).setVariables(sizes, featureSelectionModes, searchEngineCode, withInnerPage, stemmer, false, false, true, false, false, false, true, true, 1000, 1000, false, true, 1, 1, 1);
+		((CQExperiment)cQExperiment).setVariables(sizes, featureSelectionModes, searchEngineCode, withInnerPage, stemmer, false, false, true, false, false, false, true, false, 
+				true, 1000, 1000, false, true, 1, 1, 1);
 		
 		// 3.
 		cQExperiment.run();
@@ -119,7 +120,7 @@ public class ExperimentsTest {
 		boolean TF = false;
 		boolean IDF = true;
 		
-		((AQDifferentKsExperiment)aQDifferentKsExperiment).setVariables(sizes, featureSelectionModes, ks, searchEngineCode, withInnerPage, stemmer, false, false, false, false, false, false, true,
+		((AQDifferentKsExperiment)aQDifferentKsExperiment).setVariables(sizes, featureSelectionModes, ks, searchEngineCode, withInnerPage, stemmer, false, false, true, false, false, false, true, false,
 				true, 1000, 1000, TF, IDF, 1, 1, 1);
 		
 		// 3.
@@ -130,12 +131,12 @@ public class ExperimentsTest {
 	@Test
 	public void secondCQExperimentTest() throws Exception {
 		// 1.
-		cQExperiment.setExperimentName("experiment-approach3-labeling-with-charts"); // The folder name of the experiment
+		cQExperiment.setExperimentName("experiment-approach3-labeling-google"); // The folder name of the experiment
 		cQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
 		
 		// 2.
 		// Variables
-		int[] sizes = {10, 20, 30, 100}; // Mainly we change this in this experiment
+		int[] sizes = {10, 20, 30, 40, 50, 100}; // Mainly we change this in this experiment
 		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
 				FeatureSelectionModes.SNIPPET_ONLY,
 				FeatureSelectionModes.TITLE_WITH_SNIPPET,
@@ -143,7 +144,7 @@ public class ExperimentsTest {
 		
 		// These are usually neutralized
 		SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
-		boolean withInnerPage = true;
+		boolean withInnerPage = true; // Get the inner page
 		
 		// Text preprocessing related
 		Stemmer stemmer = new ArabicStemmerKhoja(); 
@@ -154,6 +155,7 @@ public class ExperimentsTest {
 		boolean arabicNumbersRemoval = true;
 		boolean nonAlphabeticWordsRemoval = true;
 		boolean stopWordsRemoval = true;
+		boolean ambiguousQueryRemoval = true;
 		
 		// Vector-space related (dictionary related)
 		boolean countWords = true;
@@ -167,9 +169,61 @@ public class ExperimentsTest {
 		
 		
 		((CQExperiment)cQExperiment).setVariables(sizes, featureSelectionModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
-				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);
+				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
+				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);
 		
 		// 3.
 		cQExperiment.run();
+	}
+	
+	@Test
+	public void secondAQDifferentKsExperimentTest() throws Exception {
+		
+		// 1.
+		aQDifferentKsExperiment.setExperimentName("experiment-aq-different-ks-with-charts"); // The folder name of the experiment
+		aQDifferentKsExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
+		
+		// 2.
+		// Variables
+		int[] sizes = {10, 20, 30, 40, 50, 100}; // Mainly we change this in this experiment
+		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
+				FeatureSelectionModes.SNIPPET_ONLY,
+				FeatureSelectionModes.TITLE_WITH_SNIPPET,
+				FeatureSelectionModes.INNER_PAGE}; // Mainly we change this in this experiment
+		
+		int[] ks = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+		// These are usually neutralized
+		// These are usually neutralized
+		SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
+		boolean withInnerPage = true; // Get the inner page
+		
+		// Text preprocessing related
+		Stemmer stemmer = new ArabicStemmerKhoja(); 
+		boolean letterNormalization = true;
+		boolean diacriticsRemoval = true;
+		boolean puncutationRemoval = true;
+		boolean nonArabicWordsRemoval = true;
+		boolean arabicNumbersRemoval = true;
+		boolean nonAlphabeticWordsRemoval = true;
+		boolean stopWordsRemoval = true;
+		boolean ambiguousQueryRemoval = true;
+		
+		// Vector-space related (dictionary related)
+		boolean countWords = true;
+		int wordsToKeep = 40;
+		int wordsToKeepInCaseOfInnerPage = 300; // Only applied when detecting innerPage attribute added to training set
+		boolean TF = false;
+		boolean IDF = true;
+		int nGramMinSize = 2; // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
+		int nGramMaxSize = 2; // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
+		int minTermFreqToKeep = 2; // TODO think about it?
+		
+		((AQDifferentKsExperiment)aQDifferentKsExperiment).setVariables(sizes, featureSelectionModes, ks, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
+				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
+				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, nGramMinSize, nGramMaxSize, minTermFreqToKeep);
+		
+		// 3.
+		aQDifferentKsExperiment.run();
+
 	}
 }

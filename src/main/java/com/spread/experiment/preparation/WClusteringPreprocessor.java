@@ -74,7 +74,7 @@ public class WClusteringPreprocessor {
 		// Ambiguous query
 		ArrayList<String> wordsToRemove = new ArrayList<String>();
 		if(ambiguousQueryRemoval) {
-			wordsToRemove.add(spreadArabicPreprocessor.processAmbiguousQuery(this.ambiguousQuery));
+			wordsToRemove.add(spreadArabicPreprocessor.processAmbiguousQuery(this.ambiguousQuery, letterNormalization, stemmer));
 		}
 		
 		// 1. Declare the attributes (features) with the class atrribute

@@ -130,7 +130,7 @@ public class ExperimentTest {
 		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, null);
 		
 		// 1. 
-		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET, new ArabicStemmerKhoja(), false, false, false, false, false, false, false);
+		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET, new ArabicStemmerKhoja(), false, false, false, false, false, false, false, false);
 		
 		System.out.println(preprocessor.getTrainingDataSet());
 
