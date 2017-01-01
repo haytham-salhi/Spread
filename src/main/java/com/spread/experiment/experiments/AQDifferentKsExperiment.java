@@ -277,8 +277,8 @@ public class AQDifferentKsExperiment extends BaseExperiment {
 						counts.keySet().forEach(key -> dataset.setValue("C" + key.intValue() + " = " + counts.get(key), counts.get(key)));
 						
 						JFreeChart pieChart = new SpreadPieChart("Cluster Analysis (k = " + k + ") for " + query.getName(), dataset, true, true, true).getPieChart();
-						int width = 640; 
-						int height = 480;  
+						int width = 800; 
+						int height = 500;  
 						File pieChartFile = new File(dirPath + "/" + "cluster_analysis.png"); 
 						ChartUtilities.saveChartAsPNG(pieChartFile, pieChart, width, height);
 						

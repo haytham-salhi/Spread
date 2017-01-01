@@ -286,8 +286,8 @@ public class CQExperiment extends BaseExperiment {
 			
 			// ============ Persist a chart -------------------- Charts step
 			JFreeChart barChart = new SpreadBarChart(0, 100, query.getName(), "Features", "Percentage of Correctly Clustered Instances (%)", chartDataset, PlotOrientation.VERTICAL, true, true, false).getBarChart();
-			int width = 640; 
-			int height = 480;  
+			int width = 800; 
+			int height = 500;  
 			File barChartFile = new File(getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/" + "evaluation_summary.png"); 
 			ChartUtilities.saveChartAsPNG(barChartFile, barChart, width, height);
 			
