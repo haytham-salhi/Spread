@@ -39,7 +39,7 @@ public class SpreadArabicPreprocessor {
 		if(letterNormalization) {
 			query = normalize(query);
 			
-			LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
+			LOGGER.info("After removing tatweel, normalizing alef wal yaa wal haa:");
 			LOGGER.info(query);
 			LOGGER.info("==================");
 		}
@@ -53,10 +53,6 @@ public class SpreadArabicPreprocessor {
 			LOGGER.info(query);
 			LOGGER.info("==================");
 		}
-		
-		LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
-		LOGGER.info(query);
-		LOGGER.info("==================");
 		
 		return query;
 	}
@@ -96,7 +92,7 @@ public class SpreadArabicPreprocessor {
 		if(letterNormalization) {
 			text = normalize(text);
 			
-			LOGGER.info("After removing tatweel, working on alef wal yaa wal haa:");
+			LOGGER.info("After removing tatweel, normalizing alef wal yaa wal haa:");
 			LOGGER.info(text);
 			LOGGER.info("==================");
 		}
