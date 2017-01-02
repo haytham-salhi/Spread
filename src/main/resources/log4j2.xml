@@ -43,7 +43,6 @@
 		<SizeBasedTriggeringPolicy size="50MB" />
 	<Filters>
         <ThresholdFilter level="TRACE"/>
-   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
        </Filters>
 	</RollingFile>
 	
@@ -55,7 +54,6 @@
 		<SizeBasedTriggeringPolicy size="50MB" />
 	<Filters>
         <ThresholdFilter level="TRACE"/>
-   		<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
        </Filters>
 	</RollingFile>
 	

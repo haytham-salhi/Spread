@@ -97,8 +97,8 @@ public class ChartTest {
 		plot.setRangeGridlinePaint(Color.blue);
 
 		
-		int width = 640; /* Width of the image */
-	    int height = 480; /* Height of the image */ 
+		int width = 800;//640; /* Width of the image */
+	    int height = 500;//480; /* Height of the image */ 
 	    File BarChart = new File( "BarChart.png" );
 	      
 	      ChartUtilities.saveChartAsPNG( BarChart , barChart , width , height );
@@ -117,9 +117,43 @@ public class ChartTest {
 		  dataset.addValue( 40 , new Integer(10) , snippet );
 		  dataset.addValue( 50 , new Integer(10) , title_snippet );
 		
+		  dataset.addValue(10 , new Integer(20) , title );
+		  dataset.addValue(12 , new Integer(20) , snippet );
+		  dataset.addValue( 11 , new Integer(20) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(30) , title );
+		  dataset.addValue(12 , new Integer(30) , snippet );
+		  dataset.addValue( 11 , new Integer(30) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(40) , title );
+		  dataset.addValue(12 , new Integer(40) , snippet );
+		  dataset.addValue( 11 , new Integer(40) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(50) , title );
+		  dataset.addValue(12 , new Integer(50) , snippet );
+		  dataset.addValue( 11 , new Integer(50) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(60) , title );
+		  dataset.addValue(12 , new Integer(60) , snippet );
+		  dataset.addValue( 11 , new Integer(60) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(70) , title );
+		  dataset.addValue(12 , new Integer(70) , snippet );
+		  dataset.addValue( 11 , new Integer(70) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(80) , title );
+		  dataset.addValue(12 , new Integer(80) , snippet );
+		  dataset.addValue( 11 , new Integer(80) , title_snippet );
+		  
+		  dataset.addValue(10 , new Integer(90) , title );
+		  dataset.addValue(12 , new Integer(90) , snippet );
+		  dataset.addValue( 11 , new Integer(90) , title_snippet );
+		  
+		  
 		  dataset.addValue(10 , new Integer(100) , title );
 		  dataset.addValue(12 , new Integer(100) , snippet );
 		  dataset.addValue( 11 , new Integer(100) , title_snippet );
+		  
 		  
 		  return dataset;
 	}

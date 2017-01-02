@@ -136,7 +136,7 @@ public class ExperimentsTest {
 		
 		// 2.
 		// Variables
-		int[] sizes = {10, 20, 30, 40, 50, 100}; // Mainly we change this in this experiment
+		int[] sizes = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}; // Mainly we change this in this experiment
 		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
 				FeatureSelectionModes.SNIPPET_ONLY,
 				FeatureSelectionModes.TITLE_WITH_SNIPPET,
@@ -161,7 +161,7 @@ public class ExperimentsTest {
 		boolean countWords = true;
 		int wordsToKeep = 40;
 		int wordsToKeepInCaseOfInnerPage = 300; // Only applied when detecting innerPage attribute added to training set
-		boolean TF = false;
+		boolean TF = false; // damping
 		boolean IDF = true;
 		int nGramMinSize = 2; // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
 		int nGramMaxSize = 2; // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
@@ -185,7 +185,7 @@ public class ExperimentsTest {
 		
 		// 2.
 		// Variables
-		int[] sizes = {10, 20, 30, 40, 50, 100}; // Mainly we change this in this experiment
+		int[] sizes = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}; // Mainly we change this in this experiment
 		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
 				FeatureSelectionModes.SNIPPET_ONLY,
 				FeatureSelectionModes.TITLE_WITH_SNIPPET,
