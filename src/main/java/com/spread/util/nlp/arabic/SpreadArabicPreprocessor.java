@@ -85,85 +85,85 @@ public class SpreadArabicPreprocessor {
 			boolean nonAlphabeticWordsRemoval,
 			boolean stopWordsRemoval,
 			List<String> wordsToRemove) {
-		LOGGER.info("Initial:");
-		LOGGER.info(text);
-		LOGGER.info("==================");
+		//LOGGER.info("Initial:");
+		//LOGGER.info(text);
+		//LOGGER.info("==================");
 		
 		if(letterNormalization) {
 			text = normalize(text);
 			
-			LOGGER.info("After removing tatweel, normalizing alef wal yaa wal haa:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing tatweel, normalizing alef wal yaa wal haa:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(diacriticsRemoval) {
 			text = removeDiacritics(text);
 			
-			LOGGER.info("After removing diacs:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing diacs:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(puncutationRemoval) {
 			text = removePunctuations(text);
 			
-			LOGGER.info("After removing puncuations:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing puncuations:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(nonArabicWordsRemoval) {
 			text = removeNonArabicWords(text);
 			
-			LOGGER.info("After removing non arabic words:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing non arabic words:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 
 		if(arabicNumbersRemoval) {
 			text = removeNumbers(text);
 			
-			LOGGER.info("After removing numbers:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing numbers:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(nonAlphabeticWordsRemoval) {
 			text = removeNonAlphabeticWords(text);
 			
-			LOGGER.info("After removing AlphabeticWords:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing AlphabeticWords:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 
 		if(stopWordsRemoval) {
 			text = removeStopWords(text);
 			
-			LOGGER.info("After removing stopWords:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing stopWords:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(stemmer != null) {
 			text = stemText(text, stemmer);
 			
-			LOGGER.info("After stemming:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After stemming:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 		
 		if(wordsToRemove != null && wordsToRemove.size() > 0) {
 			text = removeSpecificWords(text, wordsToRemove);
 			
-			LOGGER.info("After removing specific words:");
-			LOGGER.info(text);
-			LOGGER.info("==================");
+			//LOGGER.info("After removing specific words:");
+			//LOGGER.info(text);
+			//LOGGER.info("==================");
 		}
 
 		
-		LOGGER.info("==================");
-		LOGGER.info("==================");
+		//LOGGER.info("==================");
+		//LOGGER.info("==================");
 		
 		return text;
 	}
