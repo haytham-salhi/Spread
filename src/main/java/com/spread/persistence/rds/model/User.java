@@ -29,6 +29,12 @@ public class User {
 	@Column(name = "name")
 	private String name;
 	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "ip_address")
+	private String ipAddress;
+	
 	@CreationTimestamp
 	@Column(name = "created_date")
 	private Date createdDate;
@@ -36,12 +42,15 @@ public class User {
 	
 	public User() {
 	}
-
-	public User(String sessionId, String name) {
+	
+	public User(String sessionId, String name, String email, String ipAddress) {
 		super();
 		this.sessionId = sessionId;
 		this.name = name;
+		this.email = email;
+		this.ipAddress = ipAddress;
 	}
+
 
 	/**
 	 * @return the id
@@ -97,6 +106,34 @@ public class User {
 	 */
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * @return the ipAddress
+	 */
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	/**
+	 * @param ipAddress the ipAddress to set
+	 */
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 
 	/* (non-Javadoc)

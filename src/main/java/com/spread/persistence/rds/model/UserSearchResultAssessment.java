@@ -15,17 +15,16 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.spread.persistence.rds.model.enums.LabelingType;
+import com.spread.frontcontrollers.labeling.model.YesNoAnswer;
 
 /**
  * 
  * @author Haytham Salhi
  *
  */
-@Deprecated
 @Entity
-@Table(name = "user_labeling")
-public class UserLabeling {
+@Table(name = "user_search_result_assessment")
+public class UserSearchResultAssessment {
 	
 	@Id
 	@GeneratedValue
@@ -39,29 +38,23 @@ public class UserLabeling {
 	@JoinColumn(name = "search_result_id", nullable = false)
 	private SearchResult searchResult;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "meaning_id", nullable = false)
-	private Meaning meaning;
-	
-	// Just to indicate that the user assign this result more than one meaning so you will have for example (user_id=1;result_id=1;meaning_id=2) and (user_id=1;result_id=1;meaning_id=3)
 	@Enumerated(EnumType.STRING)
-	@Column(name = "labeling_type", columnDefinition = "enum('SINGLE','MULTI')", nullable = false)
-	private LabelingType labelingType;
+	@Column(name = "is_relevant", columnDefinition = "enum('YES','NO')", nullable = false)
+	private YesNoAnswer isRelevant;
 	
 	@CreationTimestamp
 	@Column(name = "created_date")
 	private Date createdDate;
 	
-	public UserLabeling() {
+	public UserSearchResultAssessment() {
 	}
 
-	public UserLabeling(User user, SearchResult searchResult, Meaning meaning,
-			LabelingType labelingType) {
+	public UserSearchResultAssessment(User user, SearchResult searchResult,
+			YesNoAnswer isRelevant) {
 		super();
 		this.user = user;
 		this.searchResult = searchResult;
-		this.meaning = meaning;
-		this.labelingType = labelingType;
+		this.isRelevant = isRelevant;
 	}
 
 	/**
@@ -107,31 +100,17 @@ public class UserLabeling {
 	}
 
 	/**
-	 * @return the meaning
+	 * @return the isRelevant
 	 */
-	public Meaning getMeaning() {
-		return meaning;
+	public YesNoAnswer getIsRelevant() {
+		return isRelevant;
 	}
 
 	/**
-	 * @param meaning the meaning to set
+	 * @param isRelevant the isRelevant to set
 	 */
-	public void setMeaning(Meaning meaning) {
-		this.meaning = meaning;
-	}
-
-	/**
-	 * @return the labelingType
-	 */
-	public LabelingType getLabelingType() {
-		return labelingType;
-	}
-
-	/**
-	 * @param labelingType the labelingType to set
-	 */
-	public void setLabelingType(LabelingType labelingType) {
-		this.labelingType = labelingType;
+	public void setIsRelevant(YesNoAnswer isRelevant) {
+		this.isRelevant = isRelevant;
 	}
 
 	/**
@@ -147,13 +126,5 @@ public class UserLabeling {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "UserLabeling [id=" + id + ", labelingType=" + labelingType
-				+ ", createdDate=" + createdDate + "]";
-	}
+	
 }

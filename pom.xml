@@ -275,6 +275,12 @@
 		    <version>1.0.19</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>de.sven-jacobs</groupId>
+		    <artifactId>loremipsum</artifactId>
+		    <version>1.0</version>
+		</dependency>
+		
 		<!-- Language detctor API (for a long text not per words) -->
 <!-- 		<dependency> -->
 <!-- 		    <groupId>com.optimaize.languagedetector</groupId> -->

@@ -26,11 +26,11 @@
 <!-- 	</ul> -->
 	<div class="main-div">
 		<table class="table" border="0">
-			<c:forEach var="query" items="${ambiguousQueries}">
+			<c:forEach var="queryView" items="${queryViews}">
 				<tr>
-					<c:url value="/labeling/query/${query.id}" var="queryUrl" />
-					<td id="${query.id}"><a href="${queryUrl}">${query.name}</a></td>
-					<td>Status</td>
+					<c:url value="/labeling/query/${queryView.query.id}" var="queryUrl" />
+					<td id="${queryView.query.id}"><a href="${queryUrl}">${queryView.query.name}</a></td>
+					<td>${queryView.respondents}</td>
 				</tr>
 		    </c:forEach>
 		</table>

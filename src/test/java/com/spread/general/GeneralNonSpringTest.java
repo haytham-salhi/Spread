@@ -37,6 +37,7 @@ import com.opencsv.CSVReader;
 import com.spread.config.RootConfig;
 import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.frontcontrollers.HelloController;
+import com.spread.persistence.rds.model.enums.SearchEngineCode;
 
 public class GeneralNonSpringTest {
 	
@@ -111,5 +112,12 @@ public class GeneralNonSpringTest {
 		while ((line = reader.readLine()) != null)
 			System.out.println(line);	
 		}
+	
+	@Test
+	public void testEnum() throws Exception {
+		String s = "Google";
+		
+		System.out.println(SearchEngineCode.valueOf("GOsOGLE"));
+	}
 	
 }

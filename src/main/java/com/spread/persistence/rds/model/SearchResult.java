@@ -57,6 +57,11 @@ public class SearchResult {
 	public SearchResult() {
 	}
 	
+	public SearchResult(Integer id) {
+		super();
+		this.id = id;
+	}
+
 	public SearchResult(Integer id, String title, String url, String snippet) {
 		super();
 		this.id = id;

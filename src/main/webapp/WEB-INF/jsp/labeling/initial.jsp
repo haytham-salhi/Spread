@@ -25,11 +25,15 @@
 
 	<div class="main-div">
 <%-- 		<form action="selectQuery" method="get"> --%> <!-- This form or this both wroks-->
-		<form:form action="selectQuery" method="get">
+		<form:form servletRelativeAction="/labeling/selectQuery" method="post">
 			<table border="0" class="form-group">
 				 <tr>
 				 	<td><label>Your name:</label></td>
 				 	<td><input class="form-control" type="text" name="personName" placeholder="e.g., Ahmad"/></td>
+				 </tr>
+				 <tr>
+				 	<td><label>Your email:</label></td>
+				 	<td><input class="form-control" type="text" name="email" placeholder="(Optional)"/></td>
 				 </tr>
 				<tr>
 				 	<td><label>Search engine:</label></td>

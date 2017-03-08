@@ -26,6 +26,7 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
+import com.spread.persistence.rds.repository.UserSearchResultAssessmentRepository;
 
 @ContextConfiguration(classes = { RootConfig.class })
 @WebAppConfiguration
@@ -45,6 +46,9 @@ public class GeneralTest {
 	
 	@Autowired
 	private SearchEngineRepository searchEngineRepository;
+	
+	@Autowired
+	private UserSearchResultAssessmentRepository userSearchResultAssessmentRepository;
 
 	
 	@Before
@@ -110,5 +114,10 @@ public class GeneralTest {
 		SearchEngine se = searchEngineRepository.findByCodeAndLanguageAndLocation(SearchEngineCode.GOOGLE, SearchEngineLanguage.AR, Location.PALESTINE);
 		
 		System.out.println(se);
+	}
+	
+	@Test
+	public void countRespondentsByQueryIdTest() throws Exception {
+		System.out.println(userSearchResultAssessmentRepository.countRespondentsByQueryId(3, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR));
 	}
 }
