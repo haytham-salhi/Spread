@@ -1,6 +1,5 @@
 package com.spread.frontcontrollers.labeling.model;
 
-import javax.validation.constraints.NotNull;
 
 import com.spread.persistence.rds.model.Query;
 

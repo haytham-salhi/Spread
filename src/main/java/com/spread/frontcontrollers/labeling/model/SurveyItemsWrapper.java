@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Size;
 
 public class SurveyItemsWrapper {
 	
 	@Valid
 	private List<SurveyItem> surveyItems = new ArrayList<SurveyItem>();
+	private String queryName;
 	
 	public SurveyItemsWrapper() {
 		// TODO Auto-generated constructor stub
@@ -32,5 +32,19 @@ public class SurveyItemsWrapper {
 	 */
 	public void setSurveyItems(List<SurveyItem> surveyItems) {
 		this.surveyItems = surveyItems;
+	}
+
+	/**
+	 * @return the queryName
+	 */
+	public String getQueryName() {
+		return queryName;
+	}
+
+	/**
+	 * @param queryName the queryName to set
+	 */
+	public void setQueryName(String queryName) {
+		this.queryName = queryName;
 	}
 }

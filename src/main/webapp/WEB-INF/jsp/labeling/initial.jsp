@@ -11,8 +11,13 @@
 	<title>Labeling</title>
 	<style type="text/css">
 		.main-div {
-    		padding-top: 5%;
-    		padding-left: 5%; 
+/*     		padding-top: 5%; */
+/*     		padding-left: 5%; */
+    		margin: auto;
+            width: 30%;
+            border: 2px solid;
+            border-color: #6495ED;	
+            padding: 10px; 
 		}
 	</style>
 </head>
@@ -22,6 +27,31 @@
 <%-- 			<li class="list-group-item">${query.name}</li> --%>
 <%-- 	    </c:forEach> --%>
 <!-- 	</ul> -->
+
+	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
+		<div class="row" style="border: 1px solid;">
+			<div class="col-md-6">
+				<p style="color: white; text-align: justify;">Hello, this interface is a part of <code>spread</code> framework, an experimental framework being developed as a part of master Thesis at Birzeit University for search results disambiguation, and represents the human relevance assessmenet interface. Its purpose is to let researchers assess the relevance of search results returned by search engines. 
+
+				<br /><br />
+				For any further information or if you find any bug/issue, please drop me an email at hsalhi89@gmail.com. I am happy to help in anyway that I can.
+
+				</p>
+			</div>
+			
+			<div class="col-md-6" style="text-align: justify; direction: rtl;">
+				<p style="color: white;">  مرحبا, هذه الواجهة هي جزء من نظام <code>سبريد</code>، والذي يُطور كجزء من رسالة ماجيستير في جامعة بيرزيت  بهدف توضيح نتائج البحث. تُمثل هذه الواجهة الواجهة الرئيسية لتقييم نتائج البحث ذات العلاقة, والتي تساعد الباحثين على تقييم نتائج البحث المسترجعة من محركات البحث, لأغراض تقييم طرق توضيح نتائج البحث.
+
+			<br /><br /> <br /><br />
+ للمزيد من المعلومات أو اذا تم ايجاد اي خلل فني, الرجاء التواصل على الايميل التالي: hsalhi89@gmail.com. سأكون سعيد للرد على اية استفسارات.
+				</p>
+			</div>
+
+		</div>
+
+	</div>
+
+	<br />
 
 	<div class="main-div">
 <%-- 		<form action="selectQuery" method="get"> --%> <!-- This form or this both wroks-->

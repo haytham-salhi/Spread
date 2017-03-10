@@ -21,9 +21,21 @@
 	</style>
 </head>
 <body>
-	<h1>Hello ${sessionScope.personName}. You have selected to work on ${sessionScope.searchEngine}</h1>
-	
-	<h2>Please fill the following</h2>
+	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
+		<div class="row" >
+			<h1 style="color: white">Hello, ${sessionScope.personName}.</h1>
+		</div>
+
+		<div class="row">
+			<h4 style="color: white">For each search result below, please indicate whether it is <b>relevant</b> to the query or not. Finally, click on <b>Submit</b> at the end of this page.</h4>
+		</div>
+		
+		<h4 style="color: white"><b>Please</b> do NOT press the button Submit twice; uploading your response may take time!</h4>
+		
+		<c:if test="${error}">
+			<h4 style="color: maroon">Some results are not filled below.</h4>
+		</c:if>
+	</div>
 <!-- 	<ul class="list-group"> -->
 <%-- 		<c:forEach var="query" items="${ambiguousQueries}"> --%>
 <%-- 			<li class="list-group-item">${query.name}</li> --%>
@@ -32,9 +44,10 @@
 	
 	<div align="center" class="main-div">
 		<form:form action="submit" method="post" modelAttribute="surveyItemsWrapper">
-			<table border="0" class="form-group">
+			<table border="0" class="form-group table-striped">
                 <tr>
-                    <td colspan="2" align="center"><h2>Query Results Intersection Explorer</h2></td>
+                	<form:hidden path="queryName"/>
+                    <td colspan="2" align="center"><h2>Search Results of <code>${surveyItemsWrapper.queryName}</code></h2></td>
                 </tr>
                 
                 <tr style="border-bottom:1pt solid black;">
@@ -72,7 +85,7 @@
 				</c:forEach>
                 
                 <tr>
-                    <td colspan="2" align="right"><button type="submit" class="btn btn-default">Explore!</button></td>
+                    <td colspan="2" align="right"><button type="submit" class="btn btn-default">Submit!</button></td>
                 </tr>
             </table>
 		</form:form>

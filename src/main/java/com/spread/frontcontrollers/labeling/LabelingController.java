@@ -117,7 +117,7 @@ public class LabelingController implements Serializable {
 		return "labeling/initial";
 	}
 	
-	// Flow step 2
+	// Intermediate Step
 	@RequestMapping(value = "/selectQuery", method = RequestMethod.POST)
 	public String selectQuery(HttpServletRequest request,
 			Model model,
@@ -141,7 +141,7 @@ public class LabelingController implements Serializable {
 		return "redirect:/labeling/selectQuery";
 	}
 	
-	// Intermediate Step
+	// Flow step 2
 	@RequestMapping(value = "/selectQuery", method = RequestMethod.GET)
 	public String selectQueryGet(HttpServletRequest request,
 			Model model,
@@ -177,6 +177,7 @@ public class LabelingController implements Serializable {
 		
 		List<QueryView> queryViews = new ArrayList<QueryView>();
 		for (Query query : ambiguousQueries) {
+			
 			queryViews.add(new QueryView(query, userSearchResultAssessmentRepository.countRespondentsByQueryId(query.getId(), code, Location.PALESTINE, SearchEngineLanguage.AR)));
 		}
 		
@@ -233,6 +234,10 @@ public class LabelingController implements Serializable {
 		for (SearchResult searchResult : searchItems) {
 			surveyItemsWrapper.getSurveyItems().add(new SurveyItem(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), null));
 		}
+		
+		// Get the query name
+		Query query = queryRepository.findOne(id);
+		surveyItemsWrapper.setQueryName(query.getName());
 
 		// 3. Set the model
 		model.addAttribute("surveyItemsWrapper", surveyItemsWrapper);
@@ -250,7 +255,7 @@ public class LabelingController implements Serializable {
 		if(result.hasErrors()) {
 			logger.info(request.getRemoteAddr() + " has errors in results");
 
-			
+			model.addAttribute("error", true);
 			model.addAttribute("choices", YesNoAnswer.values());
 			
 			return "labeling/fill-survey";

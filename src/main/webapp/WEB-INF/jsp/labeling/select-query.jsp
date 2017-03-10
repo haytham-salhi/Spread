@@ -16,9 +16,17 @@
 	</style>
 </head>
 <body>
-	<h1>Hello ${sessionScope.personName}. You have selected to work on ${sessionScope.searchEngine}</h1>
+	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
+		<div class="row" >
+			<h1 style="color: white">Hello, ${sessionScope.personName}.</h1>
+		</div>
+
+		<div class="row">
+			<h2 style="color: white">Please select a query from the list below to start assessing.</h2>
+			<h5 style="color: white"><b>Hint:</b> Select a query with a small number of assessments.</h5>
+		</div>
+	</div>
 	
-	<h2>Please select a query:</h2>
 <!-- 	<ul class="list-group"> -->
 <%-- 		<c:forEach var="query" items="${ambiguousQueries}"> --%>
 <%-- 			<li class="list-group-item">${query.name}</li> --%>
