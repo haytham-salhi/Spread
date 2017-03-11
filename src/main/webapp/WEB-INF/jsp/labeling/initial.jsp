@@ -8,7 +8,7 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Labeling</title>
+	<title>Spread: Human Relevance Assessment</title>
 	<style type="text/css">
 		.main-div {
 /*     		padding-top: 5%; */
@@ -55,7 +55,7 @@
 
 	<div class="main-div">
 <%-- 		<form action="selectQuery" method="get"> --%> <!-- This form or this both wroks-->
-		<form:form servletRelativeAction="/labeling/selectQuery" method="post">
+		<form:form servletRelativeAction="/assessment/selectQuery" method="post">
 			<table border="0" class="form-group">
 				 <tr>
 				 	<td><label>Your name:</label></td>

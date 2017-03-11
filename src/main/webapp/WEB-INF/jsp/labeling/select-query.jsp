@@ -7,7 +7,7 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Labeling</title>
+	<title>Spread: Human Relevance Assessment</title>
 	<style type="text/css">
 		.main-div {
     		width: 50%;
@@ -36,7 +36,7 @@
 		<table class="table" border="0">
 			<c:forEach var="queryView" items="${queryViews}">
 				<tr>
-					<c:url value="/labeling/query/${queryView.query.id}" var="queryUrl" />
+					<c:url value="/assessment/query/${queryView.query.id}" var="queryUrl" />
 					<td id="${queryView.query.id}"><a href="${queryUrl}">${queryView.query.name}</a></td>
 					<td>${queryView.respondents}</td>
 				</tr>

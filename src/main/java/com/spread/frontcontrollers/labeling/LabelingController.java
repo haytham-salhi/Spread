@@ -47,7 +47,7 @@ import de.svenjacobs.loremipsum.LoremIpsum;
  */
 @Controller
 @Scope("session")
-@RequestMapping(value = "/labeling")
+@RequestMapping(value = "/assessment")
 public class LabelingController implements Serializable {
 	
 	/***********************
@@ -109,12 +109,12 @@ public class LabelingController implements Serializable {
 			@SessionAttribute(required = false, name = "searchEngine") String searchEngine) {
 		
 		if(personName != null && searchEngine != null) {
-			return "redirect:/labeling/selectQuery";
+			return "redirect:/assessment/selectQuery";
 		}
 		
 		logger.info(request.getRemoteAddr() + " accessed initialView!");
 		
-		return "labeling/initial";
+		return "assessment/initial";
 	}
 	
 	// Intermediate Step
@@ -138,7 +138,7 @@ public class LabelingController implements Serializable {
 			request.getSession().setAttribute("searchEngine", searchEngineName);
 		}
 		
-		return "redirect:/labeling/selectQuery";
+		return "redirect:/assessment/selectQuery";
 	}
 	
 	// Flow step 2
@@ -155,7 +155,7 @@ public class LabelingController implements Serializable {
 		// But I did this because I want to add them in the session
 		
 		if(request.getSession().getAttribute("personName") == null) {
-			return "redirect:/labeling"; 
+			return "redirect:/assessment"; 
 		}
 		
 		String searchEngine = (String) request.getSession().getAttribute("searchEngine");
@@ -163,17 +163,17 @@ public class LabelingController implements Serializable {
 		SearchEngineCode code = null;
 		// Validate
 		if(searchEngine == null) {
-			return "redirect:/labeling";  
+			return "redirect:/assessment";  
 		} else {
 			try {
 				code = SearchEngineCode.valueOf(searchEngine.toUpperCase());
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
-				return "labeling/initial"; 
+				return "assessment/initial"; 
 			}
 		}
 		
-		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguous(false);
+		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true);
 		
 		List<QueryView> queryViews = new ArrayList<QueryView>();
 		for (Query query : ambiguousQueries) {
@@ -183,7 +183,7 @@ public class LabelingController implements Serializable {
 		
 		model.addAttribute("queryViews", queryViews);
 		
-		return "labeling/select-query";
+		return "assessment/select-query";
 	}
 	
 	
@@ -211,12 +211,12 @@ public class LabelingController implements Serializable {
 		
 		SearchEngineCode code = null;
 		if(searchEngineString == null) {
-			return "labeling/initial";  
+			return "assessment/initial";  
 		} else {
 			try {
 				code = SearchEngineCode.valueOf(searchEngineString.toUpperCase());
 			} catch (IllegalArgumentException e) {
-				return "labeling/initial"; 
+				return "assessment/initial"; 
 			}
 		}
 		
@@ -243,7 +243,7 @@ public class LabelingController implements Serializable {
 		model.addAttribute("surveyItemsWrapper", surveyItemsWrapper);
 		model.addAttribute("choices", YesNoAnswer.values());
 		
-		return "labeling/fill-survey";
+		return "assessment/fill-survey";
 	}
 	
 	// Flow step 4
@@ -258,7 +258,7 @@ public class LabelingController implements Serializable {
 			model.addAttribute("error", true);
 			model.addAttribute("choices", YesNoAnswer.values());
 			
-			return "labeling/fill-survey";
+			return "assessment/fill-survey";
 		} else {
 			logger.info(request.getRemoteAddr() + " has correct results");
 			
@@ -283,6 +283,6 @@ public class LabelingController implements Serializable {
 		
 		logger.info(request.getRemoteAddr() + " accessed afterFilling!");
 		
-		return "labeling/thanks";
+		return "assessment/thanks";
 	}
 }

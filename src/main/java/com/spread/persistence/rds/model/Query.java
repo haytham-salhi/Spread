@@ -47,6 +47,9 @@ public class Query {
 	@JoinColumn(name = "parent_id")
 	private Query parent;
 	
+	@Column(name = "is_official_data_set")
+	private Boolean isOfficial;
+	
 	public Query() {
 	}
 
@@ -143,6 +146,20 @@ public class Query {
 	 */
 	public void setParent(Query parent) {
 		this.parent = parent;
+	}
+	
+	/**
+	 * @return the isOfficial
+	 */
+	public Boolean getIsOfficial() {
+		return isOfficial;
+	}
+
+	/**
+	 * @param isOfficial the isOfficial to set
+	 */
+	public void setIsOfficial(Boolean isOfficial) {
+		this.isOfficial = isOfficial;
 	}
 
 	/* (non-Javadoc)

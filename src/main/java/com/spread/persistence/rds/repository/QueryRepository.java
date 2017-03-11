@@ -16,5 +16,7 @@ public interface QueryRepository extends CrudRepository<Query, Integer> {
 	
 	public Query findById(Integer id);
 	
-	public List<Query> findByIsAmbiguous(boolean isAmbiguous);
+	public List<Query> findByIsAmbiguous(Boolean isAmbiguous);
+	
+	public List<Query> findByIsAmbiguousAndIsOfficial(Boolean isAmbiguous, Boolean isOfficial);
 }
