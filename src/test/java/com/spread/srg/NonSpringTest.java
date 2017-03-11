@@ -229,13 +229,13 @@ public class NonSpringTest {
 		
 		System.out.println(stemmer.stem("وَاقْتَرِبْ يا شجاع"));
 		
-		AraNormalizer norm = new AraNormalizer();
+//		AraNormalizer norm = new AraNormalizer();
 		
-		System.out.println(norm.normalize(test2));
+//		System.out.println(norm.normalize(test2));
 		
-		DiacriticsRemover diacriticsRemover = new DiacriticsRemover();
+//		DiacriticsRemover diacriticsRemover = new DiacriticsRemover();
 		
-		System.out.println(diacriticsRemover.removeDiacritics(norm.normalize(test1)));
+//		System.out.println(diacriticsRemover.removeDiacritics(norm.normalize(test1)));
 		
 	}
 	
