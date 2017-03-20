@@ -65,4 +65,22 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "WHERE query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language")
 	List<SearchResult> findByQueryAndSearchEngineWithBasicInfo(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 	
+	// this shoud not be here
+	// To understand this query, see query # 4 and 5 in assessement.sql
+	@Query("SELECT userSearchResultAssessment.searchResult "
+			+ "FROM UserSearchResultAssessment userSearchResultAssessment "
+			+ "JOIN userSearchResultAssessment.searchResult searchResult" 
+			+ ", UserSearchResultAssessment ua2 " // cross join
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "WHERE ua2.searchResult.id = userSearchResultAssessment.searchResult.id " // cross join
+			+ "AND query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language "
+			+ "AND userSearchResultAssessment.user.id != ua2.user.id "
+			+ "AND userSearchResultAssessment.isRelevant = ua2.isRelevant "
+			+ "AND userSearchResultAssessment.user.id = 1 AND ua2.user.id = 2 "
+			+ "AND userSearchResultAssessment.isRelevant = 'YES'")
+	List<SearchResult> findAgreedRelevantByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	
+	
 }

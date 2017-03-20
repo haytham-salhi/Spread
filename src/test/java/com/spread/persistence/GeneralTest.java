@@ -18,6 +18,7 @@ import com.spread.config.RootConfig;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.SearchEngine;
 import com.spread.persistence.rds.model.SearchResult;
+import com.spread.persistence.rds.model.UserSearchResultAssessment;
 import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
@@ -119,5 +120,12 @@ public class GeneralTest {
 	@Test
 	public void countRespondentsByQueryIdTest() throws Exception {
 		System.out.println(userSearchResultAssessmentRepository.countRespondentsByQueryId(3, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR));
+	}
+	
+	@Test
+	public void findAgreedRelevantByQueryAndSearchEngineTest() throws Exception {
+		List<SearchResult> result = searchResultRepository.findAgreedRelevantByQueryAndSearchEngine(6, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+		
+		System.out.println(result.size());
 	}
 }
