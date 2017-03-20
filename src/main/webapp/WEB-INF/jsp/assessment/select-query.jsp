@@ -14,6 +14,10 @@
     		margin: 0 auto;
 		}
 	</style>
+	
+<meta name="HandheldFriendly" content="true" />
+<meta name="MobileOptimized" content="320" />
+<meta name="Viewport" content="width=device-width" />
 </head>
 <body>
 	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">

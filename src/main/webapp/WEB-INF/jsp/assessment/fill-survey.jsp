@@ -19,6 +19,10 @@
 	        color: red; font-weight: bold;
 	    }
 	</style>
+	
+<meta name="HandheldFriendly" content="true" />
+<meta name="MobileOptimized" content="320" />
+<meta name="Viewport" content="width=device-width" />
 </head>
 <body>
 	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
@@ -65,7 +69,7 @@
 							</h3>
 							
 							<form:hidden path="surveyItems[${status.index}].url"/>
-							<a href="${currItem.url}"><span>${currItem.url}</span></a>
+							<a href="${currItem.url}" target="_blank"><span>${currItem.url}</span></a>
 							
 							<br>
 							

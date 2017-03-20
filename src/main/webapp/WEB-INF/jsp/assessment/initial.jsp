@@ -20,6 +20,10 @@
             padding: 10px; 
 		}
 	</style>
+	
+<meta name="HandheldFriendly" content="true" />
+<meta name="MobileOptimized" content="320" />
+<meta name="Viewport" content="width=device-width" />
 </head>
 <body>
 <!-- 	<ul class="list-group"> -->
