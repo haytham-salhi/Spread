@@ -19,7 +19,7 @@
 <body>
 
 	<div class="container" style="margin: auto; width:70%; background-color: lightblue; margin-top: 1%;">
-		<h1>Thank you, ${sessionScope.personName} for taking time answering this relevance assessment.</h1>
+		<h1>Thank you, ${sessionScope.user.name} for taking time answering this relevance assessment.</h1>
 		<c:url value="/assessment" var="labelingUrl" />
 		<h2>If you want to continue and choose another query to assess, please click <a href="${labelingUrl}">here</a>.</h2>
 	</div>

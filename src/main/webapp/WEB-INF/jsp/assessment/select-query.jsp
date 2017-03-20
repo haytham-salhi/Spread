@@ -18,7 +18,7 @@
 <body>
 	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
 		<div class="row" >
-			<h1 style="color: white">Hello, ${sessionScope.personName}.</h1>
+			<h1 style="color: white">Hello, ${sessionScope.user.name}.</h1>
 		</div>
 
 		<div class="row">

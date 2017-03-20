@@ -105,10 +105,10 @@ public class LabelingController implements Serializable {
 	// Second way
 	@RequestMapping(method = RequestMethod.GET)
 	public String initialView(HttpServletRequest request,
-			@SessionAttribute(required = false, name = "personName") String personName,
+			@SessionAttribute(required = false, name = "user") User user,
 			@SessionAttribute(required = false, name = "searchEngine") String searchEngine) {
 		
-		if(personName != null && searchEngine != null) {
+		if(user != null && searchEngine != null) {
 			return "redirect:/assessment/selectQuery";
 		}
 		
@@ -131,12 +131,31 @@ public class LabelingController implements Serializable {
 		// Instead of the following you can actually pass them as attributes to the view! 
 		// But I did this because I want to add them in the session
 		
-		// Register the session values
-		if(request.getSession().getAttribute("personName") == null) {
-			request.getSession().setAttribute("personName", personName);
-			request.getSession().setAttribute("email", email);
-			request.getSession().setAttribute("searchEngine", searchEngineName);
+		// Check if it's authorized and then add it to the session 
+		if(personName == null || personName.isEmpty()) {
+			
+			logger.info(request.getRemoteAddr() + " tried to enter with name! [Not authorized]");
+			
+			return "redirect:/assessment";
+		} else {
+			personName = personName.trim();
+			User user = userRepository.findByName(personName);
+			
+			if(user == null) {
+				logger.info(request.getRemoteAddr() + " The name entered " + personName + " is not authorized!!");
+				
+				return "redirect:/assessment";
+			}
+			
+			logger.info(request.getRemoteAddr() + " The user " + personName + " is authorized!");
+
+			request.getSession().setAttribute("user", user);
 		}
+		
+		// The following step become not necessary after adding the above code. But okay to keep it
+		// Register the session values
+		request.getSession().setAttribute("email", email);
+		request.getSession().setAttribute("searchEngine", searchEngineName);
 		
 		return "redirect:/assessment/selectQuery";
 	}
@@ -145,7 +164,7 @@ public class LabelingController implements Serializable {
 	@RequestMapping(value = "/selectQuery", method = RequestMethod.GET)
 	public String selectQueryGet(HttpServletRequest request,
 			Model model,
-			@SessionAttribute(required = false, name = "personName") String personName, 
+			@SessionAttribute(required = false, name = "user") User user, 
 			@SessionAttribute(required = false, name = "searchEngine") String searchEngineName) {
 		logger.info(request.getRemoteAddr() + " accessed selectQuery!");
 		
@@ -154,7 +173,7 @@ public class LabelingController implements Serializable {
 		// Instead of the following you can actually pass them as attributes to the view! 
 		// But I did this because I want to add them in the session
 		
-		if(request.getSession().getAttribute("personName") == null) {
+		if(request.getSession().getAttribute("user") == null) {
 			return "redirect:/assessment"; 
 		}
 		
@@ -264,12 +283,22 @@ public class LabelingController implements Serializable {
 			
 			// 1. Fill the assessment objects
 			// Get the session id
-			String sessionId = request.getSession().getId();
-			User user = userRepository.findBySessionId(sessionId);
+			//String sessionId = request.getSession().getId();
+			//User user = userRepository.findBySessionId(sessionId);
+			//if(user == null) {
+			//	// Save the user
+			//	user = userRepository.save(new User(sessionId, (String) request.getSession().getAttribute("personName"), (String) request.getSession().getAttribute("email"), request.getRemoteAddr()));
+			//}
+			
+			
+			User user = (User) request.getSession().getAttribute("user");
+			// You should validate the user here! But okay!
+			
 			if(user == null) {
-				// Save the user
-				user = userRepository.save(new User(sessionId, (String) request.getSession().getAttribute("personName"), (String) request.getSession().getAttribute("email"), request.getRemoteAddr()));
+				logger.info("Seems session timed out!! Redirecting the user to the main page.");
+				return "redirect:/assessment";
 			}
+			
 			List<UserSearchResultAssessment> userSearchResultAssessments = new ArrayList<UserSearchResultAssessment>();
 			for (SurveyItem surveyItem : surveyItemsWrapper.getSurveyItems()) {
 				// Get the search result
