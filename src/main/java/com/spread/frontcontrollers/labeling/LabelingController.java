@@ -197,7 +197,7 @@ public class LabelingController implements Serializable {
 		List<QueryView> queryViews = new ArrayList<QueryView>();
 		for (Query query : ambiguousQueries) {
 			
-			queryViews.add(new QueryView(query, userSearchResultAssessmentRepository.countRespondentsByQueryId(query.getId(), code, Location.PALESTINE, SearchEngineLanguage.AR)));
+			queryViews.add(new QueryView(query, -1, userSearchResultAssessmentRepository.findRespondentNamesByQueryId(query.getId(), code,  Location.PALESTINE, SearchEngineLanguage.AR)));
 		}
 		
 		model.addAttribute("queryViews", queryViews);

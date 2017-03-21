@@ -1,6 +1,8 @@
 package com.spread.frontcontrollers.labeling.model;
 
 
+import java.util.List;
+
 import com.spread.persistence.rds.model.Query;
 
 
@@ -8,14 +10,16 @@ public class QueryView {
 	
 	private Query query;
 	private int respondents;
+	private List<String> respondentNames;
 	
 	public QueryView() {
 	}
 
-	public QueryView(Query query, int respondents) {
+	public QueryView(Query query, int respondents, List<String> respondentNames) {
 		super();
 		this.query = query;
 		this.respondents = respondents;
+		this.respondentNames = respondentNames;
 	}
 
 	/**
@@ -44,5 +48,19 @@ public class QueryView {
 	 */
 	public void setRespondents(int respondents) {
 		this.respondents = respondents;
+	}
+
+	/**
+	 * @return the respondentNames
+	 */
+	public List<String> getRespondentNames() {
+		return respondentNames;
+	}
+
+	/**
+	 * @param respondentNames the respondentNames to set
+	 */
+	public void setRespondentNames(List<String> respondentNames) {
+		this.respondentNames = respondentNames;
 	}
 }

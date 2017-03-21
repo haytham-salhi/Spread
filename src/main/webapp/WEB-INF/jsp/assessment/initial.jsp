@@ -32,7 +32,7 @@
 <%-- 	    </c:forEach> --%>
 <!-- 	</ul> -->
 
-	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
+	<div class="container" style="width:70%; background-color: #6495ED; margin-top: 1%;">
 		<div class="row" style="border: 1px solid;">
 			<div class="col-md-6">
 				<p style="color: white; text-align: justify;">Hello, this interface is a part of <code>spread</code> framework, an experimental framework being developed as a part of master Thesis at Birzeit University for search results disambiguation, and represents the human relevance assessmenet interface. Its purpose is to let researchers assess the relevance of search results returned by search engines. 

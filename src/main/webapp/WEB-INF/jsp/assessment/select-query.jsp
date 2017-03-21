@@ -38,11 +38,18 @@
 <!-- 	</ul> -->
 	<div class="main-div">
 		<table class="table" border="0">
-			<c:forEach var="queryView" items="${queryViews}">
+			<c:forEach var="queryView" items="${queryViews}" varStatus="status">
 				<tr>
 					<c:url value="/assessment/query/${queryView.query.id}" var="queryUrl" />
+					<td>${status.index + 1}</td>
 					<td id="${queryView.query.id}"><a href="${queryUrl}">${queryView.query.name}</a></td>
-					<td>${queryView.respondents}</td>
+					<td>
+<%-- 						${queryView.respondents},  --%>
+						<small>|</small>
+						<c:forEach var="name" items="${queryView.respondentNames}">
+							<small>${name} | </small>
+						</c:forEach>
+					</td>
 				</tr>
 		    </c:forEach>
 		</table>
