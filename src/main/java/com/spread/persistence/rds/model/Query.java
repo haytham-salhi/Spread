@@ -50,6 +50,10 @@ public class Query {
 	@Column(name = "is_official_data_set")
 	private Boolean isOfficial;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "allowed_user_id")
+	private User allowedUser;
+	
 	public Query() {
 	}
 
@@ -160,6 +164,20 @@ public class Query {
 	 */
 	public void setIsOfficial(Boolean isOfficial) {
 		this.isOfficial = isOfficial;
+	}
+	
+	/**
+	 * @return the allowedUser
+	 */
+	public User getAllowedUser() {
+		return allowedUser;
+	}
+
+	/**
+	 * @param allowedUser the allowedUser to set
+	 */
+	public void setAllowedUser(User allowedUser) {
+		this.allowedUser = allowedUser;
 	}
 
 	/* (non-Javadoc)

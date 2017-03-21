@@ -128,4 +128,13 @@ public class GeneralTest {
 		
 		System.out.println(result.size());
 	}
+	
+	@Test
+	public void findByIsAmbiguousAndIsOfficialAndAllowedUserTest() throws Exception {
+		List<Query> result = queryRepository.findByIsAmbiguousAndIsOfficialAndAllowedUser_Id(false, true, 5);
+		
+		System.out.println(result.size());
+		
+		System.out.println(result.get(0).getAllowedUser().getName());
+	}
 }

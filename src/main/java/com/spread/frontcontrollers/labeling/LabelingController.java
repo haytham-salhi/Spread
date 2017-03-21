@@ -134,7 +134,7 @@ public class LabelingController implements Serializable {
 		// Check if it's authorized and then add it to the session 
 		if(personName == null || personName.isEmpty()) {
 			
-			logger.info(request.getRemoteAddr() + " tried to enter with name! [Not authorized]");
+			logger.info(request.getRemoteAddr() + " tried to enter with name! [Not authorized] " + email);
 			
 			return "redirect:/assessment";
 		} else {
@@ -142,12 +142,12 @@ public class LabelingController implements Serializable {
 			User user = userRepository.findByName(personName);
 			
 			if(user == null) {
-				logger.info(request.getRemoteAddr() + " The name entered " + personName + " is not authorized!!");
+				logger.info(request.getRemoteAddr() + " The name entered " + personName + " is not authorized!! " + email);
 				
 				return "redirect:/assessment";
 			}
 			
-			logger.info(request.getRemoteAddr() + " The user " + personName + " is authorized!");
+			logger.info(request.getRemoteAddr() + " The user " + personName + " is authorized! " + email);
 
 			request.getSession().setAttribute("user", user);
 		}
@@ -192,11 +192,17 @@ public class LabelingController implements Serializable {
 			}
 		}
 		
-		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true);
+		// Show all queries for Haytham 
+		List<Query> ambiguousQueries = null;
+		if(user.getName().equalsIgnoreCase("Haytham")  || user.getName().equalsIgnoreCase("Yaser")) {
+			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true);
+		} else {
+			// Otherwise, get by user
+			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficialAndAllowedUser_Id(false, true, user.getId());
+		}
 		
 		List<QueryView> queryViews = new ArrayList<QueryView>();
 		for (Query query : ambiguousQueries) {
-			
 			queryViews.add(new QueryView(query, -1, userSearchResultAssessmentRepository.findRespondentNamesByQueryId(query.getId(), code,  Location.PALESTINE, SearchEngineLanguage.AR)));
 		}
 		
@@ -220,10 +226,21 @@ public class LabelingController implements Serializable {
 	// Flow step 3
 	@RequestMapping(value = "/query/{id}", method = RequestMethod.GET)
 	public String searchResultsView(HttpServletRequest request,
+			@SessionAttribute(required = false, name = "user") User user,
 			@PathVariable("id") int id, Model model) {
 		logger.info(request.getRemoteAddr() + " accessed searchResultsView!");
 		
 		// You should validate the input!!
+		// Check if allowed
+		User allowedUser = queryRepository.findOne(id).getAllowedUser();
+		if(!user.getName().equalsIgnoreCase("Haytham")  &&  !user.getName().equalsIgnoreCase("Yaser")) {
+			if(allowedUser == null || !allowedUser.getId().equals(user.getId()))  {
+				
+				logger.info("User " + user.getName() + " tried to access not allowed query " + id);
+				
+				return "redirect:/assessment/selectQuery";
+			}
+		}
 		
 		// 1. Get the search results for the ambiguous query id
 		String searchEngineString = (String) request.getSession().getAttribute("searchEngine");

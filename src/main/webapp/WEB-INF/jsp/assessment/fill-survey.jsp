@@ -27,14 +27,14 @@
 <body>
 	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
 		<div class="row" >
-			<h1 style="color: white">Hello, ${sessionScope.user.name}.</h1>
+			<h1 style="color: white">Hello, ${sessionScope.user.name}!</h1>
 		</div>
 
 		<div class="row">
-			<h4 style="color: white">For each search result below, please indicate whether it is <b>relevant</b> to the query or not. Finally, click on <b>Submit</b> at the end of this page.</h4>
+			<h4 style="color: white">For each search result below, please indicate whether it is <b>semantically relevant</b> to the query or not. Finally, click <b>Submit</b> at the end of this page.</h4>
 		</div>
 		
-		<h4 style="color: white"><b>Please</b> do NOT press the button Submit twice; uploading your response may take time!</h4>
+		<h4 style="color: white"><b>Please</b> do NOT press Submit twice; uploading your response may take time!</h4>
 		
 		<c:if test="${error}">
 			<h4 style="color: maroon">Some results are not filled below.</h4>

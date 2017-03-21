@@ -22,12 +22,11 @@
 <body>
 	<div class="container" style="margin: auto; width:70%; background-color: #6495ED; margin-top: 1%;">
 		<div class="row" >
-			<h1 style="color: white">Hello, ${sessionScope.user.name}.</h1>
+			<h1 style="color: white">Hello, ${sessionScope.user.name}!</h1>
 		</div>
 
 		<div class="row">
 			<h2 style="color: white">Please select a query from the list below to start assessing.</h2>
-			<h5 style="color: white"><b>Hint:</b> Select a query with a small number of assessments.</h5>
 		</div>
 	</div>
 	
@@ -38,6 +37,11 @@
 <!-- 	</ul> -->
 	<div class="main-div">
 		<table class="table" border="0">
+			<tr>
+                    <td></td>
+                    <td><h4>Clear Query</h4></td>
+                    <td><h4>Done by</h4></td>
+            </tr>
 			<c:forEach var="queryView" items="${queryViews}" varStatus="status">
 				<tr>
 					<c:url value="/assessment/query/${queryView.query.id}" var="queryUrl" />

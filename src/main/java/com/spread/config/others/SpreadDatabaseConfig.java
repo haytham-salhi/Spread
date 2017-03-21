@@ -61,7 +61,7 @@ public class SpreadDatabaseConfig {
 		dataSource.setPassword(password);
 		dataSource.setUrl(url);
 		
-		dataSource.setInitialSize(5);
+		dataSource.setInitialSize(6);
 		
 		try {
 			// We can override it of course for this/these connection/s
