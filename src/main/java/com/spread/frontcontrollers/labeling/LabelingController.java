@@ -230,6 +230,10 @@ public class LabelingController implements Serializable {
 			@PathVariable("id") int id, Model model) {
 		logger.info(request.getRemoteAddr() + " accessed searchResultsView!");
 		
+		if(user == null) {
+			return "redirect:/assessment";
+		}
+		
 		// You should validate the input!!
 		// Check if allowed
 		User allowedUser = queryRepository.findOne(id).getAllowedUser();
