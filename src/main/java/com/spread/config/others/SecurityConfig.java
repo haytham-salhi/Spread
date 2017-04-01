@@ -33,7 +33,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-		.antMatchers("/experiments/**").access("hasRole('ROLE_ADMIN')")
 		//.antMatchers("/harri/**").access("hasRole('ROLE_ADMIN')")
 		.and()
 		    .formLogin().loginPage("/login").failureUrl("/login?error").defaultSuccessUrl("/admin")
