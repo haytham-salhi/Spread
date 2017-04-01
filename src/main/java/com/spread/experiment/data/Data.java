@@ -25,7 +25,7 @@ import com.spread.persistence.rds.repository.SearchResultRepository;
 public abstract class Data {
 	
 	@Autowired
-	private SearchResultRepository searchResultRepository;
+	protected SearchResultRepository searchResultRepository;
 	
 	@Autowired
 	protected MeaningRepository meaningRepository;

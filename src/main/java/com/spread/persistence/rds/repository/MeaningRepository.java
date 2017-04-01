@@ -34,6 +34,13 @@ public interface MeaningRepository extends CrudRepository<Meaning, Integer> {
 			+ "WHERE clearQuery.parent.id = :parentQueryId AND clearQuery.isAmbiguous = false")
 	public List<Meaning> findMeaningsWithClearQueries(@Param("parentQueryId") Integer parentQueryId);
 	
+	@Query("SELECT meaning "
+			+ "FROM Meaning meaning " 
+			+ "JOIN FETCH meaning.clearQuery clearQuery "
+			+ "WHERE clearQuery.parent.id = :parentQueryId AND clearQuery.isAmbiguous = false "
+			+ "AND clearQuery.isOfficial = true")
+	public List<Meaning> findOfficialMeaningsWithClearQueries(@Param("parentQueryId") Integer parentQueryId);
+	
 	/**
 	 * Should return one meaning only
 	 * @param clearQueryId

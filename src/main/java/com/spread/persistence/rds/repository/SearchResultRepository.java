@@ -67,6 +67,7 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 	
 	// this shoud not be here
 	// To understand this query, see query # 4 and 5 in assessement.sql
+	// For Yaser and Haytham
 	@Query("SELECT userSearchResultAssessment.searchResult "
 			+ "FROM UserSearchResultAssessment userSearchResultAssessment "
 			+ "JOIN userSearchResultAssessment.searchResult searchResult" 
@@ -81,6 +82,19 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "AND userSearchResultAssessment.user.id = 1 AND ua2.user.id = 2 "
 			+ "AND userSearchResultAssessment.isRelevant = 'YES'")
 	List<SearchResult> findAgreedRelevantByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	
+	@Query("SELECT userSearchResultAssessment.searchResult "
+			+ "FROM UserSearchResultAssessment userSearchResultAssessment "
+			+ "JOIN userSearchResultAssessment.searchResult searchResult "
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "WHERE query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language "
+			+ "AND userSearchResultAssessment.user.id = 2 "
+			+ "AND userSearchResultAssessment.isRelevant = 'YES' "
+			+ "AND regexp(searchResult.title, '[؟-ي]+') = 1 " // Those in arabic
+			+ "AND searchResult.innerPage IS NOT NULL") // Those having innerpage
+	List<SearchResult> findRelevantArabicWithInnerPagesByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 	
 	
 }

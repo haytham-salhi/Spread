@@ -284,9 +284,9 @@ public class WClusteringPreprocessor {
 		filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
 		filter.setLowerCaseTokens(true);
  		//filter.setTokenizer(value); // default is worktokenizaer (we can use ngrams here)
-		NGramTokenizer nGramTokenizer = new NGramTokenizer();
-		nGramTokenizer.setNGramMinSize(nGramMinSize);
-		nGramTokenizer.setNGramMaxSize(nGramMaxSize);
+		NGramTokenizer nGramTokenizer = new NGramTokenizer(); 
+		nGramTokenizer.setNGramMinSize(nGramMinSize); // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
+		nGramTokenizer.setNGramMaxSize(nGramMaxSize); // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
 		filter.setTokenizer(nGramTokenizer);
 		
 		filter.setMinTermFreq(minTermFreqToKeep); // Default is 1, the idea is to prune the dictionary of low frequency terms

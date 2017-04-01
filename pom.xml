@@ -268,6 +268,19 @@
 		    <version>3.8.0</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/classificationViaClustering -->
+		<dependency>
+		    <groupId>nz.ac.waikato.cms.weka</groupId>
+		    <artifactId>classificationViaClustering</artifactId>
+		    <version>1.0.3</version>
+		    <exclusions>
+		        <exclusion>  <!-- declare the exclusion here -->
+			      <groupId>nz.ac.waikato.cms.weka</groupId>
+			      <artifactId>weka-dev</artifactId>
+		        </exclusion>
+		      </exclusions> 
+		</dependency>
+		
 		<!-- Jfree API -->
 		<dependency>
 		    <groupId>org.jfree</groupId>

@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
+import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.SearchEngine;
 import com.spread.persistence.rds.model.SearchResult;
@@ -23,6 +24,7 @@ import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
+import com.spread.persistence.rds.repository.MeaningRepository;
 import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
@@ -50,6 +52,9 @@ public class GeneralTest {
 	
 	@Autowired
 	private UserSearchResultAssessmentRepository userSearchResultAssessmentRepository;
+	
+	@Autowired
+	private MeaningRepository meaningRepository;
 
 	
 	@Before
@@ -136,5 +141,29 @@ public class GeneralTest {
 		System.out.println(result.size());
 		
 		System.out.println(result.get(0).getAllowedUser().getName());
+	}
+	
+	@Test
+	public void findRelevantArabicWithInnerPagesByQueryAndSearchEngineTest() throws Exception {
+		
+		List<Query> queries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true);
+		
+		for (Query query : queries) {
+			
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			
+			for (Meaning meaning : clearMeaningsWithClearQueriesForAq) {
+				
+				List<SearchResult> result = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(meaning.getClearQuery().getId(), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				//result.forEach(n -> System.out.println(n.getTitle()));
+
+				System.out.println(result.size());
+			}
+			
+		}
+		
+		
+		
+		
 	}
 }
