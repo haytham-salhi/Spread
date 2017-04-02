@@ -234,6 +234,7 @@ public class ExperimentsTest {
 
 	}
 	
+	// This code should be synced with run in ExperimentAPIController
 	@Test
 	public void thirdCQExperimentTest() throws Exception {
 		// 1.

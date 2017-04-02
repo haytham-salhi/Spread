@@ -45,6 +45,7 @@ public class ExperimentAPIController implements Serializable {
 	
 	private boolean experimentRunning = false;
 	
+	// This code should be synced with thirdCQExperimentTest in ExperimentsTest
 	@RequestMapping(value = "/run", method = RequestMethod.GET)
 	public ResponseEntity<String> run(
 			@RequestParam(defaultValue= "true", required = false, name = "test") boolean test,
