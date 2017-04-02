@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import weka.classifiers.Evaluation;
+import weka.classifiers.meta.ClassificationViaClustering;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
 import weka.core.EuclideanDistance;
@@ -44,7 +46,6 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
-import com.spread.util.WekaHelper;
 import com.spread.util.charts.SpreadBarChart;
 
 /**
@@ -54,13 +55,13 @@ import com.spread.util.charts.SpreadBarChart;
  * 
  * 3- Invoke Run
  * 
- * What makes this differs from EnhancedCQExperiment2 is that, in this we do simpleeval
+ * What makes this differs from EnhancedCQExperiment is that, in this we do fulleval
  * 
  * @author Haytham Salhi
  *
  */
 @Component
-public class EnhancedCQExperiment extends BaseExperiment {
+public class EnhancedCQExperiment2 extends BaseExperiment {
 	
 	@Autowired
 	private SearchResultRepository searchResultRepository;
@@ -246,13 +247,24 @@ public class EnhancedCQExperiment extends BaseExperiment {
 						// Evaluate against labeled data
 						ClusterEvaluation eval = new ClusterEvaluation();
 						eval.setClusterer(kmeansModel);
+						// Even though I am using ClassificationViaClustering, I had to use ClusterEvaluation just for getting the assignments
 						
 						Instances labeledTrainingDataset = preprocessor.getTrainingDataSetWithClassAttr();
 						labeledTrainingDataset.setClassIndex(0);
 						
 						eval.evaluateClusterer(labeledTrainingDataset);
 						String evaluationString = eval.clusterResultsToString(); 
-						
+
+						ClassificationViaClustering classificationViaClustering = new ClassificationViaClustering();
+						classificationViaClustering.setClusterer(kmeansModel);
+						classificationViaClustering.buildClassifier(labeledTrainingDataset); // This will call kmeansModel.buildClustere but on a copy of the passed one :)
+						Evaluation evaluation = new Evaluation(labeledTrainingDataset);
+						try {
+							evaluation.evaluateModel(classificationViaClustering, labeledTrainingDataset);
+						} catch (Exception e) {
+							System.err.println(e);
+							LOGGER.error(e.getMessage());
+						}
 						
 						// ---------- Store the results
 						// Create the directory
@@ -263,14 +275,32 @@ public class EnhancedCQExperiment extends BaseExperiment {
 						try (BufferedWriter writer = Files.newWriter(Paths.get(dirPath + "/evaluation.txt").toFile(), Charset.forName("UTF-8"))) {
 							writer.write(evaluationString);
 							
+							writer.write("\nIn addition:");							
+							
+							writer.write("\n" + classificationViaClustering.toString());
+							
+							writer.write("\nSummaries:");
+							writer.write(evaluation.toSummaryString(false) + "\n");
+							writer.write("Weighted precesion = " + evaluation.weightedPrecision() + "\n");
+							writer.write("Weighted recall = " + evaluation.weightedRecall() + "\n");
+							writer.write("Weighted Macro F measure = " + evaluation.weightedFMeasure() + "\n");
+							writer.write("Averaged Macro F measure = " + evaluation.unweightedMacroFmeasure()+ "\n");
+							writer.write("Averaged Micro F measure = " + evaluation.unweightedMicroFmeasure() + "\n");
+							writer.write(evaluation.toMatrixString() + "\n");
+							 /**
+						     * Calculate the precesion for some class
+						     */
+						    //int classNumber = labeledTrainingDataset.classAttribute().indexOfValue("meaning1");
+						    //System.out.println(evaluation.precision(classNumber));
+						    //System.out.println(evaluation.recall(classNumber));
+						    //System.out.println(evaluation.fMeasure(classNumber));
 						} catch (Exception e) {
 							System.err.println(e);
 							LOGGER.error(e.getMessage());
 						}
 						
 						// Add it to the chart data set -------------------- Charts step
-						double[] evaluationValues = WekaHelper.getIncorrectlyClassifiedInstances(evaluationString);
-						chartDataset.addValue((100.0 - evaluationValues[1]), featureSpaceMode.getName(), featureSelectionSourceMode);
+						chartDataset.addValue(evaluation.pctCorrect(), featureSpaceMode.getName(), featureSelectionSourceMode);
 						
 						// Create clusters
 						double[] assignments = eval.getClusterAssignments();

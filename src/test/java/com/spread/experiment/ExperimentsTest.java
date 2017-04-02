@@ -239,6 +239,7 @@ public class ExperimentsTest {
 		// 1.
 		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google"); // The folder name of the experiment
 		enhancedCQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
+		enhancedCQExperiment.setJustOneQueryTest(true); // Here to specify if we want to run for the first query only for test
 		
 		// 2.
 		// Variables
