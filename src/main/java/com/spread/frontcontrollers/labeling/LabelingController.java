@@ -195,7 +195,7 @@ public class LabelingController implements Serializable {
 		// Show all queries for Haytham 
 		List<Query> ambiguousQueries = null;
 		if(user.getName().equalsIgnoreCase("Haytham")  || user.getName().equalsIgnoreCase("Yaser")) {
-			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true);
+			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true, null);
 		} else {
 			// Otherwise, get by user
 			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficialAndAllowedUser_Id(false, true, user.getId());

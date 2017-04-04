@@ -18,6 +18,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import weka.clusterers.ClusterEvaluation;
@@ -76,6 +78,9 @@ public class EnhancedCQExperiment extends BaseExperiment {
 	
 	@Autowired
 	private MeaningRepository meaningRepository;
+	
+	private StringBuilder anovaPctCorrect = new StringBuilder(); // One for the accuracies file (percentages)
+	private StringBuilder anovaNumCorrect = new StringBuilder(); // One for the correctly classified instances numbers 
 	
 	// [CR]: Change to new data
 	@Autowired
@@ -189,7 +194,11 @@ public class EnhancedCQExperiment extends BaseExperiment {
 		
 		// Get all ambiguos queries
 		// [CR]: to official
-		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true);
+		Pageable pageRequest = null; // Default, get all official
+		if(getSizeOfAmbiguousQueriesToLoaded() > 0) {
+			pageRequest = new PageRequest(0, getSizeOfAmbiguousQueriesToLoaded());
+		}
+		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, pageRequest);
 
 		for (Query query : ambiguousQueries) {
 			LOGGER.info("Processing for A.Q: " + query.getName());
@@ -270,7 +279,8 @@ public class EnhancedCQExperiment extends BaseExperiment {
 						
 						// Add it to the chart data set -------------------- Charts step
 						double[] evaluationValues = WekaHelper.getIncorrectlyClassifiedInstances(evaluationString);
-						chartDataset.addValue((100.0 - evaluationValues[1]), featureSpaceMode.getName(), featureSelectionSourceMode);
+						double correctlyClusteredPrc = 100.0 - evaluationValues[1];
+						chartDataset.addValue(correctlyClusteredPrc, featureSpaceMode.getName(), featureSelectionSourceMode);
 						
 						// Create clusters
 						double[] assignments = eval.getClusterAssignments();
@@ -291,6 +301,8 @@ public class EnhancedCQExperiment extends BaseExperiment {
 						// Store the training data set just for debugging and investigation
 						storeTrainingDataset(labeledTrainingDataset, dirPath);
 						
+						anovaPctCorrect.append(correctlyClusteredPrc + ",");
+						anovaNumCorrect.append(evaluationValues[0] + ",");
 						LOGGER.info("Done for featureSpaceMode=" + featureSpaceMode);
 					}
 					
@@ -307,12 +319,15 @@ public class EnhancedCQExperiment extends BaseExperiment {
 			File barChartFile = new File(getBasePath() + getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/" + "evaluation_summary.png"); 
 			ChartUtilities.saveChartAsPNG(barChartFile, barChart, width, height);
 			
-			LOGGER.info("Done for query" + query.getName());
+			// To go to next Subject
+			anovaPctCorrect.append("\n");
+			anovaNumCorrect.append("\n");
 			
-			if(isJustOneQueryTest()) {
-				break;
-			}
+			LOGGER.info("Done for query" + query.getName());
 		}
+		
+		// Finally, after processing the subjects, persist the anova file
+		wrtieAnovaStrings();
 		
 		// ------------- Data 
 		// This will be the input for preparation
@@ -340,6 +355,27 @@ public class EnhancedCQExperiment extends BaseExperiment {
 			saver.writeBatch();		
 		} catch (IOException e) {
 			e.printStackTrace();
+			LOGGER.error(e.getMessage());
+		}
+	}
+	
+	private void wrtieAnovaStrings() {
+		String dirPath = getBasePath() + getExperimentName();
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-pct-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaPctCorrect.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-nums-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaNumCorrect.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
 			LOGGER.error(e.getMessage());
 		}
 	}

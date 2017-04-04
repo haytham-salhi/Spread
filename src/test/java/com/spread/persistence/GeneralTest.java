@@ -146,7 +146,7 @@ public class GeneralTest {
 	@Test
 	public void findRelevantArabicWithInnerPagesByQueryAndSearchEngineTest() throws Exception {
 		
-		List<Query> queries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true);
+		List<Query> queries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
 		
 		for (Query query : queries) {
 			
@@ -164,6 +164,20 @@ public class GeneralTest {
 		
 		
 		
+		
+	}
+	
+	
+	@Test
+	public void testName() throws Exception {
+		List<Query> queries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+		
+		for (Query query : queries) {
+			
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			
+			System.out.println(clearMeaningsWithClearQueriesForAq.size());
+		}
 		
 	}
 }

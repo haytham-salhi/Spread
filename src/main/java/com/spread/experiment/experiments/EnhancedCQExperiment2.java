@@ -18,6 +18,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import weka.classifiers.Evaluation;
@@ -77,6 +79,14 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 	
 	@Autowired
 	private MeaningRepository meaningRepository;
+	
+	private StringBuilder anovaPctCorrect = new StringBuilder(); // One for the accuracies file (percentages)
+	private StringBuilder anovaNumCorrect = new StringBuilder(); // One for the correctly classified instances numbers 
+	private StringBuilder anovaWeightedPrecision = new StringBuilder();
+	private StringBuilder anovaWeightedRecall = new StringBuilder();
+	private StringBuilder anovaWeightedFMeasure = new StringBuilder();
+	private StringBuilder anovaUnweightedMacroFmeasure = new StringBuilder();
+	private StringBuilder anovaUnweightedMicroFmeasure = new StringBuilder();
 	
 	// [CR]: Change to new data
 	@Autowired
@@ -190,7 +200,11 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 		
 		// Get all ambiguos queries
 		// [CR]: to official
-		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true);
+		Pageable pageRequest = null; // Default, get all official
+		if(getSizeOfAmbiguousQueriesToLoaded() > 0) {
+			pageRequest = new PageRequest(0, getSizeOfAmbiguousQueriesToLoaded());
+		}
+		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, pageRequest);
 
 		for (Query query : ambiguousQueries) {
 			LOGGER.info("Processing for A.Q: " + query.getName());
@@ -321,6 +335,15 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 						// Store the training data set just for debugging and investigation
 						storeTrainingDataset(labeledTrainingDataset, dirPath);
 						
+						//anovaFile.append(correctlyClusteredPrc + ",");
+						anovaPctCorrect.append(evaluation.pctCorrect() + ",");
+						anovaNumCorrect.append(evaluation.correct() + ",");
+						anovaWeightedPrecision.append(evaluation.weightedPrecision() + ",");
+						anovaWeightedRecall.append(evaluation.weightedRecall() + ",");
+						anovaWeightedFMeasure.append(evaluation.weightedFMeasure() + ",");
+						anovaUnweightedMacroFmeasure.append(evaluation.unweightedMacroFmeasure() + ",");
+						anovaUnweightedMicroFmeasure.append(evaluation.unweightedMicroFmeasure() + ",");
+						
 						LOGGER.info("Done for featureSpaceMode=" + featureSpaceMode);
 					}
 					
@@ -337,12 +360,20 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 			File barChartFile = new File(getBasePath() + getExperimentName() + "/" + getAlgorithmName() + "/" + query.getName() + "/" + "evaluation_summary.png"); 
 			ChartUtilities.saveChartAsPNG(barChartFile, barChart, width, height);
 			
-			LOGGER.info("Done for query" + query.getName());
+			// To go to next Subject
+			anovaPctCorrect.append("\n");
+			anovaNumCorrect.append("\n");
+			anovaWeightedPrecision.append("\n");
+			anovaWeightedRecall.append("\n");
+			anovaWeightedFMeasure.append("\n");
+			anovaUnweightedMacroFmeasure.append("\n");
+			anovaUnweightedMicroFmeasure.append("\n");
 			
-			if(isJustOneQueryTest()) {
-				break;
-			}
+			LOGGER.info("Done for query" + query.getName());
 		}
+		
+		// Finally, after processing the subjects, persist the anova file
+		wrtieAnovaString();
 		
 		// ------------- Data 
 		// This will be the input for preparation
@@ -370,6 +401,72 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 			saver.writeBatch();		
 		} catch (IOException e) {
 			e.printStackTrace();
+			LOGGER.error(e.getMessage());
+		}
+	}
+	
+	private void wrtieAnovaString() {
+		String dirPath = getBasePath() + getExperimentName();
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-pct-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaPctCorrect.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-nums-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaNumCorrect.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-precesion-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaWeightedPrecision.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-recall-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaWeightedRecall.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-f-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaWeightedFMeasure.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-macro-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaUnweightedMacroFmeasure.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			LOGGER.error(e.getMessage());
+		}
+		
+		try (BufferedWriter writer = new BufferedWriter
+			    (new OutputStreamWriter(new FileOutputStream(Paths.get(dirPath + "/effectiveness-micro-data.txt").toFile(), true), "UTF-8"))) {
+			writer.write(anovaUnweightedMicroFmeasure.toString());
+			
+		} catch (Exception e) {
+			System.err.println(e);
 			LOGGER.error(e.getMessage());
 		}
 	}

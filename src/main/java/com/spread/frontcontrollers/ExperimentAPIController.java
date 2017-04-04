@@ -46,9 +46,17 @@ public class ExperimentAPIController implements Serializable {
 	private boolean experimentRunning = false;
 	
 	// This code should be synced with thirdCQExperimentTest in ExperimentsTest
+	/**
+	 * 
+	 * @param aqSizeTest if 0 or less, that means all a.qs
+	 * @param fullEval
+	 * @param wordsToKeep
+	 * @param wordsToKeepInCaseOfInnerPage
+	 * @return
+	 */
 	@RequestMapping(value = "/run", method = RequestMethod.GET)
 	public ResponseEntity<String> run(
-			@RequestParam(defaultValue= "true", required = false, name = "test") boolean test,
+			@RequestParam(defaultValue= "1", required = false, name = "aqst") int aqSizeTest,
 			@RequestParam(defaultValue= "true", required = false, name = "fe") boolean fullEval,
 			@RequestParam(defaultValue = "40", required = false, name = "wtk1") int wordsToKeep,
 			@RequestParam(defaultValue = "300", required = false, name = "wtk2") int wordsToKeepInCaseOfInnerPage) {
@@ -68,10 +76,10 @@ public class ExperimentAPIController implements Serializable {
 		}
 		
 		// 1.
-		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google-" + fullEval + "-" + new Date().getTime()); // The folder name of the experiment
+		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google-full_" + fullEval + "-" + new Date().getTime()); // The folder name of the experiment
 		enhancedCQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
 		enhancedCQExperiment.setBasePath("/var/www/html/experiments/"); // To be set just here in APIs
-		enhancedCQExperiment.setJustOneQueryTest(test);
+		enhancedCQExperiment.setSizeOfAmbiguousQueriesToLoaded(aqSizeTest);
 		
 		// 2.
 		// Variables

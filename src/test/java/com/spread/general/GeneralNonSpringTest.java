@@ -3,11 +3,16 @@ package com.spread.general;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,6 +123,54 @@ public class GeneralNonSpringTest {
 		String s = "Google";
 		
 		System.out.println(SearchEngineCode.valueOf("GOsOGLE"));
+	}
+	
+	@Test
+	public void fileWriting() throws Exception {
+		
+		Path path = Paths.get("Results/someFile/ss.txt");
+		
+		new File("Results/someFile/mam/sas").mkdirs();
+		
+		// This creates the file each time is executed
+//		try (BufferedWriter writer = Files.newWriter(path.toFile(), Charset.forName("utf-8"))) {
+//			writer.append("Hello mamss\n");
+//			
+//			writer.append("Hello mam");
+//			FileWriter writer2 = new FileWriter(fileName, append);
+//			
+//		} catch (Exception e) {
+//			System.out.println(e);
+//		}
+		
+		
+		int[][] values = {{1,2,3,4,5,6,7,8}, {11,2,3,4,5,6,7,8}, {12,2,3,4,5,6,7,8}};
+		
+		for (int[] is : values) {
+			for (int i : is) {
+				try (BufferedWriter out = new BufferedWriter
+					    (new OutputStreamWriter(new FileOutputStream(path.toFile(), true),"UTF-8"))){
+					
+					out.write(i + ",");
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			
+			try (BufferedWriter out = new BufferedWriter
+				    (new OutputStreamWriter(new FileOutputStream(path.toFile(), true),"UTF-8"))){
+				
+				out.write("\n");
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
+		
+		
+		
 	}
 	
 }

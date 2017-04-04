@@ -228,7 +228,7 @@ public class AllQueriesCrawler extends Crawler {
 						query = new Query(clearQuery, lang, false, queryFormulationStartegy, parentQuery);
 						query = queryRepository.save(query);
 						
-						// Update meaning // TODO Needs testing :)) 
+						// Update meaning // TODO Needs testing :)) (Didn't work !!)
 						meaningRepository.setClearQueryFor(parentQuery.getId(), meaning.getName(), query.getId());
 					}
 					

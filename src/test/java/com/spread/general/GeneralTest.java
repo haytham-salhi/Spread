@@ -2,11 +2,16 @@ package com.spread.general;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

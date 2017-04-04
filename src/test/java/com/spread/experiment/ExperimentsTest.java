@@ -36,6 +36,7 @@ import com.spread.experiment.experiments.AQDifferentKsExperiment;
 import com.spread.experiment.experiments.BaseExperiment;
 import com.spread.experiment.experiments.CQExperiment;
 import com.spread.experiment.experiments.EnhancedCQExperiment;
+import com.spread.experiment.experiments.EnhancedCQExperiment2;
 import com.spread.experiment.experiments.RunnableExperiment;
 import com.spread.experiment.preparation.FeatureSelectionModes;
 import com.spread.experiment.preparation.FeatureSpaceModes;
@@ -69,7 +70,7 @@ public class ExperimentsTest {
 	private BaseExperiment aQDifferentKsExperiment;
 	
 	@Autowired
-	@Qualifier("enhancedCQExperiment")
+	@Qualifier("enhancedCQExperiment2")
 	private BaseExperiment enhancedCQExperiment;
 	
 	@Before
@@ -240,7 +241,7 @@ public class ExperimentsTest {
 		// 1.
 		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google"); // The folder name of the experiment
 		enhancedCQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
-		enhancedCQExperiment.setJustOneQueryTest(true); // Here to specify if we want to run for the first query only for test
+		enhancedCQExperiment.setSizeOfAmbiguousQueriesToLoaded(2); // Here to specify if we want to run for the first query only for test, 0 means all, >0 means it (e.g 1 means 1 query )
 		
 		// 2.
 		// Variables
@@ -280,7 +281,7 @@ public class ExperimentsTest {
 		int minTermFreqToKeep = 1; // TODO think about it?
 		
 		
-		((EnhancedCQExperiment)enhancedCQExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
+		((EnhancedCQExperiment2)enhancedCQExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
 				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
 				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
 		
