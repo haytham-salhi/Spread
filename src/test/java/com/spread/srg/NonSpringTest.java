@@ -1,5 +1,7 @@
 package com.spread.srg;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,9 +18,12 @@ import java.util.stream.Collectors;
 import org.apache.lucene.analysis.ar.ArabicNormalizer;
 import org.junit.Before;
 import org.junit.Test;
+
 import weka.core.stemmers.Stemmer;
 
 import com.spread.experiment.data.stemmers.ArabicStemmerKhoja;
+import com.spread.util.WekaHelper;
+
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 public class NonSpringTest {
@@ -212,5 +217,13 @@ public class NonSpringTest {
 		  System.out.println(arabic.matcher("dsd").matches());
 
 	}
+	
+	@Test
+	public void testName() throws Exception {
+		String sno = "Incorrectly clustered instances :	15.0	 25      %";
+		String s = "Incorrectly clustered instances :	1.0	  1.6667 %";
 		
+		double[] res = WekaHelper.getIncorrectlyClassifiedInstances(sno);
+		System.out.println(res[0] + " " + res[1]);
+	}
 }
