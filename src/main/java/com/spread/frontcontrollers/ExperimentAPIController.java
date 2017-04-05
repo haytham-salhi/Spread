@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,7 @@ public class ExperimentAPIController implements Serializable {
 		try {
 			enhancedCQExperiment.run();
 		} catch (Exception e1) {
-			LOGGER.error(e1);
+			LOGGER.error(ExceptionUtils.getStackTrace(e1));
 			
 			experimentRunning = false;
 			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
