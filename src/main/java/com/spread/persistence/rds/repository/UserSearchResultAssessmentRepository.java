@@ -34,4 +34,11 @@ public interface UserSearchResultAssessmentRepository extends CrudRepository<Use
 			+ "WHERE querySearchEngine.query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language")
 	public List<String> findRespondentNamesByQueryId(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language);
 	
+	@Query("SELECT distinct userSearchResultAssessment.user.id "
+			+ "FROM UserSearchResultAssessment userSearchResultAssessment "
+			+ "JOIN userSearchResultAssessment.searchResult searchResult "
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "WHERE querySearchEngine.query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language")
+	public List<String> findRespondentIdsByQueryId(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language);
 }
