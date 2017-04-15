@@ -99,7 +99,7 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "AND userSearchResultAssessment.user.id != ua2.user.id "
 			+ "AND userSearchResultAssessment.isRelevant = ua2.isRelevant "
 			+ "AND userSearchResultAssessment.user.id = :firstJudgeId AND ua2.user.id = :secondJudgeId ")
-	List<UserSearchResultAssessment> findAgreedByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("firstJudgeId") Integer firstJudgeId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	List<UserSearchResultAssessment> findAgreedByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("firstJudgeId") Integer firstJudgeId, @Param("secondJudgeId") Integer secondJudgeId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 	
 	@Query("SELECT userSearchResultAssessment.searchResult "
 			+ "FROM UserSearchResultAssessment userSearchResultAssessment "
