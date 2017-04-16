@@ -3,6 +3,7 @@ package com.spread.persistence;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +11,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
+import com.spread.frontcontrollers.labeling.model.YesNoAnswer;
 import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.SearchEngine;
 import com.spread.persistence.rds.model.SearchResult;
+import com.spread.persistence.rds.model.User;
 import com.spread.persistence.rds.model.UserSearchResultAssessment;
 import com.spread.persistence.rds.model.enums.Language;
 import com.spread.persistence.rds.model.enums.Location;
@@ -29,6 +34,7 @@ import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchEngineRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
+import com.spread.persistence.rds.repository.UserRepository;
 import com.spread.persistence.rds.repository.UserSearchResultAssessmentRepository;
 
 @ContextConfiguration(classes = { RootConfig.class })
@@ -55,6 +61,9 @@ public class GeneralTest {
 	
 	@Autowired
 	private MeaningRepository meaningRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	
 	@Before
@@ -179,5 +188,104 @@ public class GeneralTest {
 			System.out.println(clearMeaningsWithClearQueriesForAq.size());
 		}
 		
+	}
+	
+	@Test
+	public void check() throws Exception {
+		
+		Integer clearQueryId = 2;
+
+		Integer userId = 2;
+		Integer userId2 = 1;
+		
+		Pageable pageRequest = new PageRequest(0, 30);
+		
+		List<SearchResult> results1 = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(clearQueryId, userId ,SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+		
+		List<SearchResult> results2 = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(clearQueryId, userId2 ,SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+		
+		for (SearchResult searchResult : results1) {
+			if(!results2.contains(searchResult)) {
+				
+				System.out.print(searchResult.getId() + ", ");
+				
+			}
+		}
+	
+	}
+	
+	@Test
+	public void findRelevanceAgreementStatsScript() throws Exception {
+		
+		// Get all ambiguous queries
+		List<Query> queries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+		
+		for (Query query : queries) {
+			
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			
+			// For each clear query
+			for (Meaning meaning : clearMeaningsWithClearQueriesForAq) {
+				
+				List<Integer> respondentsIds = userSearchResultAssessmentRepository.findRespondentIdsByQueryId(meaning.getClearQuery().getId(), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR);
+				System.out.println("Respondents (users) for " + meaning.getClearQuery().getName() + ": " + respondentsIds);
+				
+				int judge1 = 2; // Haytham
+				String judge1Name = "Haytham";
+				respondentsIds.remove(new Integer(2));
+				int judge2 = respondentsIds.get(0);
+				User judge2Obj = userRepository.findOne(judge2);
+				
+				// Get data of agreements between the two judges
+				List<UserSearchResultAssessment> agreedResults = userSearchResultAssessmentRepository.findAgreedAssessmentsByQueryAndSearchEngine(meaning.getClearQuery().getId(), judge1, judge2, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				System.out.println("Number of agreements: " + agreedResults.size());
+				System.out.println("Number of agreed yes's: " + agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.YES).count()); // --- > x1
+				System.out.println("Number of agreed no's: " + agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.NO).count()); // ---> x2
+				
+				// Get data for judge 1
+				List<UserSearchResultAssessment> judge1Data = userSearchResultAssessmentRepository.findAssessmentByQueryAndJudge(meaning.getClearQuery().getId(), judge1, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				System.out.println("Number of " + judge1Name + "'s yes's: " + judge1Data.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.YES).count());
+				System.out.println("Number of " + judge1Name + "'s no's: " + judge1Data.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.NO).count());
+				
+				// Get data for judge 2
+				List<UserSearchResultAssessment> judge2Data = userSearchResultAssessmentRepository.findAssessmentByQueryAndJudge(meaning.getClearQuery().getId(), judge2, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				System.out.println("Number of " + judge2Obj.getName() + "'s yes's: " + judge2Data.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.YES).count());
+				System.out.println("Number of " + judge2Obj.getName() + "'s no's: " + judge2Data.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.NO).count());
+				
+				// Number of assessments where judge1 --> Yes Judge2 --> NO
+				List<UserSearchResultAssessment> disagreementsJudge1YesJudge2No = userSearchResultAssessmentRepository.findNotAgreedAssessmentsByQueryAndSearchEngine(meaning.getClearQuery().getId(), judge1, judge2, YesNoAnswer.YES, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null); // --> x3
+				System.out.println("Number of assessments where " + judge1Name + " --> Yes " + judge2Obj.getName() + " --> NO: " + disagreementsJudge1YesJudge2No.size());
+				// Number of assessments judge1 --> NO Judge2 --> YES
+				List<UserSearchResultAssessment> disagreementsJudge1NoJudge2Yes = userSearchResultAssessmentRepository.findNotAgreedAssessmentsByQueryAndSearchEngine(meaning.getClearQuery().getId(), judge1, judge2, YesNoAnswer.NO, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null); // --> x4
+				System.out.println("Number of assessments where " + judge1Name + " --> NO " + judge2Obj.getName() + " --> Yes: " + disagreementsJudge1NoJudge2Yes.size());
+				
+				// x1 + x2 + x3 + x4 = total of assessed results (100)
+				
+				System.out.println("-------------------------------");
+				System.out.println("-------------------------------");
+
+			}
+			
+		}
+		
+//		Integer clearQueryId = 2;
+//
+//		Integer userId = 2;
+//		Integer userId2 = 1;
+//		
+//		Pageable pageRequest = new PageRequest(0, 30);
+//		
+//		List<SearchResult> results1 = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(clearQueryId, userId ,SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+//		
+//		List<SearchResult> results2 = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(clearQueryId, userId2 ,SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+//		
+//		for (SearchResult searchResult : results1) {
+//			if(!results2.contains(searchResult)) {
+//				
+//				System.out.print(searchResult.getId() + ", ");
+//				
+//			}
+//		}
+	
 	}
 }
