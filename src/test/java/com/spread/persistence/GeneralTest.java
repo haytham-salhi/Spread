@@ -239,8 +239,10 @@ public class GeneralTest {
 				// Get data of agreements between the two judges
 				List<UserSearchResultAssessment> agreedResults = userSearchResultAssessmentRepository.findAgreedAssessmentsByQueryAndSearchEngine(meaning.getClearQuery().getId(), judge1, judge2, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
 				System.out.println("Number of agreements: " + agreedResults.size());
-				System.out.println("Number of agreed yes's: " + agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.YES).count()); // --- > x1
-				System.out.println("Number of agreed no's: " + agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.NO).count()); // ---> x2
+				int agreedYeses = (int) agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.YES).count();
+				int agreedNoes = (int) agreedResults.stream().filter(n -> n.getIsRelevant() == YesNoAnswer.NO).count();
+				System.out.println("Number of agreed yes's: " + agreedYeses); // --- > x1
+				System.out.println("Number of agreed no's: " + agreedNoes); // ---> x2
 				
 				// Get data for judge 1
 				List<UserSearchResultAssessment> judge1Data = userSearchResultAssessmentRepository.findAssessmentByQueryAndJudge(meaning.getClearQuery().getId(), judge1, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
@@ -259,7 +261,16 @@ public class GeneralTest {
 				List<UserSearchResultAssessment> disagreementsJudge1NoJudge2Yes = userSearchResultAssessmentRepository.findNotAgreedAssessmentsByQueryAndSearchEngine(meaning.getClearQuery().getId(), judge1, judge2, YesNoAnswer.NO, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null); // --> x4
 				System.out.println("Number of assessments where " + judge1Name + " --> NO " + judge2Obj.getName() + " --> Yes: " + disagreementsJudge1NoJudge2Yes.size());
 				
+				// Calculate Kappa
+				int total = agreedResults.size() + disagreementsJudge1YesJudge2No.size() + disagreementsJudge1NoJudge2Yes.size();
+				float proportionOfAgreements = agreedResults.size() / (float)total;
+				float relevantMarginal = (agreedYeses + disagreementsJudge1YesJudge2No.size() + agreedYeses + disagreementsJudge1NoJudge2Yes.size()) / ((float)total * 2);
+				float nonRelevantMarginal = (agreedNoes + disagreementsJudge1YesJudge2No.size() + agreedNoes + disagreementsJudge1NoJudge2Yes.size()) / ((float)total * 2);
+
+				float pOfE = (float) (Math.pow(relevantMarginal, 2) + Math.pow(nonRelevantMarginal, 2));
 				// x1 + x2 + x3 + x4 = total of assessed results (100)
+				float k = (proportionOfAgreements - pOfE)/(1 - pOfE);
+				System.out.println("Kappa statistic: " + k);
 				
 				System.out.println("-------------------------------");
 				System.out.println("-------------------------------");
