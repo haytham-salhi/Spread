@@ -260,10 +260,22 @@ public class LabelingController implements Serializable {
 			}
 		}
 		
-		int size = 100;
-		Pageable pageRequest = new PageRequest(0, size);
 		
-		List<SearchResult> searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+		
+		List<SearchResult> searchItems = null;
+		
+		// CR: For bing we want to get the top 30 with arabic and with inner pages
+		if(code == SearchEngineCode.BING) {
+			int size = 30;
+			Pageable pageRequest = new PageRequest(0, size);
+			
+			searchItems = searchResultRepository.findArabicAndWithInnerPageByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+		} else {
+			int size = 100;
+			Pageable pageRequest = new PageRequest(0, size);
+			
+			searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+		}
 		
 		// The correct way is to bind searchitems, for the informative data
 		

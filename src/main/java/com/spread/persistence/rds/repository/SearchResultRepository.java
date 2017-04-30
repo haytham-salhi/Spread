@@ -65,6 +65,17 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "WHERE query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language")
 	List<SearchResult> findByQueryAndSearchEngineWithBasicInfo(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 	
+	// The same as above but gets the arabic ones with innerpages
+	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.id, searchResult.title, searchResult.url, searchResult.snippet) "
+			+ "FROM SearchResult searchResult " 
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "WHERE query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language "
+			+ "AND regexp(searchResult.title, '[؟-ي]+') = 1 " // Those in arabic
+			+ "AND searchResult.innerPage IS NOT NULL") // Those having innerpage
+	List<SearchResult> findArabicAndWithInnerPageByQueryAndSearchEngineWithBasicInfo(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	
 	// this shoud not be here
 	// To understand this query, see query # 4 and 5 in assessement.sql
 	// For Yaser and Haytham
