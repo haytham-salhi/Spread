@@ -227,7 +227,9 @@ public class LabelingController implements Serializable {
 	@RequestMapping(value = "/query/{id}", method = RequestMethod.GET)
 	public String searchResultsView(HttpServletRequest request,
 			@SessionAttribute(required = false, name = "user") User user,
-			@PathVariable("id") int id, Model model) {
+			@PathVariable("id") int id,
+			@RequestParam(name = "size", required = false) Integer size,
+			Model model) {
 		logger.info(request.getRemoteAddr() + " accessed searchResultsView!");
 		
 		if(user == null) {
@@ -266,12 +268,16 @@ public class LabelingController implements Serializable {
 		
 		// CR: For bing we want to get the top 30 with arabic and with inner pages
 		if(code == SearchEngineCode.BING) {
-			int size = 30;
+			if(size == null) {
+				size = 30;
+			}
 			Pageable pageRequest = new PageRequest(0, size);
 			
 			searchItems = searchResultRepository.findArabicAndWithInnerPageByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
 		} else {
-			int size = 100;
+			if(size == null) {
+				size = 100;
+			}
 			Pageable pageRequest = new PageRequest(0, size);
 			
 			searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
