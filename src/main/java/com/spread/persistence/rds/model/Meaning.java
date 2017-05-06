@@ -45,9 +45,17 @@ public class Meaning {
 	@OneToOne
 	@JoinColumn(name = "clear_query_id")
 	private Query clearQuery;
+	
+	@Column(name = "is_official_data_set")
+	private Boolean isOfficial;
 
 	
 	public Meaning() {
+	}
+	
+	public Meaning(Integer id) {
+		super();
+		this.id = id;
 	}
 
 	public Meaning(String name, String description, String clazz,
@@ -158,6 +166,14 @@ public class Meaning {
 	 */
 	public void setClearQuery(Query clearQuery) {
 		this.clearQuery = clearQuery;
+	}
+	
+	public Boolean getIsOfficial() {
+		return isOfficial;
+	}
+	
+	public void setIsOfficial(Boolean isOfficial) {
+		this.isOfficial = isOfficial;
 	}
 
 	/* (non-Javadoc)

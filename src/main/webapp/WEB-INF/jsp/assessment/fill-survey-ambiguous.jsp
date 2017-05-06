@@ -47,7 +47,7 @@
 <!-- 	</ul> -->
 	
 	<div align="center" class="main-div">
-		<form:form action="submit" method="post" modelAttribute="surveyItemsWrapper">
+		<form:form action="submit2" method="post" modelAttribute="surveyItemsWrapper">
 			<table border="0" class="form-group table-striped">
                 <tr>
                 	<form:hidden path="queryName"/>
@@ -56,7 +56,7 @@
                 
                 <tr style="border-bottom:1pt solid black;">
                     <td><h2>Search Item</h2></td>
-                    <td align="right"><h2>Relevant?</h2></td>
+                    <td align="right"><h2>Meaning?</h2></td>
                 </tr>
 				
 				<%-- The dynamic infomative data should not be in the same form data model !! That's why I had to put in the form hidden to bind it again when the clients submits!!--%>
@@ -79,12 +79,12 @@
 		                
 	                    <%-- Here surveyItems is in surveyItemsWrapper--%>
 	                    <td align="right">
-	                    	<form:radiobuttons path="surveyItems[${status.index}].answer" items="${choices}" itemLabel="name"/>
+	                    	<form:radiobuttons path="surveyItems[${status.index}].meaningId" items="${choices}" itemLabel="name" itemValue="id"/>
 	                    </td>
 	                    
 	                    <!-- 1. I put this here to make sure when submitting to include to bind all items, not only the filled ones -->
 	                    <td><form:hidden path="surveyItems[${status.index}].id"/></td> 
-	                    <td><form:errors path="surveyItems[${status.index}].answer" cssClass="error" /></td>
+	                    <td><form:errors path="surveyItems[${status.index}].meaningId" cssClass="error" /></td>
 	                </tr>
 				</c:forEach>
                 

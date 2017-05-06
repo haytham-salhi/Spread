@@ -78,6 +78,13 @@
 					     </select>
 				 	</td>
 				 </tr>
+				 <tr>
+				 	<td><label>Queries:</label></td>
+				 	<td>
+				 		<input type="radio" name="typeOfQueries" value="clear" checked> Clear
+  						<input type="radio" name="typeOfQueries" value="ambiguous"> Ambiguous
+				 	</td>
+				 </tr>
 			</table>
 			<button type="submit" class="btn btn-default">Enter!</button>
 		</form:form>

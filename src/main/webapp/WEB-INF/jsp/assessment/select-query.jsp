@@ -28,6 +28,10 @@
 		<div class="row">
 			<h2 style="color: white">Please select a query from the list below to start assessing.</h2>
 		</div>
+		
+		<div class="row">
+			<h5 style="color: white">You are working on ${sessionScope.searchEngine}.</h5>
+		</div>
 	</div>
 	
 <!-- 	<ul class="list-group"> -->

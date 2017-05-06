@@ -55,4 +55,13 @@ public interface MeaningRepository extends CrudRepository<Meaning, Integer> {
 	 * @return
 	 */
 	public List<Meaning> findByQuery_Id(Integer queryId);
+	
+	/**
+	 * By query id and isOfficial
+	 * 
+	 * @param queryId
+	 * @param isOfficial
+	 * @return
+	 */
+	public List<Meaning> findByQuery_IdAndIsOfficial(Integer queryId, Boolean isOfficial);
 }

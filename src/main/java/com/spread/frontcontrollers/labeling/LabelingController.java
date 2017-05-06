@@ -3,6 +3,7 @@ package com.spread.frontcontrollers.labeling;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -22,21 +23,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
+
 import com.spread.frontcontrollers.labeling.model.QueryView;
 import com.spread.frontcontrollers.labeling.model.SurveyItem;
+import com.spread.frontcontrollers.labeling.model.SurveyItemAmbiguous;
+import com.spread.frontcontrollers.labeling.model.SurveyItemsAmbiguousWrapper;
 import com.spread.frontcontrollers.labeling.model.SurveyItemsWrapper;
 import com.spread.frontcontrollers.labeling.model.YesNoAnswer;
+import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.SearchResult;
 import com.spread.persistence.rds.model.User;
 import com.spread.persistence.rds.model.UserSearchResultAssessment;
+import com.spread.persistence.rds.model.UserSearchResultMeaningAssessment;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
+import com.spread.persistence.rds.repository.MeaningRepository;
 import com.spread.persistence.rds.repository.QueryRepository;
 import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.UserRepository;
 import com.spread.persistence.rds.repository.UserSearchResultAssessmentRepository;
+import com.spread.persistence.rds.repository.UserSearchResultMeaningAssessmentRepository;
 
 import de.svenjacobs.loremipsum.LoremIpsum;
 
@@ -78,6 +86,12 @@ public class LabelingController implements Serializable {
 	
 	@Autowired
 	private UserSearchResultAssessmentRepository userSearchResultAssessmentRepository;
+	
+	@Autowired
+	private UserSearchResultMeaningAssessmentRepository userSearchResultMeaningAssessmentRepository;
+	
+	@Autowired
+	private MeaningRepository meaningRepository;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -123,7 +137,8 @@ public class LabelingController implements Serializable {
 			Model model,
 			@RequestParam("personName") String personName,
 			@RequestParam("email") String email,
-			@RequestParam("searchEngine")String searchEngineName) {
+			@RequestParam("searchEngine")String searchEngineName,
+			@RequestParam("typeOfQueries") String typeOfQueries) {
 		logger.info(request.getRemoteAddr() + " accessed selectQuery!");
 		
 		// You should validate the input!!
@@ -156,6 +171,7 @@ public class LabelingController implements Serializable {
 		// Register the session values
 		request.getSession().setAttribute("email", email);
 		request.getSession().setAttribute("searchEngine", searchEngineName);
+		request.getSession().setAttribute("typeOfQueries", typeOfQueries);
 		
 		return "redirect:/assessment/selectQuery";
 	}
@@ -178,6 +194,7 @@ public class LabelingController implements Serializable {
 		}
 		
 		String searchEngine = (String) request.getSession().getAttribute("searchEngine");
+		String typeOfQueries = (String) request.getSession().getAttribute("typeOfQueries");
 		
 		SearchEngineCode code = null;
 		// Validate
@@ -192,18 +209,29 @@ public class LabelingController implements Serializable {
 			}
 		}
 		
-		// Show all queries for Haytham 
-		List<Query> ambiguousQueries = null;
-		if(user.getName().equalsIgnoreCase("Haytham")  || user.getName().equalsIgnoreCase("Yaser")) {
-			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true, null);
-		} else {
-			// Otherwise, get by user
-			ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficialAndAllowedUser_Id(false, true, user.getId());
-		}
-		
 		List<QueryView> queryViews = new ArrayList<QueryView>();
-		for (Query query : ambiguousQueries) {
-			queryViews.add(new QueryView(query, -1, userSearchResultAssessmentRepository.findRespondentNamesByQueryId(query.getId(), code,  Location.PALESTINE, SearchEngineLanguage.AR)));
+		
+		// CR: Show the queries depending on typeOfQueries
+		if(typeOfQueries.equalsIgnoreCase("clear")) {
+			// Show all queries for Haytham 
+			List<Query> clearQueries = null;
+			if(user.getName().equalsIgnoreCase("Haytham")  || user.getName().equalsIgnoreCase("Yaser")) {
+				clearQueries = queryRepository.findByIsAmbiguousAndIsOfficial(false, true, null);
+			} else {
+				// Otherwise, get by user
+				clearQueries = queryRepository.findByIsAmbiguousAndIsOfficialAndAllowedUser_Id(false, true, user.getId());
+			}
+			
+			for (Query query : clearQueries) {
+				queryViews.add(new QueryView(query, -1, userSearchResultAssessmentRepository.findRespondentNamesByQueryId(query.getId(), code,  Location.PALESTINE, SearchEngineLanguage.AR)));
+			}
+		} else { // ambiguous
+			// Show the ambiguous queries
+			List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+			
+			for (Query query : ambiguousQueries) {
+				queryViews.add(new QueryView(query, -1, userSearchResultMeaningAssessmentRepository.findRespondentNamesByQueryId(query.getId(), code,  Location.PALESTINE, SearchEngineLanguage.AR)));
+			}
 		}
 		
 		model.addAttribute("queryViews", queryViews);
@@ -263,45 +291,73 @@ public class LabelingController implements Serializable {
 		}
 		
 		
+		String typeOfQueries = (String) request.getSession().getAttribute("typeOfQueries");
 		
-		List<SearchResult> searchItems = null;
-		
-		// CR: For bing we want to get the top 30 with arabic and with inner pages
-		if(code == SearchEngineCode.BING) {
-			if(size == null) {
-				size = 30;
-			}
-			Pageable pageRequest = new PageRequest(0, size);
+		if(typeOfQueries.equalsIgnoreCase("clear")) {
+			List<SearchResult> searchItems = null;
 			
-			searchItems = searchResultRepository.findArabicAndWithInnerPageByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
-		} else {
-			if(size == null) {
-				size = 100;
+			// CR: For bing we want to get the top 30 with arabic and with inner pages
+			if(code == SearchEngineCode.BING) {
+				if(size == null) {
+					size = 30;
+				}
+				Pageable pageRequest = new PageRequest(0, size);
+				
+				searchItems = searchResultRepository.findArabicAndWithInnerPageByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
+			} else {
+				if(size == null) {
+					size = 100;
+				}
+				Pageable pageRequest = new PageRequest(0, size);
+				
+				searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
 			}
-			Pageable pageRequest = new PageRequest(0, size);
 			
-			searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, pageRequest);
-		}
-		
-		// The correct way is to bind searchitems, for the informative data
-		
-		// 2. Build the holder and the model
-		// ctrl + 1
-		SurveyItemsWrapper surveyItemsWrapper = new SurveyItemsWrapper();
-		
-		for (SearchResult searchResult : searchItems) {
-			surveyItemsWrapper.getSurveyItems().add(new SurveyItem(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), null));
-		}
-		
-		// Get the query name
-		Query query = queryRepository.findOne(id);
-		surveyItemsWrapper.setQueryName(query.getName());
+			// The correct way is to bind searchitems, for the informative data
+			
+			// 2. Build the holder and the model
+			// ctrl + 1
+			SurveyItemsWrapper surveyItemsWrapper = new SurveyItemsWrapper();
+			
+			for (SearchResult searchResult : searchItems) {
+				surveyItemsWrapper.getSurveyItems().add(new SurveyItem(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), null));
+			}
+			
+			// Get the query name
+			Query query = queryRepository.findOne(id);
+			surveyItemsWrapper.setQueryName(query.getName());
 
-		// 3. Set the model
-		model.addAttribute("surveyItemsWrapper", surveyItemsWrapper);
-		model.addAttribute("choices", YesNoAnswer.values());
+			// 3. Set the model
+			model.addAttribute("surveyItemsWrapper", surveyItemsWrapper);
+			model.addAttribute("choices", YesNoAnswer.values());
+			
+			return "assessment/fill-survey";
+		} else { // ambiguous
+			
+			List<SearchResult> searchItems = null;
+			searchItems = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(id, code, Location.PALESTINE, SearchEngineLanguage.AR, null);
+			
+			// 2. Build the holder and the model
+			SurveyItemsAmbiguousWrapper surveyItemsAmbiguousWrapper = new SurveyItemsAmbiguousWrapper();
+			
+			for (SearchResult searchResult : searchItems) {
+				surveyItemsAmbiguousWrapper.getSurveyItems().add(new SurveyItemAmbiguous(searchResult.getId(), searchResult.getTitle(), searchResult.getUrl(), searchResult.getSnippet(), null));
+			}
+			
+			// Get the query name
+			Query query = queryRepository.findOne(id);
+			surveyItemsAmbiguousWrapper.setQueryName(query.getName());
+			
+			List<Meaning> meanings = meaningRepository.findByQuery_IdAndIsOfficial(id, true);
+
+			// 3. Set the model
+			model.addAttribute("surveyItemsWrapper", surveyItemsAmbiguousWrapper);
+			model.addAttribute("choices", meanings);
+			
+			return "assessment/fill-survey-ambiguous";
+		}
 		
-		return "assessment/fill-survey";
+		
 	}
 	
 	// Flow step 4
@@ -347,6 +403,56 @@ public class LabelingController implements Serializable {
 			
 			// 2. Save them
 			userSearchResultAssessmentRepository.save(userSearchResultAssessments);
+		}
+		
+		logger.info(request.getRemoteAddr() + " accessed afterFilling!");
+		
+		return "assessment/thanks";
+	}
+	
+	// Flow step 4 (for ambiguous)
+	@RequestMapping(value = "/query/submit2", method = RequestMethod.POST)
+	public String afterFillingAmbiguous(HttpServletRequest request,
+			@Valid @ModelAttribute("surveyItemsWrapper") SurveyItemsAmbiguousWrapper surveyItemsWrapper,
+			BindingResult result,
+			Model model) {
+		if(result.hasErrors()) {
+			logger.info(request.getRemoteAddr() + " has errors in results");
+
+			model.addAttribute("error", true);
+			
+			return "assessment/fill-survey-ambiguous";
+		} else {
+			logger.info(request.getRemoteAddr() + " has correct results");
+			
+			// 1. Fill the assessment objects
+			// Get the session id
+			//String sessionId = request.getSession().getId();
+			//User user = userRepository.findBySessionId(sessionId);
+			//if(user == null) {
+			//	// Save the user
+			//	user = userRepository.save(new User(sessionId, (String) request.getSession().getAttribute("personName"), (String) request.getSession().getAttribute("email"), request.getRemoteAddr()));
+			//}
+			
+			
+			User user = (User) request.getSession().getAttribute("user");
+			// You should validate the user here! But okay!
+			
+			if(user == null) {
+				logger.info("Seems session timed out!! Redirecting the user to the main page.");
+				return "redirect:/assessment";
+			}
+			
+			List<UserSearchResultMeaningAssessment> userSearchResultAssessments = new ArrayList<UserSearchResultMeaningAssessment>();
+			for (SurveyItemAmbiguous surveyItem : surveyItemsWrapper.getSurveyItems()) {
+				// Get the search result
+				SearchResult searchResult = new SearchResult(surveyItem.getId());
+				Meaning meaning = surveyItem.getMeaningId() != null ? new Meaning(surveyItem.getMeaningId()): null;
+				userSearchResultAssessments.add(new UserSearchResultMeaningAssessment(user, searchResult, meaning));
+			}
+			
+			// 2. Save them
+			userSearchResultMeaningAssessmentRepository.save(userSearchResultAssessments);
 		}
 		
 		logger.info(request.getRemoteAddr() + " accessed afterFilling!");

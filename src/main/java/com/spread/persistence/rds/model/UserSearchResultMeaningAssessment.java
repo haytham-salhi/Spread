@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,17 +13,14 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.spread.persistence.rds.model.enums.LabelingType;
-
 /**
  * 
  * @author Haytham Salhi
  *
  */
-@Deprecated
-//@Entity
-//@Table(name = "user_labeling")
-public class UserLabeling {
+@Entity
+@Table(name = "user_search_result_meaning_assessment")
+public class UserSearchResultMeaningAssessment {
 	
 	@Id
 	@GeneratedValue
@@ -39,29 +34,23 @@ public class UserLabeling {
 	@JoinColumn(name = "search_result_id", nullable = false)
 	private SearchResult searchResult;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "meaning_id", nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "meaning_id", nullable = true)
 	private Meaning meaning;
-	
-	// Just to indicate that the user assign this result more than one meaning so you will have for example (user_id=1;result_id=1;meaning_id=2) and (user_id=1;result_id=1;meaning_id=3)
-	@Enumerated(EnumType.STRING)
-	@Column(name = "labeling_type", columnDefinition = "enum('SINGLE','MULTI')", nullable = false)
-	private LabelingType labelingType;
 	
 	@CreationTimestamp
 	@Column(name = "created_date")
 	private Date createdDate;
 	
-	public UserLabeling() {
+	public UserSearchResultMeaningAssessment() {
 	}
 
-	public UserLabeling(User user, SearchResult searchResult, Meaning meaning,
-			LabelingType labelingType) {
+	public UserSearchResultMeaningAssessment(User user, SearchResult searchResult,
+			Meaning meaning) {
 		super();
 		this.user = user;
 		this.searchResult = searchResult;
 		this.meaning = meaning;
-		this.labelingType = labelingType;
 	}
 
 	/**
@@ -105,7 +94,7 @@ public class UserLabeling {
 	public void setSearchResult(SearchResult searchResult) {
 		this.searchResult = searchResult;
 	}
-
+	
 	/**
 	 * @return the meaning
 	 */
@@ -121,20 +110,6 @@ public class UserLabeling {
 	}
 
 	/**
-	 * @return the labelingType
-	 */
-	public LabelingType getLabelingType() {
-		return labelingType;
-	}
-
-	/**
-	 * @param labelingType the labelingType to set
-	 */
-	public void setLabelingType(LabelingType labelingType) {
-		this.labelingType = labelingType;
-	}
-
-	/**
 	 * @return the createdDate
 	 */
 	public Date getCreatedDate() {
@@ -147,13 +122,5 @@ public class UserLabeling {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "UserLabeling [id=" + id + ", labelingType=" + labelingType
-				+ ", createdDate=" + createdDate + "]";
-	}
+	
 }
