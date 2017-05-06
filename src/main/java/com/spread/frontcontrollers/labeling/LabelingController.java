@@ -459,4 +459,11 @@ public class LabelingController implements Serializable {
 		
 		return "assessment/thanks";
 	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(HttpServletRequest request) {
+		request.getSession().invalidate();
+		
+		return "redirect:/assessment";
+	}
 }
