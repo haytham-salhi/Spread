@@ -1,9 +1,10 @@
 package com.spread.frontcontrollers.labeling.model;
 
-
-import com.spread.persistence.rds.model.Meaning;
-
-
+/**
+ * 
+ * @author Haytham Salhi
+ *
+ */
 public class SurveyItemAmbiguous {
 	
 	private Integer id;
