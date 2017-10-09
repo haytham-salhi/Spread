@@ -12,7 +12,7 @@ public class ArabicDataLoader extends FileDataLoader {
 
 	@Override
 	protected String getFileName() {
-		return "arabic-queries-4.csv";
+		return "arabic-queries-5.csv";
 	}
 
 }

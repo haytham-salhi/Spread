@@ -88,9 +88,9 @@ public class AllQueriesCrawler extends Crawler {
 				// Check if (q_id and se_id + startegy) exists in query_search_engine table
 		
 		// TODO change to size variable below later
-		//fetchAndStore(fetchInnerPage, 100, queries, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
+		fetchAndStore(fetchInnerPage, 100, queries, SearchEngineCode.GOOGLE, googleFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
-		fetchAndStore(fetchInnerPage, 200, queries, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
+		//fetchAndStore(fetchInnerPage, 200, queries, SearchEngineCode.BING, bingFetcher, lang, searchEngineLanguage, locationOfFetching);
 		
 	}
 
