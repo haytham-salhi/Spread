@@ -112,6 +112,7 @@ public class ExperimentAPIController implements Serializable {
 				searchEngineCode = null;
 				break;
 			default:
+				experimentRunning = false;
 				return new ResponseEntity<String>("Weein raye7 ya kbeer", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
