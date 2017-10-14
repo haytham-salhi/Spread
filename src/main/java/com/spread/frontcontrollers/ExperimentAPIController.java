@@ -61,6 +61,8 @@ public class ExperimentAPIController implements Serializable {
 			@RequestParam(defaultValue= "true", required = false, name = "fe") boolean fullEval,
 			@RequestParam(defaultValue = "40", required = false, name = "wtk1") int wordsToKeep,
 			@RequestParam(defaultValue = "300", required = false, name = "wtk2") int wordsToKeepInCaseOfInnerPage,
+			// Size per clear query
+			@RequestParam(defaultValue = "30", required = false, name = "size") int size,
 			// Possible values: G (for Google), B (for Bing), and GB (for Google and Bing)
 			@RequestParam(defaultValue = "G", required = false, name = "engine") String engine,
 			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
@@ -87,7 +89,7 @@ public class ExperimentAPIController implements Serializable {
 		
 		// 2.
 		// Variables
-		int[] sizes = {30}; // 30 per clear query
+		int[] sizes = {size}; // size per clear query
 		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
 				FeatureSelectionModes.SNIPPET_ONLY,
 				FeatureSelectionModes.TITLE_WITH_SNIPPET,
