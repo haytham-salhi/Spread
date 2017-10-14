@@ -392,11 +392,9 @@ public class SpreadArabicPreprocessor {
 		ArrayList<String> tt=new ArrayList<String>();
 		  StringBuffer word = new StringBuffer ( );
 		  currentText=currentText+" ";
-		  for ( int i=0;i<currentText.length();i++)
-              {
-			  
+		  for ( int i=0;i<currentText.length();i++) {
             // If the character is not a space, add it to a word
-            if(( ! Character.isWhitespace(currentText.charAt(i))))
+            if(!Character.isWhitespace(currentText.charAt(i)))
                  {
                 word.append(currentText.charAt(i));
                  }
@@ -404,8 +402,14 @@ public class SpreadArabicPreprocessor {
                {
                 if (word.length() != 0)
                   {
-                    tt.add(word.toString());
-                    word.setLength ( 0 );
+                	
+                	// Make sure that the token does not contain invisible chars
+                	// El trim zyadeh hoon :D malhas lzoom actually
+                	String tokenayeh = word.toString().trim().replaceAll("\\p{C}", "");
+                	if(tokenayeh.length() > 0) {
+                		tt.add(tokenayeh);
+                        word.setLength ( 0 );
+                	}
                   }
                 }
               }
@@ -681,5 +685,34 @@ public class SpreadArabicPreprocessor {
 	    } else {
 	      	return newText;
 	    }
+	}
+	
+	/**
+	 * 
+	 * Trims the leading and training special characters including white spaces
+	 * 
+	 * @param string
+	 * @return
+	 * @author Haytham Salhi
+	 */
+	private static String trimSpecialChars(String string) {
+		if (string != null && !string.isEmpty()) {
+			// Trim first
+			string = string.trim();
+
+			// Double check for other control/special characters
+			// Check the first letter
+			int i = 0;
+			while (!string.isEmpty() && !Character.isLetterOrDigit(string.charAt(i))) {
+				string = string.substring(1);
+			}
+
+			// Check the last letter
+			while (!string.isEmpty() && !Character.isLetterOrDigit(string.charAt(string.length() - 1))) {
+				string = string.substring(0, string.length() - 1);
+			}
+		}
+
+		return string;
 	}
 }
