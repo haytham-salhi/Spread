@@ -60,7 +60,10 @@ public class ExperimentAPIController implements Serializable {
 			@RequestParam(defaultValue= "1", required = false, name = "aqst") int aqSizeTest,
 			@RequestParam(defaultValue= "true", required = false, name = "fe") boolean fullEval,
 			@RequestParam(defaultValue = "40", required = false, name = "wtk1") int wordsToKeep,
-			@RequestParam(defaultValue = "300", required = false, name = "wtk2") int wordsToKeepInCaseOfInnerPage) {
+			@RequestParam(defaultValue = "300", required = false, name = "wtk2") int wordsToKeepInCaseOfInnerPage,
+			// Possible values: G (for Google), B (for Bing), and GB (for Google and Bing)
+			@RequestParam(defaultValue = "G", required = false, name = "engine") String engine,
+			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
 		if(!experimentRunning) {
 			experimentRunning = true;
 		} else {
@@ -77,7 +80,7 @@ public class ExperimentAPIController implements Serializable {
 		}
 		
 		// 1.
-		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google-full_" + fullEval + "-" + new Date().getTime()); // The folder name of the experiment
+		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google-full_" + fullEval + "-" + new Date().getTime() + "-" + customName); // The folder name of the experiment
 		enhancedCQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
 		enhancedCQExperiment.setBasePath("/var/www/html/experiments/"); // To be set just here in APIs
 		enhancedCQExperiment.setSizeOfAmbiguousQueriesToLoaded(aqSizeTest);
@@ -96,6 +99,20 @@ public class ExperimentAPIController implements Serializable {
 		
 		// These are usually neutralized
 		SearchEngineCode searchEngineCode = SearchEngineCode.GOOGLE;
+		switch (engine) {
+			case "G":
+				searchEngineCode = SearchEngineCode.GOOGLE;
+				break;
+			case "B":
+				searchEngineCode = SearchEngineCode.BING;
+				break;
+			case "GB":
+				searchEngineCode = null;
+				break;
+			default:
+				return new ResponseEntity<String>("Weein raye7 ya kbeer", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 		boolean withInnerPage = true; // Get the inner page [CR:] in EnhancedCQExperiment, the data.getSearchResults, the innerPage flag has no effect. Always gets the inner page 
 		
 		// Text preprocessing related

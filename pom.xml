@@ -272,7 +272,7 @@
 		<dependency>
 		    <groupId>nz.ac.waikato.cms.weka</groupId>
 		    <artifactId>classificationViaClustering</artifactId>
-		    <version>1.0.4</version>
+		    <version>1.0.6</version>
 		    <exclusions>
 		        <exclusion>  <!-- declare the exclusion here -->
 			      <groupId>nz.ac.waikato.cms.weka</groupId>

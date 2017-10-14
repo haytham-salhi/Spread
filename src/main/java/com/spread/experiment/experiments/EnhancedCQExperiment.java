@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -222,8 +223,23 @@ public class EnhancedCQExperiment extends BaseExperiment {
 						// ------------- Data 
 						// This will be the input for preparation
 						List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
-						// [CR]: innerpage variable here has no effect in the following method. Always gets the inner page
-						List<RawSearchResult> rawSearchResults = data.getSearchResults(clearQueryIds, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
+						
+						// If code is null, then get mix results of google and bing
+						List<RawSearchResult> rawSearchResults = null;
+						if(searchEngineCode == null) {
+							// [CR]: innerpage variable here has no effect in the following method. Always gets the inner page
+							List<RawSearchResult> googleRawSearchResults = data.getSearchResults(clearQueryIds, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
+							List<RawSearchResult> bingRawSearchResults = data.getSearchResults(clearQueryIds, SearchEngineCode.BING, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
+							
+							rawSearchResults =  new ArrayList<>();
+							rawSearchResults.addAll(googleRawSearchResults);
+							rawSearchResults.addAll(bingRawSearchResults);
+						} else {
+							// Otherwise, get the results of that search engine
+							// [CR]: innerpage variable here has no effect in the following method. Always gets the inner page
+							rawSearchResults = data.getSearchResults(clearQueryIds, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
+						}
+						LOGGER.info("Size of search results is " + rawSearchResults.size());
 						
 						// This will be the input for preparation
 						List<String> meaningsList = data.getMeaningsForClearQueries(clearQueryIds);
