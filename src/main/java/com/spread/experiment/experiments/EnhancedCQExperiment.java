@@ -19,6 +19,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -62,6 +64,7 @@ import com.spread.util.charts.SpreadBarChart;
  * @author Haytham Salhi
  *
  */
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class EnhancedCQExperiment extends BaseExperiment {
 	
