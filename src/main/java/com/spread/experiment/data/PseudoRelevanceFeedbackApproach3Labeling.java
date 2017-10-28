@@ -13,13 +13,13 @@ import com.spread.persistence.rds.model.enums.SearchEngineCode;
 import com.spread.persistence.rds.model.enums.SearchEngineLanguage;
 
 /**
- * Labeling based on Approach 3 but relevant 
+ * Labeling based on Approach 3 but assuming that the top {@size} results are relevant (Pseudo relevance feedback , also known as blind relevance feedback) 
  * 
  * @author Haytham Salhi
  *
  */
-@Component(value = "relevantApproach3Labeling")
-public class RelevantApproach3Labeling extends Approach3Labeling {
+@Component(value = "pseudoRelevanceFeedbackApproach3Labeling")
+public class PseudoRelevanceFeedbackApproach3Labeling extends Approach3Labeling {
 	
 	/**
 	 * Inner page has no effect here
@@ -33,7 +33,7 @@ public class RelevantApproach3Labeling extends Approach3Labeling {
 		
 		Pageable pageRequest = new PageRequest(0, size);
 		
-		searchResults = searchResultRepository.findRelevantArabicWithInnerPagesByQueryAndSearchEngine(queryId, code, location, language, pageRequest);
+		searchResults = searchResultRepository.findArabicWithInnerPagesByQueryAndSearchEngine(queryId, code, location, language, pageRequest);
 		
 		List<RawSearchResult> searchResultDtos;
 		searchResultDtos = labelTheResultsAndConvertToDtos(queryId, searchResults);

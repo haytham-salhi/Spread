@@ -57,9 +57,11 @@ import com.spread.util.charts.SpreadBarChart;
 /**
  * 1- Set the variables first; otherwise they will take the default ones
  * 
- * 2- Set experimentName and algorithmName (to be appended in the folders names)
+ * 2- Set the data source
  * 
- * 3- Invoke Run
+ * 3- Set experimentName and algorithmName (to be appended in the folders names)
+ * 
+ * 4- Invoke Run
  * 
  * What makes this differs from EnhancedCQExperiment is that, in this we do fulleval
  * 
@@ -92,11 +94,6 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 	private StringBuilder anovaWeightedFMeasure = new StringBuilder();
 	private StringBuilder anovaUnweightedMacroFmeasure = new StringBuilder();
 	private StringBuilder anovaUnweightedMicroFmeasure = new StringBuilder();
-	
-	// [CR]: Change to new data
-	@Autowired
-	@Qualifier("relevantApproach3Labeling")
-	private Data data;
 	
 	private static final Logger LOGGER = LogManager.getLogger("experimentApproach3");
 	
@@ -179,7 +176,7 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 		this.IDF = iDF;
 		this.minTermFreqToKeep = minTermFreqToKeep;
 	}
-
+	
 	@Override
 	public void run() throws Exception {
 		if(getExperimentName() == null || getAlgorithmName() == null) {

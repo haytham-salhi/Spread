@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import weka.core.stemmers.Stemmer;
 
+import com.spread.experiment.data.Data;
 import com.spread.experiment.data.stemmers.LightStemmer;
 import com.spread.experiment.experiments.BaseExperiment;
 import com.spread.experiment.experiments.EnhancedCQExperiment;
@@ -60,7 +61,10 @@ public class ExperimentAPIController implements Serializable {
 			@RequestParam(defaultValue = "30", required = false, name = "size") int size,
 			// Possible values: G (for Google), B (for Bing), and GB (for Google and Bing)
 			@RequestParam(defaultValue = "G", required = false, name = "engine") String engine,
-			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
+			// Appended to the fo
+			@RequestParam(defaultValue = "", required = false, name = "customName") String customName,
+			// Will we do pseudo relevance (blind) or human judged relevant data 
+			@RequestParam(defaultValue= "false", required = false, name = "brf") boolean blindRelevanceFeedback) {
 		if(!experimentRunning) {
 			experimentRunning = true;
 		} else {
@@ -143,6 +147,15 @@ public class ExperimentAPIController implements Serializable {
 			((EnhancedCQExperiment)enhancedCQExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
 					arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
 					countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
+		}
+		
+		// Set the datasource
+		if(blindRelevanceFeedback) {
+			LOGGER.info("pseudoRelevanceFeedbackApproach3Labeling will be used!");
+			enhancedCQExperiment.setDataSource((Data) applicationContext.getBean("pseudoRelevanceFeedbackApproach3Labeling"));
+		} else {
+			LOGGER.info("relevantApproach3Labeling will be used!");
+			enhancedCQExperiment.setDataSource((Data) applicationContext.getBean("relevantApproach3Labeling"));
 		}
 		
 		

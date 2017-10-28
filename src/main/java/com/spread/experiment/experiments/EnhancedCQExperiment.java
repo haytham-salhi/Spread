@@ -55,9 +55,11 @@ import com.spread.util.charts.SpreadBarChart;
 /**
  * 1- Set the variables first; otherwise they will take the default ones
  * 
- * 2- Set experimentName and algorithmName (to be appended in the folders names)
+ * 2- Set the data source
  * 
- * 3- Invoke Run
+ * 3- Set experimentName and algorithmName (to be appended in the folders names)
+ * 
+ * 4- Invoke Run
  * 
  * What makes this differs from EnhancedCQExperiment2 is that, in this we do simpleeval
  * 
@@ -85,11 +87,6 @@ public class EnhancedCQExperiment extends BaseExperiment {
 	
 	private StringBuilder anovaPctCorrect = new StringBuilder(); // One for the accuracies file (percentages)
 	private StringBuilder anovaNumCorrect = new StringBuilder(); // One for the correctly classified instances numbers 
-	
-	// [CR]: Change to new data
-	@Autowired
-	@Qualifier("relevantApproach3Labeling")
-	private Data data;
 	
 	private static final Logger LOGGER = LogManager.getLogger("experimentApproach3");
 	
@@ -172,7 +169,7 @@ public class EnhancedCQExperiment extends BaseExperiment {
 		this.IDF = iDF;
 		this.minTermFreqToKeep = minTermFreqToKeep;
 	}
-
+	
 	@Override
 	public void run() throws Exception {
 		if(getExperimentName() == null || getAlgorithmName() == null) {

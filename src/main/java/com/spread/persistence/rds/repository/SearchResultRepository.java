@@ -119,4 +119,14 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "AND regexp(searchResult.title, '[؟-ي]+') = 1 " // Those in arabic
 			+ "AND searchResult.innerPage IS NOT NULL") // Those having innerpage
 	List<SearchResult> findRelevantArabicWithInnerPagesByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("userId") Integer userId,@Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	
+	@Query("SELECT searchResult "
+			+ "FROM SearchResult searchResult "
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "WHERE query.id = :queryId AND searchEngine.code = :code AND searchEngine.location = :location AND searchEngine.language= :language "
+			+ "AND regexp(searchResult.title, '[؟-ي]+') = 1 " // Those in arabic
+			+ "AND searchResult.innerPage IS NOT NULL") // Those having innerpage
+	List<SearchResult> findArabicWithInnerPagesByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 }
