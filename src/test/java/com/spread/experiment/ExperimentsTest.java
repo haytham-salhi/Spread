@@ -70,7 +70,7 @@ public class ExperimentsTest {
 	private BaseExperiment aQDifferentKsExperiment;
 	
 	@Autowired
-	@Qualifier("enhancedCQExperiment2")
+	@Qualifier("enhancedCQExperiment")
 	private BaseExperiment enhancedCQExperiment;
 	
 	@Before
@@ -239,9 +239,9 @@ public class ExperimentsTest {
 	@Test
 	public void thirdCQExperimentTest() throws Exception {
 		// 1.
-		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google"); // The folder name of the experiment
+		enhancedCQExperiment.setExperimentName("experiment-approach3-labeling-google-2"); // The folder name of the experiment
 		enhancedCQExperiment.setAlgorithmName("k-means"); // the sub folder name of the experiment
-		enhancedCQExperiment.setSizeOfAmbiguousQueriesToLoaded(2); // Here to specify if we want to run for the first query only for test, 0 means all, >0 means it (e.g 1 means 1 query )
+		enhancedCQExperiment.setSizeOfAmbiguousQueriesToLoaded(1); // Here to specify if we want to run for the first query only for test, 0 means all, >0 means it (e.g 1 means 1 query )
 		
 		// 2.
 		// Variables
@@ -272,8 +272,8 @@ public class ExperimentsTest {
 		
 		// Vector-space related (dictionary related)
 		boolean countWords = true;
-		int wordsToKeep = 40; // the top-N most common words;
-		int wordsToKeepInCaseOfInnerPage = 300; // Only applied when detecting innerPage attribute added to training set
+		int wordsToKeep = 1000; // the top-N most common words;
+		int wordsToKeepInCaseOfInnerPage = 1000; // Only applied when detecting innerPage attribute added to training set
 		boolean TF = false; // damping
 		boolean IDF = true;
 		int nGramMinSize = 1; // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
@@ -281,7 +281,7 @@ public class ExperimentsTest {
 		int minTermFreqToKeep = 1; // TODO think about it?
 		
 		
-		((EnhancedCQExperiment2)enhancedCQExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
+		((EnhancedCQExperiment)enhancedCQExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
 				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
 				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
 		

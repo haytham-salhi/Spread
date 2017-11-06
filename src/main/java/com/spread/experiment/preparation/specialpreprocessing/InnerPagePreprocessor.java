@@ -15,7 +15,11 @@ public class InnerPagePreprocessor implements TextPreprocesser {
 		Document html = Jsoup.parse(text);
 		
 		String title = html.title();
-		String body = html.body().text();
+		String body = "";
+		
+		if(html.body() != null) {
+			body = html.body().text();
+		}
 		
 		return title + " " + body;
 	}
