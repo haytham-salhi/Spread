@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spread.config.RootConfig;
+import com.spread.experiment.RawSearchResult;
+import com.spread.experiment.data.Data;
 import com.spread.frontcontrollers.labeling.model.YesNoAnswer;
 import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
@@ -64,6 +67,10 @@ public class GeneralTest {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	@Qualifier("relevantApproach3Labeling")
+	private Data data;
 
 	
 	@Before
@@ -298,5 +305,40 @@ public class GeneralTest {
 //			}
 //		}
 	
+	}
+	
+	@Test
+	public void testFindAmbiguousQueriesWhoseResultsLabeled() throws Exception {
+		List<Query> results = queryRepository.findAmbiguousQueriesWhoseResultsLabeled(SearchEngineCode.BING, null);
+	
+		for (Query query : results) {
+			// [CR]: to official
+			System.out.println(query);
+			
+			
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			System.out.println("Its meanings are: " + clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getName()).collect(Collectors.toList()));
+			
+			List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+			
+			
+			List<String> meaningsList = data.getMeaningsForClearQueries(clearQueryIds);
+			System.out.println("Its meanings are: " + meaningsList);
+
+		
+		}
+		
+	}
+	
+	@Test
+	public void testGetLabeledSearchResultsBuQueryIdAndSearchEngine() throws Exception {
+		List<RawSearchResult> results = searchResultRepository.getLabeledSearchResultsBuQueryIdAndSearchEngine(88, SearchEngineCode.GOOGLE, true);
+		
+		System.out.println(results.size());
+		
+		for (RawSearchResult rawSeacrhResult : results) {
+			System.out.println(rawSeacrhResult);
+		}
+		
 	}
 }

@@ -136,7 +136,7 @@ public class ExperimentCQTest {
 					
 					
 					// -------- Preparation
-					WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName());
+					WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName(), LOGGER);
 					
 					// 1. 
 					preprocessor.prepare(featureSelectionMode, new ArabicStemmerKhoja(), false, false, false, false, false, false, false, false);

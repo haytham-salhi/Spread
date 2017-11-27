@@ -34,12 +34,13 @@ public class WClusteringPreprocessor {
 	// For evaluation
 	private Instances trainingDatasetWithClassAtrr;
 	
-	private static final Logger LOGGER = LogManager.getLogger("experimentApproach3");
+	private static Logger LOGGER;
 	
-	public WClusteringPreprocessor(List<RawSearchResult> rawSearchResults, List<String> meanings, String ambiguousQuery) {
+	public WClusteringPreprocessor(List<RawSearchResult> rawSearchResults, List<String> meanings, String ambiguousQuery, Logger logger) {
 		this.rawSearchResults = rawSearchResults;
 		this.meanings = meanings;
 		this.ambiguousQuery = ambiguousQuery;
+		WClusteringPreprocessor.LOGGER = logger;
 	}
 	
 	/**
@@ -218,7 +219,11 @@ public class WClusteringPreprocessor {
 			// Add here other attributes as needed 
 			
 			// Do these always
-			instance.setValue(classAttr, rawSearchResult.getMeaning());
+			// 1. Set the value of classAttr
+			if(rawSearchResult.getMeaning() != null) { // Will deal the value missing in case the meaning for that search result is null
+				instance.setValue(classAttr, rawSearchResult.getMeaning());
+			}
+			// 2. Set the data set
 			instance.setDataset(trainingDataset);
 			
 			// Add the instance

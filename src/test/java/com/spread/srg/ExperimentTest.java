@@ -127,7 +127,7 @@ public class ExperimentTest {
 		
 		
 		// -------- Preparation // TODO I added null after editing, check it if feasible here !
-		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, null);
+		WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, null, logger);
 		
 		// 1. 
 		preprocessor.prepare(FeatureSelectionModes.TITLE_WITH_SNIPPET, new ArabicStemmerKhoja(), false, false, false, false, false, false, false, false);

@@ -259,13 +259,23 @@
 		    <groupId>javax.el</groupId>
 		    <artifactId>el-api</artifactId>
 		    <version>2.2</version>
-		</dependency>
+		</dependency> 
 		
 		<!-- Weka API -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>nz.ac.waikato.cms.weka</groupId> -->
+<!-- 		    <artifactId>weka-stable</artifactId> -->
+<!-- 		    <version>3.8.0</version> -->
+<!-- 		</dependency> -->
+
+		<!-- I moved to dev-branch version because there the authors solved the bugs and implemented the features I reported! -->
+		<!-- Install it locally using install, use the one in the lib folder -->
+		<!-- And don't forget to install it on the JENKINS server before the build! -->
+		<!-- e.g., mvn install:install-file -Dfile=/home/ec2-user/salesforce.jar -DgroupId=com.sforce.soap -DartifactId=harri-sales-force -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=/var/lib/jenkins/.m2/repository  -->
 		<dependency>
-		    <groupId>nz.ac.waikato.cms.weka</groupId>
-		    <artifactId>weka-stable</artifactId>
-		    <version>3.8.0</version>
+			<groupId>mylocal.weka</groupId>
+			<artifactId>weka</artifactId>
+			<version>1.0</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/classificationViaClustering -->
@@ -279,6 +289,18 @@
 			      <artifactId>weka-dev</artifactId>
 		        </exclusion>
 		      </exclusions> 
+		</dependency>
+		
+		<dependency>
+		   <groupId>nz.ac.waikato.cms.weka</groupId>
+		   <artifactId>cascadeKMeans</artifactId>
+		   <version>1.0.4</version>
+ 		   <exclusions>
+		        <exclusion>  <!-- declare the exclusion here -->
+			      <groupId>nz.ac.waikato.cms.weka</groupId>
+			      <artifactId>weka-dev</artifactId>
+		        </exclusion>
+		   </exclusions>
 		</dependency>
 		
 		<!-- Jfree API -->

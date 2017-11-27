@@ -253,7 +253,7 @@ public class EnhancedCQExperiment2 extends BaseExperiment {
 						
 						
 						// -------- Preparation
-						WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName());
+						WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName(), LOGGER);
 						
 						// 1. 
 						preprocessor.prepare(featureSelectionSourceMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval,

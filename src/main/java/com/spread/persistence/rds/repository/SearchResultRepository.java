@@ -2,6 +2,7 @@ package com.spread.persistence.rds.repository;
 
 import java.util.List;
 
+import com.spread.experiment.RawSearchResult;
 import com.spread.persistence.rds.model.SearchResult;
 import com.spread.persistence.rds.model.enums.Location;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
@@ -129,4 +130,16 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "AND regexp(searchResult.title, '[؟-ي]+') = 1 " // Those in arabic
 			+ "AND searchResult.innerPage IS NOT NULL") // Those having innerpage
 	List<SearchResult> findArabicWithInnerPagesByQueryAndSearchEngine(@Param("queryId") Integer queryId, @Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
+	
+	@Query("SELECT new com.spread.experiment.RawSearchResult(searchResult.id, searchResult.title, searchResult.url, searchResult.snippet, CASE :withInnerPage WHEN true THEN searchResult.innerPage ELSE null END, meaning.name, meaning.clazz) "
+			+ "FROM UserSearchResultMeaningAssessment userSearchResultMeaningAssessment " 
+			+ "JOIN userSearchResultMeaningAssessment.searchResult searchResult "
+			+ "LEFT JOIN userSearchResultMeaningAssessment.meaning meaning "
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "WHERE searchEngine.code = :searchEngine "
+			+ "AND searchEngine.location = 'PALESTINE' AND searchEngine.language= 'AR' "
+			+ "AND query.id = :queryId")
+	List<RawSearchResult> getLabeledSearchResultsBuQueryIdAndSearchEngine(@Param("queryId") Integer queryId, @Param("searchEngine") SearchEngineCode code, @Param("withInnerPage") boolean withInnerPage);
 }

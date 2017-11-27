@@ -4,7 +4,7 @@
   
 	<!-- General files -->
 	<!-- Error log file -->
-	<RollingFile name="generalErrorFile" fileName="/mnt/tomcat/spread/logs/general_error_log.log"
+	<RollingFile name="generalErrorFile" fileName="/var/log/spread/general_error_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/general_error_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
@@ -12,7 +12,7 @@
 	<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/> 
 	</RollingFile>
 	<!-- Info log file -->
-	<RollingFile name="generalInfoFile" fileName="/mnt/tomcat/spread/logs/general_info_log.log"
+	<RollingFile name="generalInfoFile" fileName="/var/log/spread/general_info_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/general_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
@@ -24,7 +24,7 @@
 	</RollingFile>
 	
 	<!--Fetcher log file -->
-	<RollingFile name="fetcherInfoFile" fileName="/mnt/tomcat/spread/logs/fetcher_info_log.log"
+	<RollingFile name="fetcherInfoFile" fileName="/var/log/spread/fetcher_info_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/fetcher_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
@@ -36,7 +36,7 @@
 	</RollingFile>
 	
 	<!--experimentApproach3InfoFile -->
-	<RollingFile name="experimentApproach3InfoFile" fileName="/mnt/tomcat/spread/logs/experiment_approach3_info_log.log"
+	<RollingFile name="experimentApproach3InfoFile" fileName="/var/log/spread/experiment_approach3_info_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/experiment_approach3_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
@@ -47,7 +47,7 @@
 	</RollingFile>
 	
 	<!--experimentNoLabaledInfoFile -->
-	<RollingFile name="experimentNoLabaledInfoFile" fileName="/mnt/tomcat/spread/logs/experiment_no_labaled_info_log.log"
+	<RollingFile name="experimentNoLabaledInfoFile" fileName="/var/log/spread/experiment_no_labaled_info_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/experiment_no_labaled_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
@@ -58,8 +58,30 @@
 	</RollingFile>
 	
 	<!--Spread Arabic Preprocessor -->
-	<RollingFile name="arabicPreprocessorFile" fileName="/mnt/tomcat/spread/logs/arabic_preprocessor_info_log.log"
+	<RollingFile name="arabicPreprocessorFile" fileName="/var/log/spread/arabic_preprocessor_info_log.log"
 		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/arabic_preprocessor_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
+       </Filters>
+	</RollingFile>
+	
+	<!--"item4ExperimentInfoFile" -->
+	<RollingFile name="item4ExperimentInfoFile" fileName="/var/log/spread/item4_experiment_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/item4_experiment_info_log-%d{MM-dd-yyyy}-%i.log.gz">
+		<PatternLayout
+			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
+		<SizeBasedTriggeringPolicy size="50MB" />
+	<Filters>
+        <ThresholdFilter level="TRACE"/>
+       </Filters>
+	</RollingFile>
+	
+	<!--"item5ExperimentInfoFile" -->
+	<RollingFile name="item5ExperimentInfoFile" fileName="/var/log/spread/item5_experiment_info_log.log"
+		filePattern="/mnt/tomcat/spread/logs/$${date:yyyy-MM}/item5_experiment_info_log-%d{MM-dd-yyyy}-%i.log.gz">
 		<PatternLayout
 			pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %c{1} %M - %msg%xEx%n" />
 		<SizeBasedTriggeringPolicy size="50MB" />
@@ -107,6 +129,18 @@
    	<Logger name="spreadArabicPreprocessorLogger"
 		level="trace" additivity="false">
 		<appender-ref ref="arabicPreprocessorFile" level="trace" />
+	</Logger>
+	
+	<!-- item4Experiment logger -->
+   	<Logger name="item4Experiment"
+		level="trace" additivity="false">
+		<appender-ref ref="item4ExperimentInfoFile" level="trace" />
+	</Logger>
+	
+	<!-- item5Experiment logger -->
+   	<Logger name="item5Experiment"
+		level="trace" additivity="false">
+		<appender-ref ref="item5ExperimentInfoFile" level="trace" />
 	</Logger>
 	
   </Loggers>

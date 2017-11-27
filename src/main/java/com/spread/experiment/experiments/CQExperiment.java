@@ -56,6 +56,7 @@ import com.spread.util.charts.SpreadBarChart;
  * @author Haytham Salhi
  *
  */
+@Deprecated
 @Component
 public class CQExperiment extends BaseExperiment {
 	
@@ -210,7 +211,7 @@ public class CQExperiment extends BaseExperiment {
 					
 					
 					// -------- Preparation
-					WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName());
+					WClusteringPreprocessor preprocessor = new WClusteringPreprocessor(rawSearchResults, meaningsList, query.getName(), LOGGER);
 					
 					// 1. 
 					preprocessor.prepare(featureSelectionMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval,
