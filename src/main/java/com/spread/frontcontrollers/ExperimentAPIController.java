@@ -200,7 +200,7 @@ public class ExperimentAPIController implements Serializable {
 		
 		// 2.
 		// Variables
-		// int[] sizes = {size}; // No size needed so far
+		int[] sizes = {0}; // No size needed so far. I am using all results of A.Q. That's why!
 		FeatureSelectionModes[] featureSelectionModes = {FeatureSelectionModes.TITLE_ONLY,
 				FeatureSelectionModes.SNIPPET_ONLY,
 				FeatureSelectionModes.TITLE_WITH_SNIPPET,
@@ -250,7 +250,7 @@ public class ExperimentAPIController implements Serializable {
 		int nGramMaxSize = 1; // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
 		int minTermFreqToKeep = 1; // TODO think about it?
 		
-		((AQDynamicKExperiment)aQDynamicKExperiment).setVariables(null, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
+		((AQDynamicKExperiment)aQDynamicKExperiment).setVariables(sizes, featureSelectionModes, featureSpaceModes, searchEngineCode, withInnerPage, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval,
 				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
 				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
 		
