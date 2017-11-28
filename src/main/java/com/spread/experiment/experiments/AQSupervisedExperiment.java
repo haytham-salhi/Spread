@@ -195,7 +195,7 @@ public class AQSupervisedExperiment extends BaseExperiment {
 		if(getSizeOfAmbiguousQueriesToLoaded() > 0) {
 			pageRequest = new PageRequest(0, getSizeOfAmbiguousQueriesToLoaded());
 		}
-		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, pageRequest);
+		List<Query> ambiguousQueries = queryRepository.findAmbiguousQueriesWhoseResultsLabeled(searchEngineCode, pageRequest);
 
 		for (Query query : ambiguousQueries) {
 			LOGGER.info("Processing for A.Q: " + query.getName());
@@ -290,7 +290,6 @@ public class AQSupervisedExperiment extends BaseExperiment {
 							testRawSearchResults.addAll(bingRawSearchResults);
 						} else {
 							// Otherwise, get the results of that search engine
-							// [CR]: innerpage variable here has no effect in the following method. Always gets the inner page
 							testRawSearchResults = searchResultRepository.getLabeledSearchResultsBuQueryIdAndSearchEngine(query.getId(), searchEngineCode, withInnerPage); //data.getSearchResults(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
 						}
 						LOGGER.info("Size of search results of A.Q (Test set) is " + testRawSearchResults.size());

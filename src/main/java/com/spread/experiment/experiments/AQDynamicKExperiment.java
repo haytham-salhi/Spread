@@ -229,14 +229,13 @@ public class AQDynamicKExperiment extends BaseExperiment {
 							List<RawSearchResult> bingRawSearchResults = searchResultRepository.getLabeledSearchResultsBuQueryIdAndSearchEngine(query.getId(), SearchEngineCode.BING, withInnerPage); // You can add size in future if needed!
 							
 							LOGGER.info("Size of google search results is " + googleRawSearchResults.size());
-							LOGGER.info("Size of bing search results is " + googleRawSearchResults.size());
+							LOGGER.info("Size of bing search results is " + bingRawSearchResults.size());
 							
 							rawSearchResults =  new ArrayList<>();
 							rawSearchResults.addAll(googleRawSearchResults);
 							rawSearchResults.addAll(bingRawSearchResults);
 						} else {
 							// Otherwise, get the results of that search engine
-							// [CR]: innerpage variable here has no effect in the following method. Always gets the inner page
 							rawSearchResults = searchResultRepository.getLabeledSearchResultsBuQueryIdAndSearchEngine(query.getId(), searchEngineCode, withInnerPage); //data.getSearchResults(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, withInnerPage, size);
 						}
 						LOGGER.info("Size of search results is " + rawSearchResults.size());
