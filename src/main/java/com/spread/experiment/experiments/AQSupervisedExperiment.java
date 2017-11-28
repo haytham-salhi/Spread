@@ -64,7 +64,7 @@ import com.spread.util.charts.SpreadBarChart;
  *
  */
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@Component
+@Component("item5ExperimentBean")
 public class AQSupervisedExperiment extends BaseExperiment {
 	
 	@Autowired

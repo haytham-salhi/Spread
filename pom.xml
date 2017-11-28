@@ -273,8 +273,9 @@
 		<!-- And don't forget to install it on the JENKINS server before the build! -->
 		<!-- 1- The one in lib should be synced with the s3 in spread.data bucket -->
 		<!-- 2- From s3 to ~/weka -->
+		<!-- 3- Switch to jenkins user because the repo is owned by jenkins -->
 		<!-- 3- install -->
-		<!-- e.g., mvn install:install-file -Dfile=/home/ec2-user/salesforce.jar -DgroupId=com.sforce.soap -DartifactId=harri-sales-force -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=/var/lib/jenkins/.m2/repository  -->
+		<!-- e.g., ./mvn install:install-file -Dfile=/home/ubuntu/weka/weka.jar -DgroupId=mylocal.weka -DartifactId=weka -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=/var/lib/jenkins/.m2/repository  -->
 		<dependency>
 			<groupId>mylocal.weka</groupId>
 			<artifactId>weka</artifactId>

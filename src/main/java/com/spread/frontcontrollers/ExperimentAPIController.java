@@ -190,7 +190,7 @@ public class ExperimentAPIController implements Serializable {
 			// Appended to the fo
 			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
 		
-		BaseExperiment aQDynamicKExperiment = (BaseExperiment) applicationContext.getBean("aQDynamicKExperiment");
+		BaseExperiment aQDynamicKExperiment = (BaseExperiment) applicationContext.getBean("item4ExperimentBean");
 		
 		// 1.
 		aQDynamicKExperiment.setExperimentName("experiment-item4-dynamic-k-full_" + true + "-" + new Date().getTime() + "-" + customName); // The folder name of the experiment
@@ -281,7 +281,7 @@ public class ExperimentAPIController implements Serializable {
 			// Appended to the fo
 			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
 		
-		BaseExperiment aQSupervisedExperiment = (BaseExperiment) applicationContext.getBean("aQSupervisedExperiment");
+		BaseExperiment aQSupervisedExperiment = (BaseExperiment) applicationContext.getBean("item5ExperimentBean");
 		
 		// 1.
 		aQSupervisedExperiment.setExperimentName("experiment-item5-dynamic-k-full_" + true + "-" + new Date().getTime() + "-" + customName); // The folder name of the experiment
