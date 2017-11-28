@@ -271,6 +271,9 @@
 		<!-- I moved to dev-branch version because there the authors solved the bugs and implemented the features I reported! -->
 		<!-- Install it locally using install, use the one in the lib folder -->
 		<!-- And don't forget to install it on the JENKINS server before the build! -->
+		<!-- 1- The one in lib should be synced with the s3 in spread.data bucket -->
+		<!-- 2- From s3 to ~/weka -->
+		<!-- 3- install -->
 		<!-- e.g., mvn install:install-file -Dfile=/home/ec2-user/salesforce.jar -DgroupId=com.sforce.soap -DartifactId=harri-sales-force -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=/var/lib/jenkins/.m2/repository  -->
 		<dependency>
 			<groupId>mylocal.weka</groupId>
