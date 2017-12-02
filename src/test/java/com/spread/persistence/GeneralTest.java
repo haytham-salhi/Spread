@@ -309,7 +309,7 @@ public class GeneralTest {
 	
 	@Test
 	public void testFindAmbiguousQueriesWhoseResultsLabeled() throws Exception {
-		List<Query> results = queryRepository.findAmbiguousQueriesWhoseResultsLabeled(SearchEngineCode.BING, null);
+		List<Query> results = queryRepository.findAmbiguousQueriesWhoseResultsLabeled(SearchEngineCode.GOOGLE, null);
 	
 		for (Query query : results) {
 			// [CR]: to official

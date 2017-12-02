@@ -345,6 +345,9 @@ public class ExperimentAPIController implements Serializable {
 				arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval,
 				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
 		
+		// Set the datasource
+		aQSupervisedExperiment.setDataSource((Data) applicationContext.getBean("relevantApproach3Labeling"));
+		
 		// 3.
 		try {
 			aQSupervisedExperiment.run();
