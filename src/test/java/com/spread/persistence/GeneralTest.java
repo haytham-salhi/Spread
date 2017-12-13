@@ -2,6 +2,7 @@ package com.spread.persistence;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.spread.config.RootConfig;
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.Data;
+import com.spread.experiment.data.stemmers.LightStemmer;
 import com.spread.frontcontrollers.labeling.model.YesNoAnswer;
 import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
@@ -39,6 +41,9 @@ import com.spread.persistence.rds.repository.SearchResultRepository;
 import com.spread.persistence.rds.repository.TestRepository;
 import com.spread.persistence.rds.repository.UserRepository;
 import com.spread.persistence.rds.repository.UserSearchResultAssessmentRepository;
+import com.spread.util.nlp.arabic.SpreadArabicPreprocessor;
+
+import weka.core.stemmers.Stemmer;
 
 @ContextConfiguration(classes = { RootConfig.class })
 @WebAppConfiguration
@@ -340,5 +345,151 @@ public class GeneralTest {
 			System.out.println(rawSeacrhResult);
 		}
 		
+	}
+	
+	@Test
+	/**
+	 * I computed the normal words in mysql, see my notes in mac notes app for more details!
+	 * This method will not work unless you define COUNT int static in SpreadArabicPreprocessor.
+	 * @throws Exception
+	 */
+	public void computeStopWordsOnly() throws Exception {
+		
+		SearchEngineCode[] engines = {SearchEngineCode.GOOGLE, SearchEngineCode.BING};
+		
+		for (SearchEngineCode searchEngineCode : engines) {
+			//PageRequest pr = new PageRequest(0, 10300);
+			//List<SearchResult> results = searchResultRepository.findOfficialBySearchEngineWithBasicInfo(searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr);
+			
+			PageRequest pr = new PageRequest(0, 100);
+			List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+			List<SearchResult> results = new ArrayList<>();
+			for (Query query : ambiguousQueries) {
+				List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+				List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+				
+				results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+				
+				for (Integer integer : clearQueryIds) {
+					results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(integer, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+				}
+			}
+			
+			System.out.println("For " + searchEngineCode + ":");
+			
+			System.out.println(results.size());
+			
+			SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+			
+			//SpreadArabicPreprocessor.COUNT = 0;
+			for (SearchResult seacrhResult : results) {
+				spreadArabicPreprocessor.removeStopWords(seacrhResult.getTitle());
+			}
+			//System.out.println("Number of stop words detected (title) = " + SpreadArabicPreprocessor.COUNT);
+			//System.out.println("Average: " + (double)SpreadArabicPreprocessor.COUNT / results.size());
+			
+			//SpreadArabicPreprocessor.COUNT = 0;
+			for (SearchResult seacrhResult : results) {
+				spreadArabicPreprocessor.removeStopWords(seacrhResult.getSnippet());
+			}
+			//System.out.println("Number of stop words detected (snippet) = " + SpreadArabicPreprocessor.COUNT);
+			//System.out.println("Average: " + (double)SpreadArabicPreprocessor.COUNT / results.size());
+			
+			//SpreadArabicPreprocessor.COUNT = 0;
+			for (SearchResult seacrhResult : results) {
+				spreadArabicPreprocessor.removeStopWords(seacrhResult.getTitle() + " " + seacrhResult.getSnippet());
+			}
+			//System.out.println("Number of stop words detected (title + snippet) = " + SpreadArabicPreprocessor.COUNT);
+			//System.out.println("Average: " + (double)SpreadArabicPreprocessor.COUNT / results.size());
+		}
+	}
+	
+	/**
+	 * This logic has been enhanced and moved to an API. See @OperationsController.
+	 * @throws Exception
+	 */
+	@Test
+	public void computeAvergaeTermsOfDictionary() throws Exception {
+		
+		// Text preprocessing related
+		Stemmer stemmer = new LightStemmer(); 
+		boolean letterNormalization = true;
+		boolean diacriticsRemoval = true;
+		boolean puncutationRemoval = true;
+		boolean nonArabicWordsRemoval = true;
+		boolean arabicNumbersRemoval = true;
+		boolean nonAlphabeticWordsRemoval = true;
+		boolean stopWordsRemoval = true;
+		
+		SearchEngineCode[] engines = {SearchEngineCode.GOOGLE, SearchEngineCode.BING};
+		
+		for (SearchEngineCode searchEngineCode : engines) {
+			
+			//PageRequest pr = new PageRequest(0, 10300);
+			//List<SearchResult> results = searchResultRepository.findOfficialBySearchEngineWithBasicInfo(searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr);
+			
+			PageRequest pr = new PageRequest(0, 100);
+			List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+			List<SearchResult> results = new ArrayList<>();
+			for (Query query : ambiguousQueries) {
+				List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+				List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+				
+				results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+				
+				for (Integer integer : clearQueryIds) {
+					results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(integer, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+				}
+			}
+			
+			System.out.println("For " + searchEngineCode + ":");
+
+			SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+			
+			int countOfTerms = 0;
+			int countOfResultsThatHasTermsAfterPreprocesssing = 0;
+			for (SearchResult seacrhResult : results) {
+				String text = spreadArabicPreprocessor.process(seacrhResult.getTitle(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+				ArrayList<String> terms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+				
+				if(terms != null && !terms.isEmpty()) {
+					countOfTerms += terms.size();
+					countOfResultsThatHasTermsAfterPreprocesssing++;
+				}
+			}
+			System.out.println("Number of terms detected (title) = " + countOfTerms);
+			System.out.println("Number of resutls that has terms after preprocessing: " + countOfResultsThatHasTermsAfterPreprocesssing + " out of " + results.size());
+			System.out.println("Average: " + (double)countOfTerms / countOfResultsThatHasTermsAfterPreprocesssing);
+			
+			countOfTerms = 0;
+			countOfResultsThatHasTermsAfterPreprocesssing = 0;
+			for (SearchResult seacrhResult : results) {
+				String text = spreadArabicPreprocessor.process(seacrhResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+				ArrayList<String> terms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+				
+				if(terms != null && !terms.isEmpty()) {
+					countOfTerms += terms.size();
+					countOfResultsThatHasTermsAfterPreprocesssing++;
+				}
+			}
+			System.out.println("Number of terms detected (snippet) = " + countOfTerms);
+			System.out.println("Number of resutls that has terms after preprocessing: " + countOfResultsThatHasTermsAfterPreprocesssing + " out of " + results.size());
+			System.out.println("Average: " + (double)countOfTerms / countOfResultsThatHasTermsAfterPreprocesssing);
+			
+			countOfTerms = 0;
+			countOfResultsThatHasTermsAfterPreprocesssing = 0;
+			for (SearchResult seacrhResult : results) {
+				String text = spreadArabicPreprocessor.process(seacrhResult.getTitle() + " " + seacrhResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+				ArrayList<String> terms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(text);
+				
+				if(terms != null && !terms.isEmpty()) {
+					countOfTerms += terms.size();
+					countOfResultsThatHasTermsAfterPreprocesssing++;
+				}
+			}
+			System.out.println("Number of terms detected (title + snippet) = " + countOfTerms);
+			System.out.println("Number of resutls that has terms after preprocessing: " + countOfResultsThatHasTermsAfterPreprocesssing + " out of " + results.size());
+			System.out.println("Average: " + (double)countOfTerms / countOfResultsThatHasTermsAfterPreprocesssing);
+		}
 	}
 }

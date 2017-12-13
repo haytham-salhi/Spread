@@ -142,4 +142,15 @@ public interface SearchResultRepository extends CrudRepository<SearchResult, Int
 			+ "AND searchEngine.location = 'PALESTINE' AND searchEngine.language= 'AR' "
 			+ "AND query.id = :queryId")
 	List<RawSearchResult> getLabeledSearchResultsBuQueryIdAndSearchEngine(@Param("queryId") Integer queryId, @Param("searchEngine") SearchEngineCode code, @Param("withInnerPage") boolean withInnerPage);
+	
+	@Query("SELECT new com.spread.persistence.rds.model.SearchResult(searchResult.id, searchResult.title, searchResult.url, searchResult.snippet) "
+			+ "FROM SearchResult searchResult " 
+			+ "JOIN searchResult.querySearchEngine querySearchEngine "
+			+ "JOIN querySearchEngine.query query "
+			+ "JOIN querySearchEngine.searchEngine searchEngine "
+			+ "WHERE query.isOfficial = true "
+			+ "AND searchEngine.code = :code "
+			+ "AND searchEngine.location = :location "
+			+ "AND searchEngine.language= :language")
+	List<SearchResult> findOfficialBySearchEngineWithBasicInfo(@Param("code") SearchEngineCode code, @Param("location") Location location, @Param("language") SearchEngineLanguage language, Pageable pageable);
 }

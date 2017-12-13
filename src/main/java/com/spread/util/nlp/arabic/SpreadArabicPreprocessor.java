@@ -388,7 +388,7 @@ public class SpreadArabicPreprocessor {
 	 * @param currentText
 	 * @return
 	 */
-	private ArrayList<String> tokenizeBySpaceAndRemoveExcessiveSpaces(String currentText) {
+	public ArrayList<String> tokenizeBySpaceAndRemoveExcessiveSpaces(String currentText) {
 		ArrayList<String> tt=new ArrayList<String>();
 		  StringBuffer word = new StringBuffer ( );
 		  currentText=currentText+" ";
