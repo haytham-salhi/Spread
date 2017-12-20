@@ -26,11 +26,15 @@ import org.springframework.stereotype.Component;
 
 import weka.classifiers.meta.ClassificationViaClustering;
 import weka.clusterers.ClusterEvaluation;
+import weka.clusterers.FilteredClusterer;
 import weka.clusterers.SimpleKMeans;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.stemmers.Stemmer;
+import weka.filters.Filter;
+import weka.filters.MultiFilter;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import com.google.common.io.Files;
 import com.spread.experiment.RawSearchResult;
@@ -252,8 +256,15 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						trainingDatasetPreprocesser.prepare(featureSelectionSourceMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval,
 								nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval);
 						
-						// 2.
-						trainingDatasetPreprocesser.buildVectorSpaceDataset(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, featureSpaceMode.getMin(), featureSpaceMode.getMax(), minTermFreqToKeep);
+						// 2. This will prpeare the filter only, will not convert data into VSM, also, will make copy of training dataset with classatrr and one without clasattr
+						StringToWordVector toVectorsfilter = trainingDatasetPreprocesser.getVsmFilter(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, featureSpaceMode.getMin(), featureSpaceMode.getMax(), minTermFreqToKeep);
+						
+						// Here just as instances, not in VSM,
+						// This will be used for training the model
+						Instances trainingDatasetAsInstancesWithNoClassAttr = trainingDatasetPreprocesser.getTrainingDataSet();
+						// This will be used for clusters-to-classes evaluation 
+						// But no need here because we will evaluate against test data
+						//Instances trainingDatasetAsInstancesWithClassAttr = trainingDatasetPreprocesser.getTrainingDataSetWithClassAttr();
 						
 						// --------- Clustering
 						// TODO Refactor this for other algorithms
@@ -265,7 +276,15 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						String[] opts= {"-init", "1"};
 						kmeansModel.setOptions(opts);
 						// Build the model
-						kmeansModel.buildClusterer(trainingDatasetPreprocesser.getTrainingDataSet());
+						//kmeansModel.buildClusterer(trainingDatasetPreprocesser.getTrainingDataSet());
+						
+						MultiFilter multiFilter = new MultiFilter();
+						multiFilter.setFilters(new Filter[] {toVectorsfilter});
+						
+						FilteredClusterer fc = new FilteredClusterer();
+						fc.setFilter(multiFilter);
+						fc.setClusterer(kmeansModel);
+						fc.buildClusterer(trainingDatasetAsInstancesWithNoClassAttr);
 						
 						LOGGER.info("Step 1.: Done Building the supervised model (composed of results for AQ's clear qeuries (Training set)) for the A.Q: " + query.getName());
 
@@ -301,8 +320,9 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						testDatasetPreprocessor.prepare(featureSelectionSourceMode, stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval,
 								nonAlphabeticWordsRemoval, stopWordsRemoval, ambiguousQueryRemoval);
 						
-						// 2.
-						testDatasetPreprocessor.buildVectorSpaceDataset(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, featureSpaceMode.getMin(), featureSpaceMode.getMax(), minTermFreqToKeep);
+						// 2. No need to build vector space hoon aslan, la2enno serna nesta5dem el filtered
+						// for test data, I called this just to make copy of training data, one with class atrr and one with no class att, also, to set wtk conditonally based on if its inner ppage or not
+						testDatasetPreprocessor.getVsmFilter(countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, featureSpaceMode.getMin(), featureSpaceMode.getMax(), minTermFreqToKeep);
 						
 						LOGGER.info("Step 2.: Done Getting and preprocessing labeled search results (Test set) for the A.Q: " + query.getName());
 						
@@ -312,24 +332,26 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						// --------- Evaluation
 						// Evaluate against labeled test data set
 						ClusterEvaluation eval = new ClusterEvaluation();
-						eval.setClusterer(kmeansModel);
+						eval.setClusterer(fc);
 						// Even though I am using ClassificationViaClustering, I had to use ClusterEvaluation just for getting the assignments
 						
-						Instances labeledTestDataset = testDatasetPreprocessor.getTrainingDataSetWithClassAttr(); // This is the test data set actually
-						labeledTestDataset.setClassIndex(0);
+						// Just instances without VSM
+						Instances labeledTestDatasetWithClassAttr = testDatasetPreprocessor.getTrainingDataSetWithClassAttr(); // This is the test data set actually
+						labeledTestDatasetWithClassAttr.setClassIndex(labeledTestDatasetWithClassAttr.numAttributes() - 1);
 						
-						Instances labeledTrainingDataset = trainingDatasetPreprocesser.getTrainingDataSetWithClassAttr();
-						labeledTrainingDataset.setClassIndex(0);
+						// Just instances without VSM
+						Instances trainingDatasetAsInstancesWithClassAttr = trainingDatasetPreprocesser.getTrainingDataSetWithClassAttr();
+						trainingDatasetAsInstancesWithClassAttr.setClassIndex(trainingDatasetAsInstancesWithClassAttr.numAttributes() - 1);
 						
-						eval.evaluateClusterer(labeledTestDataset);
+						eval.evaluateClusterer(labeledTestDatasetWithClassAttr);
 						String evaluationString = eval.clusterResultsToString(); 
 
 						ClassificationViaClustering classificationViaClustering = new ClassificationViaClustering();
-						classificationViaClustering.setClusterer(kmeansModel);
-						classificationViaClustering.buildClassifier(labeledTrainingDataset); // This will call kmeansModel.buildClustere but on a copy of the passed one :)
-						OtherWayForMyMetric evaluation = new OtherWayForMyMetric(labeledTrainingDataset);
+						classificationViaClustering.setClusterer(fc);
+						classificationViaClustering.buildClassifier(trainingDatasetAsInstancesWithClassAttr); // This will call kmeansModel.buildClustere but on a copy of the passed one :)
+						OtherWayForMyMetric evaluation = new OtherWayForMyMetric(trainingDatasetAsInstancesWithClassAttr);
 						try {
-							evaluation.evaluateModel(classificationViaClustering, labeledTestDataset);
+							evaluation.evaluateModel(classificationViaClustering, labeledTestDatasetWithClassAttr);
 						} catch (Exception e) {
 							System.err.println(e);
 							LOGGER.error(e.getMessage());
@@ -390,9 +412,9 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						}
 						
 						// Store the training data set just for debugging and investigation
-						storeDataset(labeledTrainingDataset, dirPath, "training");
+						storeDataset(trainingDatasetAsInstancesWithClassAttr, dirPath, "training");
 						// Store Test data set
-						storeDataset(labeledTestDataset, dirPath, "test");
+						storeDataset(labeledTestDatasetWithClassAttr, dirPath, "test");
 						
 						//anovaFile.append(correctlyClusteredPrc + ",");
 						anovaPctCorrect.append(evaluation.pctCorrect() + ",");

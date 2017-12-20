@@ -2,7 +2,6 @@ package com.spread.experiment.preparation;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import weka.core.Attribute;
@@ -234,6 +233,8 @@ public class WClusteringPreprocessor {
 	/**
 	 * This shoud be called after prepare
 	 * 
+	 * it should be synced with the below filter!!
+	 * 
 	 * @param countWords If set to true, a count matrix will be used. Otherwise, incidence matrix will be used.
 	 * @param wordsToKeep // Per class if there is a class
 	 * @param TF
@@ -273,7 +274,96 @@ public class WClusteringPreprocessor {
 		// 3. I want to do preprocessing (StringToVector Filter ;))
 		StringToWordVector filter = new StringToWordVector(); // It converts it to SparseData Repesentation :)))
 		
+		filter.setStemmer(null);
+		filter.setOutputWordCounts(countWords);
+		
+		if(trainingDataset.attribute("innerPage") != null) {
+			filter.setWordsToKeep(wordsToKeepInCaseOfInnerPage);
+		} else {
+			filter.setWordsToKeep(wordsToKeep);
+		}
+		
+		filter.setTFTransform(TF);
+		filter.setIDFTransform(IDF);
+		filter.setDoNotOperateOnPerClassBasis(true); // I think it should be like that because we do clustering
+		filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
+		filter.setLowerCaseTokens(true);
+ 		//filter.setTokenizer(value); // default is worktokenizaer (we can use ngrams here)
+		NGramTokenizer nGramTokenizer = new NGramTokenizer(); 
+		nGramTokenizer.setNGramMinSize(nGramMinSize); // 1 and 1 mean tokenize 1 gram (1 word), 2 and 2 mean toenize 2-gram words 
+		nGramTokenizer.setNGramMaxSize(nGramMaxSize); // If you specify a range 1, 2. That means 1-gram and 2-gram will be included in the dictionary (lexicon)
+		filter.setTokenizer(nGramTokenizer);
+		
+		filter.setMinTermFreq(minTermFreqToKeep); // Default is 1, the idea is to prune the dictionary of low frequency terms
+		
+		// [Eibe]: The rule is to call setInputFormat() after you have specified the options for the filter, because setInpuFomat() may configure the filtering process based on the options that have been set.
 		filter.setInputFormat(trainingDataset);
+
+		
+		trainingDataset = Filter.useFilter(trainingDataset, filter);
+		// Now it is represented in document vector space
+		
+		// We can shuffle if needed 
+		//trainingdataSetFiltered.randomize(new Random()); // For shuffling the instances :)))))
+		
+		// 4. 
+		// Make a copy for evaluation
+		trainingDatasetWithClassAtrr = new Instances(trainingDataset);
+
+		// Let's remove the class attribute as it is no longer needed for clustering
+		String[] opts= {"-R", "1"};
+		Remove remove = new Remove(); // There are many types of filters!!
+		remove.setOptions(opts);
+		remove.setInputFormat(trainingDataset);
+		// Apply the filter
+		trainingDataset = Filter.useFilter(trainingDataset, remove);
+	}
+	
+	
+	/**
+	 * This is very special to item#5, it should be synced with the above filter!!
+	 * It can be enhanced but for the sake of speed
+	 * 
+	 * @param countWords If set to true, a count matrix will be used. Otherwise, incidence matrix will be used.
+	 * @param wordsToKeep // Per class if there is a class
+	 * @param TF
+	 * @param IDF
+	 * @param nGramMaxSize the max of n
+	 * @param nGramMinSize the min of n
+	 * @return 
+	 * @throws Exception
+	 */
+	public StringToWordVector getVsmFilter(
+			boolean countWords,
+			int wordsToKeep,
+			int wordsToKeepInCaseOfInnerPage,
+			boolean TF,
+			boolean IDF,
+			int nGramMinSize,
+			int nGramMaxSize,
+			int minTermFreqToKeep) throws Exception {
+		
+		if(trainingDataset == null) {
+			throw new Exception("Training data set is null. Make sure that you call prepare before this!");
+		}
+//		filter.setInputFormat(trainingSet);
+//		filter.setStemmer(new TestStemmer());
+//		filter.setOutputWordCounts(false); // to make it count matrix instead set it to true. False indicates to incidence matrix ;)
+//		filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NORMALIZE_ALL, StringToWordVector.TAGS_FILTER));
+		//filter.setTFTransform(false);
+		//filter.setIDFTransform(true);
+		//filter.setAttributeIndices("first-3"); Default is all string attributes will bo converted to words vectors
+		//filter.setMinTermFreq(newMinTermFreq); // Default is 1, the idea is to prune the dictionary of low frequency terms
+		//filter.setWordsToKeep(newWordsToKeep);
+		//filter.setDoNotOperateOnPerClassBasis(false); Default false If this is set, the maximum number of words and the minimum term frequency is not enforced on a per-class basis but based on the documents in all the classes (even if a class attribute is set).
+		//filter.setInvertSelection(invert); Inout selection mode, default is false
+		//filter.setLowerCaseTokens(false); no care for arabic
+		//filter.setTokenizer(value); Tokenizer algorithm to use
+		//filter.setStopwordsHandler();
+		
+		// 3. I want to do preprocessing (StringToVector Filter ;))
+		StringToWordVector filter = new StringToWordVector(); // It converts it to SparseData Repesentation :)))
+		
 		filter.setStemmer(null);
 		filter.setOutputWordCounts(countWords);
 		
@@ -296,10 +386,9 @@ public class WClusteringPreprocessor {
 		
 		filter.setMinTermFreq(minTermFreqToKeep); // Default is 1, the idea is to prune the dictionary of low frequency terms
 
-		
-		trainingDataset = Filter.useFilter(trainingDataset, filter);
-		// Now it is represented in document vector space
-		
+		// [Eibe]: The rule is to call setInputFormat() after you have specified the options for the filter, because setInpuFomat() may configure the filtering process based on the options that have been set.
+		filter.setInputFormat(trainingDataset);
+
 		// We can shuffle if needed 
 		//trainingdataSetFiltered.randomize(new Random()); // For shuffling the instances :)))))
 		
@@ -314,6 +403,8 @@ public class WClusteringPreprocessor {
 		remove.setInputFormat(trainingDataset);
 		// Apply the filter
 		trainingDataset = Filter.useFilter(trainingDataset, remove);
+		
+		return filter;
 	}
 	
 	// The output after calling prepare, buildVectorSpaceDataset
