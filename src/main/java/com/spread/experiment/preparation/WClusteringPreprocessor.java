@@ -397,7 +397,7 @@ public class WClusteringPreprocessor {
 		trainingDatasetWithClassAtrr = new Instances(trainingDataset);
 
 		// Let's remove the class attribute as it is no longer needed for clustering
-		String[] opts= {"-R", "1"};
+		String[] opts= {"-R", "" + trainingDataset.numAttributes()};
 		Remove remove = new Remove(); // There are many types of filters!!
 		remove.setOptions(opts);
 		remove.setInputFormat(trainingDataset);
