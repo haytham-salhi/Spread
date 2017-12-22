@@ -24,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import weka.classifiers.meta.ClassificationViaClustering;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.FilteredClusterer;
 import weka.clusterers.SimpleKMeans;
@@ -43,6 +42,7 @@ import com.spread.experiment.evaluation.OtherWayForMyMetric;
 import com.spread.experiment.preparation.FeatureSelectionModes;
 import com.spread.experiment.preparation.FeatureSpaceModes;
 import com.spread.experiment.preparation.WClusteringPreprocessor;
+import com.spread.experiment.tempuntilofficialrelease.ClassificationViaClustering108;
 import com.spread.persistence.rds.model.Meaning;
 import com.spread.persistence.rds.model.Query;
 import com.spread.persistence.rds.model.enums.Location;
@@ -346,7 +346,7 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						eval.evaluateClusterer(labeledTestDatasetWithClassAttr);
 						String evaluationString = eval.clusterResultsToString(); 
 
-						ClassificationViaClustering classificationViaClustering = new ClassificationViaClustering();
+						ClassificationViaClustering108 classificationViaClustering = new ClassificationViaClustering108();
 						classificationViaClustering.setClusterer(fc);
 						classificationViaClustering.buildClassifier(trainingDatasetAsInstancesWithClassAttr); // This will call kmeansModel.buildClustere but on a copy of the passed one :)
 						OtherWayForMyMetric evaluation = new OtherWayForMyMetric(trainingDatasetAsInstancesWithClassAttr);
