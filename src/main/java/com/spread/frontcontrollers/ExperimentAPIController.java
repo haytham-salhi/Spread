@@ -279,7 +279,9 @@ public class ExperimentAPIController implements Serializable {
 			// Possible values: G (for Google), B (for Bing), and GB (for Google and Bing)
 			@RequestParam(defaultValue = "G", required = false, name = "engine") String engine,
 			// Appended to the fo
-			@RequestParam(defaultValue = "", required = false, name = "customName") String customName) {
+			@RequestParam(defaultValue = "", required = false, name = "customName") String customName,
+			// Will we do pseudo relevance (blind) or human judged relevant data (as training of course) 
+			@RequestParam(defaultValue= "false", required = false, name = "brf") boolean blindRelevanceFeedback) {
 		
 		BaseExperiment aQSupervisedExperiment = (BaseExperiment) applicationContext.getBean("item5ExperimentBean");
 		
@@ -346,7 +348,14 @@ public class ExperimentAPIController implements Serializable {
 				countWords, wordsToKeep, wordsToKeepInCaseOfInnerPage, TF, IDF, minTermFreqToKeep);
 		
 		// Set the datasource
-		aQSupervisedExperiment.setDataSource((Data) applicationContext.getBean("relevantApproach3Labeling"));
+		// Here for training dataset
+		if(blindRelevanceFeedback) {
+			LOGGER.info("pseudoRelevanceFeedbackApproach3Labeling will be used!");
+			aQSupervisedExperiment.setDataSource((Data) applicationContext.getBean("pseudoRelevanceFeedbackApproach3Labeling"));
+		} else {
+			LOGGER.info("relevantApproach3Labeling will be used!");
+			aQSupervisedExperiment.setDataSource((Data) applicationContext.getBean("relevantApproach3Labeling"));
+		}
 		
 		// 3.
 		try {
