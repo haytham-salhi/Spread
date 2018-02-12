@@ -11,8 +11,17 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +52,7 @@ import com.spread.config.RootConfig;
 import com.spread.fetcher.SearchEngineFetcher;
 import com.spread.frontcontrollers.HelloController;
 import com.spread.persistence.rds.model.enums.SearchEngineCode;
+import com.spread.util.nlp.arabic.SpreadArabicPreprocessor;
 
 public class GeneralNonSpringTest {
 	
@@ -173,4 +183,62 @@ public class GeneralNonSpringTest {
 		
 	}
 	
+	@Test
+	public void testWriting() throws Exception {
+		String s = "Haytham";
+		
+		Files.write(Paths.get("test.txt"), (s + System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+	}
+	
+	@Test
+	public void testInter() throws Exception {
+		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+		
+		String s1 = "هل هل هل يي سي ";//"حين يقال رحم الله فلان كان وكان كان اسماؤنا وبها سمت اسماؤنا";
+		String s2 = "ماو ماااا ماااااا";//"اعمارنا اعمالتا وبها سمت اسماؤنا نمضي وتبقى ها وتبقى هنا ";
+			
+		java.util.List<String> list1 = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(s1);	
+		java.util.List<String> list2 = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(s2);	
+		
+		
+		System.out.println(list1);
+		System.out.println(list2);
+		
+		Set<String> set1 = list1.stream().collect(Collectors.toSet());
+		Set<String> set2 = list2.stream().collect(Collectors.toSet());	
+		
+		System.out.println(set1);
+		System.out.println(set2);
+		
+		System.out.println(intersection(set1, set2));
+		System.out.println(union(set1, set2));
+
+		
+		
+		
+
+
+		
+		
+		
+
+		
+
+		
+	}
+	
+	public static int intersection(Set<String> a, Set<String> b) {
+		Set<String> intersection = new HashSet<>(a);
+		intersection.retainAll(b);
+		
+		return intersection.size();
+	}
+	
+	public static int union(Set<String> a, Set<String> b) {
+		Set<String> union = new HashSet<>(a);
+		union.addAll(b);
+		
+		return union.size();
+	}
 }

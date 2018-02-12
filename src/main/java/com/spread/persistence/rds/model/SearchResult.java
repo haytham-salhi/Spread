@@ -226,4 +226,10 @@ public class SearchResult {
 				+ ", createdDate=" + createdDate + ", updatedDate="
 				+ updatedDate + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return ((SearchResult) obj).getUrl().trim().equals(getUrl().trim());
+	}
 }

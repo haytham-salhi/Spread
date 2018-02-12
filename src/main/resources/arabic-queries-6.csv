@@ -1,0 +1,9 @@
+query,meaning,description,class,formulation startegy
+صخر,شركة,غير متوفر,company,APPEND
+,صخر بن عمرو أخو الخنساء,غير متوفر,person,NO_APPEND
+,صخر حجري,غير متوفر,rock,NO_APPEND
+نهاوند,مقام موسيقي,,maqam,APPEND,
+,مدينة فارسية,,city,APPEND,جغرافيا
+,مدينة نهاوند الفارسية,,city,NO_APPEND,جغرافيا
+العربية,اللغة العربية,غير متوفر,language,NO_APPEND
+,قناة العربية الاخبارية,غير متوفر,tv channel,NO_APPEND

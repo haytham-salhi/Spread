@@ -1,0 +1,78 @@
+query,meaning,description,class,formulation startegy,
+المالكي,المذهب,أحد مذاهب السنة الأربع الكبرى، ويتبع مذهب الإمام مالك بن أنس,doctrine,APPEND,
+,نوري المالكي,رئيس الوزراء العراقي الحالي ,person,NO_APPEND,
+,مراد المالكي,لاعب كرة قدم تونسي,person,NO_APPEND,
+,فايز المالكي,ممثل سعودي كوميدي ,person,NO_APPEND,
+عمان,سلطنة,دولة عربية تقع في آسيا,country,APPEND,جغرافيا
+,مدينة,عاصمة الأردن,city,APPEND,جغرافيا
+,دولة سلطنة عمان,غير متوفر,country,NO_APPEND
+,مدينة عمان عاصمة الاردن,غير متوفر,city,NO_APPEND
+الإمارات,دولة,دولة خليجية,country,APPEND,جغرافيا
+,طيران,شركة طيران إماراتية مقرها دبي,company,APPEND,
+أمازون,نهر,أعظم أنهار العالم ويقع في أمريكا الجنوبية,river,APPEND,جغرافيا
+,غابة,الاستوائية وتحتوي تنوع هائل من الكائنات الحية,forest,APPEND,جغرافيا
+,غابة,الاستوائية وتحتوي تنوع هائل من الكائنات الحية,forest,APPEND,جغرافيا
+,نهر أمازون أمريكا الجنوبية,غير متوفر,river,NO_APPEND
+,شركة امازون للتجارة والحوسبة,غير متوفر,company,NO_APPEND
+واشنطن,العاصمة,,city,APPEND,جغرافيا
+,ولاية,,state,APPEND,جغرافيا
+,جورج واشنطن,,person,NO_APPEND,
+شعر,شعر الجسم,زوائد بروتينية تنمو على أجسام الثدييات,biomaterial,NO_APPEND,
+,شعر أدب,كلام موزون مقفى قصداً,literary genre,NO_APPEND,
+,قصيدة,ضرب شعري من ضروب الأدب العربي,poem,NO_APPEND,
+بوش,جورج ه. و. بوش (الأب),,person,NO_APPEND,
+,جورج و. بوش (الابن),,person,NO_APPEND,
+,جب بوش (والي فلوريدا),أخ جورج و. بوش,person,NO_APPEND,
+,بريسكت بوش,"عضو مجلس الشيوخ سابقا, جد جورج و. بوش",person,NO_APPEND,
+,روبرت بوش,رجل صناعي ألماني,person,NO_APPEND,
+,شركة,شركة كهربائيات ألمانية,company,APPEND,
+,فيلم,,film,APPEND,
+,طعام سوداني,طريقة لطبخ الفول في السودان,food,APPEND,
+كلينتون,بيل كلينتون,رئيس أمريكي سابق,person,NO_APPEND,
+,هيلاري كلينتون,سيناتور أمريكية وزوجة الرئيس الأمريكي السابق بيل كلينتون,person,NO_APPEND,
+,مدينة كلينتون كارولاينا,مدينة أمريكية تقع في ولاية كارولاينا الشمالية,city,NO_APPEND,
+,مقاطعة كلينتون نيويورك,,county,NO_APPEND,
+,مقاطعة كلينتون إلينوي,,county,NO_APPEND,
+,مقاطعة كلينتون آيوا,,county,NO_APPEND,
+البقرة,حيوان,حيوان من الثدييات,cattle,APPEND,
+,سورة,ثاني سور القرآن ، عدد آياتها 286,sura,APPEND,
+جرار,جرار زراعي,اسم لأداة المحراث الزراعية,vehicle,NO_APPEND,
+,العائلة الفلسطينية,عائلة فلسطينية بالضفة الغربية والأردن,family,APPEND,
+,بسام جرار,الشيخ بسام جرار,person,NO_APPEND,
+,جرار القدوة,عضو مجلس ثوري,person,NO_APPEND,
+آرمسترونج,نيل آرمسترونج,رائد فضاء أمريكي,person,NO_APPEND,
+,لانس آرمسترونج,,person,NO_APPEND,
+,كارن أرمسترونغ,,person,NO_APPEND,
+,ارمسترونغ ميزوري,,city,NO_APPEND,جغرافيا
+,مقاطعة آرمسترونغ تكساس,,county,NO_APPEND,جغرافيا
+عدنان إبراهيم,المخرج,عراقي,person,APPEND,
+,المفكر,فلسطيني,person,APPEND,
+,عدنان ابراهيم المخرج العراقي,غير متوفر,person,NO_APPEND
+,الدكتور الشيخ عدنان ابراهيم,غير متوفر,person,NO_APPEND
+مايكل جونسون,العداء,عداء أمريكي سابق,person,APPEND,
+,لاعب كرة قدم,لاعب كرة قدم إنجليزي,person,APPEND,
+اسيا,قارة,أكبر قارات العالم,continent,APPEND,جغرافيا
+,اسية زوجة فرعون,,person,NO_APPEND,
+,اسيا داغر,ممثلة لبنانية,person,NO_APPEND,
+,مسلسل,مسلسل مصري,series,APPEND,
+عرفات,جبل,,mountain,APPEND,
+,ياسر عرفات,,person,NO_APPEND,
+,فتحي عرفات,,person,NO_APPEND,
+,موسى عرفات,,person,NO_APPEND,
+,رائد عرفات,,person,NO_APPEND,
+,سهى عرفات,,person,NO_APPEND,
+العشاء,صلاة,,prayer,APPEND,
+,وجبة,,meal,APPEND,
+,العشاء صلاة,غير متوفر,prayer,NO_APPEND
+نهاوند,مقام موسيقي,,maqam,APPEND,
+,مدينة فارسية,,city,APPEND,جغرافيا
+,نهاوند مقام موسيقي,غير متوفر,maqam,NO_APPEND
+كاميرون,جمهورية,,country,APPEND,جغرافيا
+,ديفيد كاميرون,,person,NO_APPEND,
+,جيمس كاميرون,,person,NO_APPEND,
+القدرة,أكلة,,food,APPEND,
+,فيزياء,,physical quantity,APPEND,
+القرش,عملة,,currency,APPEND,
+,سمكة,,fish,APPEND,
+,القرش عملة,غير متوفر,currency,NO_APPEND
+,القرش سمكة,غير متوفر,fish,NO_APPEND

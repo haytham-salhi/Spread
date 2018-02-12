@@ -1,0 +1,45 @@
+query,meaning,description,class,formulation startegy
+صخر,شركة,غير متوفر,company,APPEND
+,صخر بن عمرو أخو الخنساء,غير متوفر,person,NO_APPEND
+,صخر حجري,غير متوفر,rock,NO_APPEND
+الجامعة العربية,جامعة الدول العربية ,غير متوفر,regional organization,NO_APPEND
+,الجامعة العربية المفتوحة,غير متوفر,university,NO_APPEND
+العين,عين الحسد,غير متوفر,emotion,NO_APPEND
+,عضو العين,غير متوفر,organ,NO_APPEND
+الاقتران,الاقتران الزواج ,غير متوفر,contract ,NO_APPEND
+,الاقتران في الرياضيات,غير متوفر,relation,NO_APPEND
+الاهرام,جريدة الاهرام المصرية,غير متوفر,news,NO_APPEND
+,اهرام الجيزة ,غير متوفر,archaeological site,NO_APPEND
+الازهر,جامعة الازهر مصر,غير متوفر,university,NO_APPEND
+,جامعة الازهر غزة ,غير متوفر,university,NO_APPEND
+الجلمة,جلمة حماة,غير متوفر,city,NO_APPEND
+,جلمة جنين,غير متوفر,city,NO_APPEND
+السكاكيني ,جامع السكاكيني حلب,غير متوفر,mosque,NO_APPEND
+,خليل السكاكيني,غير متوفر,person,NO_APPEND
+الظاهرية,مذهب الظاهرية,غير متوفر,doctrine,NO_APPEND
+,ظاهرية الخليل,غير متوفر,city,NO_APPEND
+العزيز,العزيز اسماء الله الحسنى,غير متوفر,god,NO_APPEND
+,بوتيفار عزيز مصر,غير متوفر,person,NO_APPEND
+الغزالي ,الاديب أبو الفتوح أحمد الغزالي ,غير متوفر,person,NO_APPEND
+,العالم الازهري محمد الغزالي ,غير متوفر,person,NO_APPEND
+الفارابي ,أبو إبراهيم الفارابي أديب نحوي لغوي,غير متوفر,person,NO_APPEND
+,أبو نصر محمد الفارابي فيلسوف طبيب,غير متوفر,person,NO_APPEND
+الفرات,نهر الفرات,غير متوفر,river,NO_APPEND
+,جريدة الفرات,غير متوفر,news,NO_APPEND
+الملك عبد الله,عبد الله بن عبد العزيز آل سعود ملك السعودية,غير متوفر,person,NO_APPEND
+,عبد الله الثاني بن الحسين ملك الأردن الحالي,غير متوفر,person,NO_APPEND
+بنجر,نبات البنجر الشمندر,غير متوفر,plant ,NO_APPEND
+,شعب البنجر اندونيسيا,غير متوفر,people,NO_APPEND
+بورصة ,مدينة بورصة التركية,غير متوفر,city,NO_APPEND
+,بورصة سوق الاوراق المالية والسندات المالية,غير متوفر,finance,NO_APPEND
+طرابلس,طرابلس مدينة لبنان,غير متوفر,city,NO_APPEND
+,طرابلس عاصمة ليبيا,غير متوفر,city,NO_APPEND
+العربية,اللغة العربية,غير متوفر,language,NO_APPEND
+,قناة العربية,غير متوفر,tv channel,NO_APPEND
+جافا,لغة الجافا,غير متوفر,programming language,NO_APPEND
+,جزيرة الجافا,غير متوفر,island,NO_APPEND
+العذراء,مريم العذراء,غير متوفر,person,NO_APPEND
+,برج العذراء,غير متوفر,constellation,NO_APPEND
+الاسد,بشار الاسد,غير متوفر,person,NO_APPEND
+,حيوان الاسد,غير متوفر,animal,NO_APPEND
+,برج الاسد,غير متوفر,constellation,NO_APPEND

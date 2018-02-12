@@ -2,8 +2,14 @@ package com.spread.persistence;
 
 import static org.junit.Assert.*;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -428,18 +434,18 @@ public class GeneralTest {
 			//PageRequest pr = new PageRequest(0, 10300);
 			//List<SearchResult> results = searchResultRepository.findOfficialBySearchEngineWithBasicInfo(searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr);
 			
-			PageRequest pr = new PageRequest(0, 100);
+			PageRequest pr = new PageRequest(0, 200);
 			List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
 			List<SearchResult> results = new ArrayList<>();
 			for (Query query : ambiguousQueries) {
-				List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
-				List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+				//List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+				//List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
 				
 				results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(query.getId(), searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
 				
-				for (Integer integer : clearQueryIds) {
-					results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(integer, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
-				}
+				//for (Integer integer : clearQueryIds) {
+				//	results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(integer, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+				//}
 			}
 			
 			System.out.println("For " + searchEngineCode + ":");
@@ -491,5 +497,247 @@ public class GeneralTest {
 			System.out.println("Number of resutls that has terms after preprocessing: " + countOfResultsThatHasTermsAfterPreprocesssing + " out of " + results.size());
 			System.out.println("Average: " + (double)countOfTerms / countOfResultsThatHasTermsAfterPreprocesssing);
 		}
+	}
+	
+	@Test
+	public void computeStatsAboutSnippetsOfCommonResultsBetweenGoogleAndBing() throws Exception {
+		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+		
+		String filename = "stats.csv";
+		String SEP = ",";
+		
+		//Files.write(Paths.get(filename), ("QueryId" + SEP + "QueryName" + SEP + "GoogleSearchResultId" + SEP + "BingSearchResultId" + SEP + "GoogleTitle" + SEP + "BingTitle" + SEP + "GTitleNumOfTokens" + SEP + "BTitleNumOfTokens" + SEP + "TitleTokensJaccardSim" + SEP + "GTitleNumOfTerms" + SEP + "BTitleNumOfTerms" + SEP + "TitleTermsJaccardSim" + SEP + "GoogleSnippet" + SEP + "BingSnippet" + SEP + "GSnippetNumOfTokens" + SEP + "BSnippetNumOfTokens" + SEP + "SnippetTokensJaccardSim" + SEP + "GSnippetNumOfTerms" + SEP + "BSnippetNumOfTerms" + SEP + "SnippetTremsJaccardSim" + System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		Files.write(Paths.get(filename), ("QueryId" + SEP + "QueryName" + SEP + "GoogleSearchResultId" + SEP + "BingSearchResultId" + SEP + "GTitleNumOfTokens" + SEP + "BTitleNumOfTokens" + SEP + "TitleTokensJaccardSim" + SEP + "GTitleNumOfTerms" + SEP + "BTitleNumOfTerms" + SEP + "TitleTermsJaccardSim" + SEP + "GSnippetNumOfTokens" + SEP + "BSnippetNumOfTokens" + SEP + "SnippetTokensJaccardSim" + SEP + "GSnippetNumOfTerms" + SEP + "BSnippetNumOfTerms" + SEP + "SnippetTremsJaccardSim" + System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		// Text preprocessing related
+		Stemmer stemmer = new LightStemmer(); 
+		boolean letterNormalization = true;
+		boolean diacriticsRemoval = true;
+		boolean puncutationRemoval = true;
+		boolean nonArabicWordsRemoval = false;
+		boolean arabicNumbersRemoval = false;
+		boolean nonAlphabeticWordsRemoval = true;
+		boolean stopWordsRemoval = true;
+		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+
+		for (Query query : ambiguousQueries) {
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+			
+			// For ambiguous query
+			List<SearchResult> googleResultsForAQ = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(query.getId(), SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+			List<SearchResult> bingResultsForAQ = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(query.getId(), SearchEngineCode.BING, Location.PALESTINE, SearchEngineLanguage.AR, null);
+			
+			System.out.println("For query --------------------------> " + query.getName());
+			System.out.println();
+
+			for (SearchResult bingSearchResult : bingResultsForAQ) {
+				for (SearchResult googleSearchResult : googleResultsForAQ) {
+					if(bingSearchResult.equals(googleSearchResult)) { // Based on the URL
+						System.out.println("Google: " + googleSearchResult);
+						System.out.println("Bing: " + bingSearchResult);
+						
+						List<String> gTitleTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(googleSearchResult.getTitle());
+						List<String> bTitleTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bingSearchResult.getTitle());
+						
+						String gTitleTextAfterPreprocessing = spreadArabicPreprocessor.process(googleSearchResult.getTitle(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+						ArrayList<String> gTitleTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(gTitleTextAfterPreprocessing);
+
+						String bTitleTextAfterPreprocessing = spreadArabicPreprocessor.process(bingSearchResult.getTitle(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+						ArrayList<String> bTitleTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bTitleTextAfterPreprocessing);
+						
+						
+						List<String> gSnippetTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(googleSearchResult.getSnippet());
+						List<String> bSnippetTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bingSearchResult.getSnippet());
+						
+						String gSnippetTextAfterPreprocessing = spreadArabicPreprocessor.process(googleSearchResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+						ArrayList<String> gSnippetTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(gSnippetTextAfterPreprocessing);
+
+						String bSnippetTextAfterPreprocessing = spreadArabicPreprocessor.process(bingSearchResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+						ArrayList<String> bSnippetTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bSnippetTextAfterPreprocessing);
+						
+						//QueryId, QueryName, GoogleSearchResultId, BingSearchResultId, GoogleTitle, BingTitle, GTitleNumOfTokens, BTitleNumOfTokens, TitleTokensJaccardSim, GTitleNumOfTerms, BTitleNumOfTerms, TitleTermsJaccardSim, GoogleSnippet, BingSnippet, GSnippetNumOfTokens, BSnippetNumOfTokens, SnippetTokensJaccardSim, GSnippetNumOfTerms, BSnippetNumOfTerms, SnippetTremsJaccardSim
+						Files.write(Paths.get(filename), 
+						(
+								query.getId() + SEP +
+								query.getName() + SEP +
+								googleSearchResult.getId() + SEP +
+								bingSearchResult.getId() + SEP + 
+								//googleSearchResult.getTitle() + SEP + 
+								//bingSearchResult.getTitle() + SEP +
+								// GTitleNumOfTokens
+								gTitleTokens.size() + SEP +
+								// BTitleNumOfTokens
+								bTitleTokens.size() + SEP +
+								// TitleTokensJaccardSim
+								((float)intersection(gTitleTokens.stream().collect(Collectors.toSet()), bTitleTokens.stream().collect(Collectors.toSet())) / union(gTitleTokens.stream().collect(Collectors.toSet()), bTitleTokens.stream().collect(Collectors.toSet()))) + SEP +
+								// GTitleNumOfTerms
+								gTitleTerms.size() + SEP +
+								// BTitleNumOfTerms
+								bTitleTerms.size() + SEP +
+								// TitleTermsJaccardSim
+								((float)intersection(gTitleTerms.stream().collect(Collectors.toSet()), bTitleTerms.stream().collect(Collectors.toSet())) / union(gTitleTerms.stream().collect(Collectors.toSet()), bTitleTerms.stream().collect(Collectors.toSet()))) + SEP +
+								// GoogleSnippet
+								//googleSearchResult.getSnippet() + SEP + 
+								// BingSnippet
+								//bingSearchResult.getSnippet() + SEP +
+								// GSnippetNumOfTokens
+								gSnippetTokens.size() + SEP +
+								// BSnippetNumOfTokens
+								bSnippetTokens.size() + SEP +
+								// SnippetTokensJaccardSim
+								((float)intersection(gSnippetTokens.stream().collect(Collectors.toSet()), bSnippetTokens.stream().collect(Collectors.toSet())) / union(gSnippetTokens.stream().collect(Collectors.toSet()), bSnippetTokens.stream().collect(Collectors.toSet()))) + SEP +
+								// GSnippetNumOfTerms
+								gSnippetTerms.size() + SEP +
+								// BSnippetNumOfTerms
+								bSnippetTerms.size() + SEP +
+								// SnippetTremsJaccardSim
+								((float)intersection(gSnippetTerms.stream().collect(Collectors.toSet()), bSnippetTerms.stream().collect(Collectors.toSet())) / union(gSnippetTerms.stream().collect(Collectors.toSet()), bSnippetTerms.stream().collect(Collectors.toSet()))) +
+						System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+						
+						System.out.println();
+						System.out.println();
+						System.out.println();
+					}
+				}
+			}
+			
+//			for (Integer integer : clearQueryIds) {
+//				results.addAll(searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(integer, searchEngineCode, Location.PALESTINE, SearchEngineLanguage.AR, pr));
+//			}
+		}
+		
+		ambiguousQueries.forEach(System.out::println);
+		System.out.println(ambiguousQueries.parallelStream().count());
+
+	}
+	
+	/**
+	 * Same code as above but for clear queries, whenever you edit here or above, don't forget to sync
+	 * @throws Exception
+	 */
+	@Test
+	public void computeStatsAboutSnippetsOfCommonResultsBetweenGoogleAndBingForClearQueries() throws Exception {
+		List<Query> ambiguousQueries = queryRepository.findByIsAmbiguousAndIsOfficial(true, true, null);
+		
+		String filename = "stats-clear-queries.csv";
+		String SEP = ",";
+		
+		//Files.write(Paths.get(filename), ("QueryId" + SEP + "QueryName" + SEP + "GoogleSearchResultId" + SEP + "BingSearchResultId" + SEP + "GoogleTitle" + SEP + "BingTitle" + SEP + "GTitleNumOfTokens" + SEP + "BTitleNumOfTokens" + SEP + "TitleTokensJaccardSim" + SEP + "GTitleNumOfTerms" + SEP + "BTitleNumOfTerms" + SEP + "TitleTermsJaccardSim" + SEP + "GoogleSnippet" + SEP + "BingSnippet" + SEP + "GSnippetNumOfTokens" + SEP + "BSnippetNumOfTokens" + SEP + "SnippetTokensJaccardSim" + SEP + "GSnippetNumOfTerms" + SEP + "BSnippetNumOfTerms" + SEP + "SnippetTremsJaccardSim" + System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		Files.write(Paths.get(filename), ("QueryId" + SEP + "QueryName" + SEP + "GoogleSearchResultId" + SEP + "BingSearchResultId" + SEP + "GTitleNumOfTokens" + SEP + "BTitleNumOfTokens" + SEP + "TitleTokensJaccardSim" + SEP + "GTitleNumOfTerms" + SEP + "BTitleNumOfTerms" + SEP + "TitleTermsJaccardSim" + SEP + "GSnippetNumOfTokens" + SEP + "BSnippetNumOfTokens" + SEP + "SnippetTokensJaccardSim" + SEP + "GSnippetNumOfTerms" + SEP + "BSnippetNumOfTerms" + SEP + "SnippetTremsJaccardSim" + System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+		// Text preprocessing related
+		Stemmer stemmer = new LightStemmer(); 
+		boolean letterNormalization = true;
+		boolean diacriticsRemoval = true;
+		boolean puncutationRemoval = true;
+		boolean nonArabicWordsRemoval = false;
+		boolean arabicNumbersRemoval = false;
+		boolean nonAlphabeticWordsRemoval = true;
+		boolean stopWordsRemoval = true;
+		SpreadArabicPreprocessor spreadArabicPreprocessor = new SpreadArabicPreprocessor();
+
+		for (Query query : ambiguousQueries) {
+			List<Meaning> clearMeaningsWithClearQueriesForAq = meaningRepository.findOfficialMeaningsWithClearQueries(query.getId());
+			List<Integer> clearQueryIds = clearMeaningsWithClearQueriesForAq.stream().map(n -> n.getClearQuery().getId()).collect(Collectors.toList());
+			
+			// For clear queries
+			for (Integer clearQueryId : clearQueryIds) {
+				// For ambiguous query
+				List<SearchResult> googleResultsForAQ = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(clearQueryId, SearchEngineCode.GOOGLE, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				List<SearchResult> bingResultsForAQ = searchResultRepository.findByQueryAndSearchEngineWithBasicInfo(clearQueryId, SearchEngineCode.BING, Location.PALESTINE, SearchEngineLanguage.AR, null);
+				
+				System.out.println("For query --------------------------> " + query.getName());
+				System.out.println();
+
+				for (SearchResult bingSearchResult : bingResultsForAQ) {
+					for (SearchResult googleSearchResult : googleResultsForAQ) {
+						if(bingSearchResult.equals(googleSearchResult)) { // Based on the URL
+							System.out.println("Google: " + googleSearchResult);
+							System.out.println("Bing: " + bingSearchResult);
+							
+							List<String> gTitleTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(googleSearchResult.getTitle());
+							List<String> bTitleTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bingSearchResult.getTitle());
+							
+							String gTitleTextAfterPreprocessing = spreadArabicPreprocessor.process(googleSearchResult.getTitle(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+							ArrayList<String> gTitleTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(gTitleTextAfterPreprocessing);
+
+							String bTitleTextAfterPreprocessing = spreadArabicPreprocessor.process(bingSearchResult.getTitle(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+							ArrayList<String> bTitleTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bTitleTextAfterPreprocessing);
+							
+							
+							List<String> gSnippetTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(googleSearchResult.getSnippet());
+							List<String> bSnippetTokens = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bingSearchResult.getSnippet());
+							
+							String gSnippetTextAfterPreprocessing = spreadArabicPreprocessor.process(googleSearchResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+							ArrayList<String> gSnippetTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(gSnippetTextAfterPreprocessing);
+
+							String bSnippetTextAfterPreprocessing = spreadArabicPreprocessor.process(bingSearchResult.getSnippet(), stemmer, letterNormalization, diacriticsRemoval, puncutationRemoval, nonArabicWordsRemoval, arabicNumbersRemoval, nonAlphabeticWordsRemoval, stopWordsRemoval, null);
+							ArrayList<String> bSnippetTerms = spreadArabicPreprocessor.tokenizeBySpaceAndRemoveExcessiveSpaces(bSnippetTextAfterPreprocessing);
+							
+							//QueryId, QueryName, GoogleSearchResultId, BingSearchResultId, GoogleTitle, BingTitle, GTitleNumOfTokens, BTitleNumOfTokens, TitleTokensJaccardSim, GTitleNumOfTerms, BTitleNumOfTerms, TitleTermsJaccardSim, GoogleSnippet, BingSnippet, GSnippetNumOfTokens, BSnippetNumOfTokens, SnippetTokensJaccardSim, GSnippetNumOfTerms, BSnippetNumOfTerms, SnippetTremsJaccardSim
+							Files.write(Paths.get(filename), 
+							(
+									clearQueryId + SEP +
+									clearMeaningsWithClearQueriesForAq.stream().filter(meaning -> meaning.getClearQuery().getId() == clearQueryId).map(meaning -> meaning.getClearQuery().getName()).findFirst().get() + SEP +
+									googleSearchResult.getId() + SEP +
+									bingSearchResult.getId() + SEP + 
+									//googleSearchResult.getTitle() + SEP + 
+									//bingSearchResult.getTitle() + SEP +
+									// GTitleNumOfTokens
+									gTitleTokens.size() + SEP +
+									// BTitleNumOfTokens
+									bTitleTokens.size() + SEP +
+									// TitleTokensJaccardSim
+									((float)intersection(gTitleTokens.stream().collect(Collectors.toSet()), bTitleTokens.stream().collect(Collectors.toSet())) / union(gTitleTokens.stream().collect(Collectors.toSet()), bTitleTokens.stream().collect(Collectors.toSet()))) + SEP +
+									// GTitleNumOfTerms
+									gTitleTerms.size() + SEP +
+									// BTitleNumOfTerms
+									bTitleTerms.size() + SEP +
+									// TitleTermsJaccardSim
+									((float)intersection(gTitleTerms.stream().collect(Collectors.toSet()), bTitleTerms.stream().collect(Collectors.toSet())) / union(gTitleTerms.stream().collect(Collectors.toSet()), bTitleTerms.stream().collect(Collectors.toSet()))) + SEP +
+									// GoogleSnippet
+									//googleSearchResult.getSnippet() + SEP + 
+									// BingSnippet
+									//bingSearchResult.getSnippet() + SEP +
+									// GSnippetNumOfTokens
+									gSnippetTokens.size() + SEP +
+									// BSnippetNumOfTokens
+									bSnippetTokens.size() + SEP +
+									// SnippetTokensJaccardSim
+									((float)intersection(gSnippetTokens.stream().collect(Collectors.toSet()), bSnippetTokens.stream().collect(Collectors.toSet())) / union(gSnippetTokens.stream().collect(Collectors.toSet()), bSnippetTokens.stream().collect(Collectors.toSet()))) + SEP +
+									// GSnippetNumOfTerms
+									gSnippetTerms.size() + SEP +
+									// BSnippetNumOfTerms
+									bSnippetTerms.size() + SEP +
+									// SnippetTremsJaccardSim
+									((float)intersection(gSnippetTerms.stream().collect(Collectors.toSet()), bSnippetTerms.stream().collect(Collectors.toSet())) / union(gSnippetTerms.stream().collect(Collectors.toSet()), bSnippetTerms.stream().collect(Collectors.toSet()))) +
+							System.lineSeparator()).getBytes(Charset.forName("UTF-8")), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+							
+							System.out.println();
+							System.out.println();
+							System.out.println();
+						}
+					}
+				}
+			}
+		}
+		
+		ambiguousQueries.forEach(System.out::println);
+		System.out.println(ambiguousQueries.parallelStream().count());
+
+	}
+	
+	public static int intersection(Set<String> a, Set<String> b) {
+		Set<String> intersection = new HashSet<>(a);
+		intersection.retainAll(b);
+		
+		return intersection.size();
+	}
+	
+	public static int union(Set<String> a, Set<String> b) {
+		Set<String> union = new HashSet<>(a);
+		union.addAll(b);
+		
+		return union.size();
 	}
 }
