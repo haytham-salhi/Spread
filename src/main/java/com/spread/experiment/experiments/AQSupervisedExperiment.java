@@ -278,6 +278,10 @@ public class AQSupervisedExperiment extends BaseExperiment {
 						// Build the model
 						//kmeansModel.buildClusterer(trainingDatasetPreprocesser.getTrainingDataSet());
 						
+						// StringToWordVector creates a dictionary from the first batch of data it receives (i.e., the training data if you use the FilteredClassifier). All subsequent batches (i.e., the test data if you use the FilteredClassifier) will be turned into feature vectors based on that dictionary.
+						//Essentially, the “filtering model” will be built based on the first batch of data and then remain constant. 
+						//Most (all?) filters in WEKA that build an internal model to process the data work that way.
+
 						MultiFilter multiFilter = new MultiFilter();
 						multiFilter.setFilters(new Filter[] {toVectorsfilter});
 						

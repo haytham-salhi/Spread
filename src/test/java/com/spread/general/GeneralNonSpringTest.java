@@ -27,6 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.http.HttpTransport;
@@ -90,7 +95,57 @@ public class GeneralNonSpringTest {
 		//System.out.println(document.text());
 		
 		//System.out.println(Jsoup.parse(document.outerHtml()).text());;
-
+		
+	}
+	
+	@Test
+	public void testWikipedia() throws Exception {
+		java.util.List<String> senses = getSensesFromArabicWikipedia("الملك عبد الله", false);
+		
+		for (String sense : senses) {
+			System.out.println(sense);
+		}
+	}
+	
+	java.util.List<String> getSensesFromArabicWikipedia(String arabicQuery, boolean debug) {
+		//String englishQuery = "chef";
+		//String arabicQuery = "أمازون";
+		
+		// english url
+		//String urlEndpoint = "https://en.wikipedia.org/w/api.php?action=query&titles=" + englishQuery + "_(disambiguation)&prop=extracts&format=json&redirects=true";
+		String urlEndpoint = "https://ar.wikipedia.org/w/api.php?action=query&titles=" + arabicQuery + "_(توضيح)&prop=extracts&format=json&redirects=true";
+		
+		//Document document = Jsoup.connect(urlEndpoint)
+		//		.ignoreContentType(true)
+		//		.get();
+		
+		RestTemplate restTemplate = new RestTemplate();
+		String jsonResponse = restTemplate.getForObject(urlEndpoint, String.class);
+		
+		if(debug)
+			System.out.println(jsonResponse);
+		
+		//String jsonResponse = document.body().
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode rootNode = null;
+		try {
+			rootNode = objectMapper.readTree(jsonResponse);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Get extract field, which its value is html 
+		String extract = rootNode.findValue("extract").asText(); 
+		
+		// Parse
+		Document doc = Jsoup.parse(extract);
+		Elements elements = doc.select("li");
+		
+		// Convert them to list of strings
+		return elements.stream().map(element -> element.text()).collect(Collectors.toList());
 	}
 	
 	@Test

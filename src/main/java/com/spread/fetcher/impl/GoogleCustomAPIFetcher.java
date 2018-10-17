@@ -25,10 +25,13 @@ import com.spread.model.SearchResult;
  *
  */
 @Component
-@Deprecated
-public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetcher {
+public class GoogleCustomAPIFetcher extends BaseFetcher implements SearchEngineFetcher {
 	
-	private static final long serialVersionUID = -6656639906931036082L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1799458810192899640L;
 
 	/* Begin: Place Holders Variables */
 	private static final String QUERY_PLACE_HOLDER = "{query}";
@@ -39,22 +42,10 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 	/* End: Place Holders Variables */
 	
 	/* Begin: JSON Path Variables */
-	private static final String CONTENT_NO_FORMATTING_JSON_PATH = "contentNoFormatting";
-
-	private static final String URL_JSON_PATH = "unescapedUrl"; // This must be the unescaped one
 	
-	private static final String FOMATTED_URL_JSON_PATH = "formattedUrl";
-
-	private static final String TITLE_NO_FORMATTING_JSON_PATH = "titleNoFormatting";
-
-	private static final String RESULTS_JSON_PATH = "results";
-
-	private static final String NUMBER_OF_PAGES_JSON_PATH = "pages";
-
-	private static final String RESULT_COUNT_JSON_PATH = "resultCount";
 	/* End: JSON Path Variables */
 	
-	private static final Logger LOGGER = LogManager.getLogger(GoogleCustomFetcher.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(GoogleCustomAPIFetcher.class.getName());
 
 	@Value("${google.custom.search.engine.url}")
 	private String cseEndPoint;
@@ -76,12 +67,12 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 		SearchResult searchResult = new SearchResult();
 		
 		// num can be 10 as well, let it be 20 to reduce the calls numbers
-		int num = 20;
+		int num = 10;
 		// The max number of results that can be fetched is 100
 		
 		int actualNumberOfItemsFetched = 0; // Counter
 		
-		int start = 0;
+		int start = 1;
 		int pageNumber = 0;
 		
 		// Don't encode the query here as Google will be unhappy
@@ -105,17 +96,19 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 			LOGGER.error(ExceptionUtils.getStackTrace(e));
 		}
 		
-		JsonNode cursorNode = rootNode.path("cursor");
-		
-		String resultsCount = cursorNode.path(RESULT_COUNT_JSON_PATH).asText(NOT_FOUND);
+		String resultsCount = rootNode.path("searchInformation").path("totalResults").asText(NOT_FOUND);
 		searchResult.setTotalResults(resultsCount);
 		
-		int numberOfPages = cursorNode.path(NUMBER_OF_PAGES_JSON_PATH).size();
+		//int numberOfPages = cursorNode.path(NUMBER_OF_PAGES_JSON_PATH).size();
 		
-		if(numberOfPages > 0) {
+			//LOGGER.info("No pages!!");
+			
+		JsonNode itemsPath = rootNode.path("items");
+		
+		while(!itemsPath.isMissingNode()) {
 			LOGGER.info("Fetching data of with start=" + start + " and page=" + pageNumber);
 			
-			Iterator<JsonNode> searchElements = rootNode.path(RESULTS_JSON_PATH).elements();
+			Iterator<JsonNode> searchElements = itemsPath.elements();
 			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
 				JsonNode searchElement = searchElements.next();
 				
@@ -124,25 +117,20 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 				// Accumulate the fetched items
 				actualNumberOfItemsFetched++;
 			}
-		} else {
-			LOGGER.info("No pages!!");
-		}
-		
-		start += num; // To loop over 20, 40, 60, 80
-		pageNumber++; // Go to next page
-		
-		// If there are no pages, it will not enter the next loop
-		while(pageNumber < numberOfPages && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
-			LOGGER.info("Fetching data of with start=" + start + " and page=" + pageNumber);
 			
-			// Prepare the endPoint
+			start += num; // To loop over 20, 40, 60, 80
+			pageNumber++;
+			
+			if(pageNumber > 9) {
+				// DO not proceed and break
+				break;
+			}
+			
 			preparedEndPoint = cseEndPoint.replace(NUM_PLACE_HOLDER, String.valueOf(num)).replace(START_PLACE_HOLDER, String.valueOf(start)).replace(QUERY_PLACE_HOLDER, query);
-			
 			jsonResponse = restTemplate.getForObject(preparedEndPoint, String.class);
 			
 			objectMapper = new ObjectMapper();
 			rootNode = null;
-			
 			try {
 				rootNode = objectMapper.readTree(jsonResponse);
 			} catch (JsonProcessingException e) {
@@ -157,21 +145,9 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 				return searchResult;
 			}
 			
-			cursorNode = rootNode.path("cursor");
-			
-			Iterator<JsonNode> searchElements = rootNode.path(RESULTS_JSON_PATH).elements();
-			while (searchElements.hasNext() && actualNumberOfItemsFetched < maxNumOfResultsToFetch) {
-				JsonNode searchElement = searchElements.next();
-				
-				parseAndAddToSearchResult(searchResult, searchElement, fetchInnerPage);
-				
-				// Accumulate the fetched items
-				actualNumberOfItemsFetched++;
-			}
-			
-			start += num; // to loop over 20, 40, 60, 80
-			pageNumber++;
+			itemsPath = rootNode.path("items");
 		}
+			
 		
 		LOGGER.trace("retrurning");
 		return searchResult;
@@ -179,10 +155,10 @@ public class GoogleCustomFetcher extends BaseFetcher implements SearchEngineFetc
 
 	private void parseAndAddToSearchResult(SearchResult searchResult,
 			JsonNode searchElement, boolean fetchInnerPage) {
-		String title = searchElement.path(TITLE_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-		String url = searchElement.path(URL_JSON_PATH).asText(NOT_FOUND).trim();
-		String snippet = searchElement.path(CONTENT_NO_FORMATTING_JSON_PATH).asText(NOT_FOUND);
-		String formattedUrl = searchElement.path(FOMATTED_URL_JSON_PATH).asText(NOT_FOUND);
+		String title = searchElement.path("title").asText(NOT_FOUND);
+		String url = searchElement.path("link").asText(NOT_FOUND).trim();
+		String snippet = searchElement.path("snippet").asText(NOT_FOUND);
+		String formattedUrl = searchElement.path("formattedUrl").asText(NOT_FOUND);
 		
 		// Decode the url
 		try {
