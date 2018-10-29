@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spread.experiment.RawSearchResult;
 import com.spread.experiment.data.stemmers.LightStemmer;
+import com.spread.experiment.evaluation.MyClusterEvaluation;
 import com.spread.experiment.preparation.FeatureSelectionModes;
 import com.spread.experiment.preparation.FeatureSpaceModes;
 import com.spread.experiment.preparation.WClusteringPreprocessor;
@@ -65,7 +66,7 @@ public class SpreadController implements Serializable {
 	
 
 	@RequestMapping(value = {"/", ""}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<Integer, List<RawSearchResult>>> item5Run(
+	public ResponseEntity<Map<String, List<RawSearchResult>>> item5Run(
 			@RequestParam(defaultValue= "عمان", required = false) String query,
 			@RequestParam(defaultValue= "B", required = false) String engine) throws Exception {
 		System.out.println(query);
@@ -80,6 +81,12 @@ public class SpreadController implements Serializable {
 		if(query.equals("عمان")) {
 			senses.remove("عمان (نطاق أنترنت)");
 		}
+		if(query.equals("أمازون")) {
+			senses = Arrays.asList(new String[] {"نهر أمازون", "شركة أمازون"});
+		}
+		if(query.equals("أسد")) {
+			senses = Arrays.asList(new String[] {"حيوان الاسد", "برج الأسد", "بشار الأسد"});
+		}
 		
 		// Map senses to numbers
 		Map<String, String> sensesClassesMap = new HashMap<>();
@@ -87,6 +94,15 @@ public class SpreadController implements Serializable {
 		for (String sense : senses) {
 			sensesClassesMap.put(sense, "Class" + i++);
 		}
+		
+		// Map senses to classes as well
+		Map<String, String> classesToSensesMap = new HashMap<>();
+		i = 0;
+		for (String sense : senses) {
+			classesToSensesMap.put("Class" + i++, sense);
+		}
+		// To handle the case if the model below assigns to no class cluster!!
+		classesToSensesMap.put("No class", "No sense");
 		
 		// 2. Crawl search results for each sense from Google, Bing or Yahoo
 		List<RawSearchResult> trainingRawSearchResults = new ArrayList<RawSearchResult>();
@@ -121,7 +137,7 @@ public class SpreadController implements Serializable {
 		boolean ambiguousQueryRemoval = true;
 		// Vector-space related (dictionary related)
 		boolean countWords = true;
-		int wordsToKeep = 40; // the top-N most common words;
+		int wordsToKeep = 10; // the top-N most common words;
 		int wordsToKeepInCaseOfInnerPage = 300; // Only applied when detecting innerPage attribute added to training set
 		boolean TF = false; // damping
 		boolean IDF = true;
@@ -196,7 +212,9 @@ public class SpreadController implements Serializable {
 		// --------- Evaluate the training dta set just to see the classes-to-clusters of training data
 		// Evaluate against labeled test data set
 		System.out.println("------Training data clustering evaluation:------");
-		ClusterEvaluation trainingEval = new ClusterEvaluation();
+		// Used MyClusterEvaluation instead of ClusterEvaluation because I added a new logic there to preserve the cluster to classes mapping
+		// See below trainingEval.clustersToClassesMapping
+		MyClusterEvaluation trainingEval = new MyClusterEvaluation();
 		trainingEval.setClusterer(fc);
 		// Just instances without VSM
 		Instances trainingDatasetAsInstancesWithClassAttr = trainingDatasetPreprocesser.getTrainingDataSetWithClassAttr();
@@ -205,6 +223,10 @@ public class SpreadController implements Serializable {
 		trainingEval.evaluateClusterer(trainingDatasetAsInstancesWithClassAttr);
 		String eval1String = trainingEval.clusterResultsToString(); 
 		System.out.println(eval1String);
+		// I didn't depend on this mapping (trainingEval.getClassesToClusters()) because it not understood!!
+		System.out.println("I didn't depend on this mapping (trainingEval.getClassesToClusters()) because it not understood!!");
+		System.out.println("Instead, I preserved the cluster i <-- class j in MyClusterEvaluation! and used that maping to get the clusters first, and then classes, and then the senses!");
+		System.out.println("Classes to clusters: " + Arrays.toString(trainingEval.getClassesToClusters()));
 		
 		System.out.println("Senses to classes map: " + sensesClassesMap);
 		
@@ -213,27 +235,36 @@ public class SpreadController implements Serializable {
 		// --------- Evaluation
 		// Evaluate against labeled test data set
 		System.out.println("------Test data clustering evaluation:------");
-		ClusterEvaluation eval = new ClusterEvaluation();
+		// Just to unify with the above even though I can still use ClusterEvaluation, but the reason to change this is to unify with the above
+		MyClusterEvaluation eval = new MyClusterEvaluation();
 		eval.setClusterer(fc);
 		eval.evaluateClusterer(new Instances(testDatasetAsInstancesWithNoClassAttr));
 		
 		String evalString = eval.clusterResultsToString();
 		System.out.println(evalString);
+		System.out.println("Classes to clusters: " + Arrays.toString(eval.getClassesToClusters()));
+
 		
 		
-		Map<Integer, List<RawSearchResult>> clusteredTestSearchResults = new HashMap<>();
+		// ClusterNumber to cluster
+		//Map<Integer, List<RawSearchResult>> clusteredTestSearchResults = new HashMap<>();
+		// Class name to cluster --> based on the classes and their mappings in classesToSensesMap
+		Map<String, List<RawSearchResult>> clusteredTestSearchResults = new HashMap<>();
 		
 		// Create the clusters
 		double[] assignments = eval.getClusterAssignments();
 		
 		for (int j = 0; j < assignments.length; j++) {
 			int clusterNumber = (int) assignments[j];
-			List<RawSearchResult> clusterList = clusteredTestSearchResults.get(clusterNumber);
+			//List<RawSearchResult> clusterList = clusteredTestSearchResults.get(clusterNumber);
+			// note: this trainingEval.clustersToClassesMapping.get("Cluster " + clusterNumber) can return "Class n" or "No class" 
+			List<RawSearchResult> clusterList = clusteredTestSearchResults.get(classesToSensesMap.get(trainingEval.clustersToClassesMapping.get("Cluster " + clusterNumber)));
 			if(clusterList == null) {
 				// Create and add
 				clusterList = new ArrayList<>();
 				clusterList.add(testRawSearchResults.get(j));
-				clusteredTestSearchResults.put(clusterNumber, clusterList);
+				//clusteredTestSearchResults.put(clusterNumber, clusterList);
+				clusteredTestSearchResults.put(classesToSensesMap.get(trainingEval.clustersToClassesMapping.get("Cluster " + clusterNumber)), clusterList);
 			} else {
 				clusterList.add(testRawSearchResults.get(j));
 			}
